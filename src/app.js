@@ -235,7 +235,7 @@
       if (n !== value) p.onChange(n);
     }
     function bump(d) { p.onChange(Math.min(max, Math.max(min, Math.round((value + d) * 100) / 100))); }
-    return html`<span class="stepper">
+    return html`<span class="stepper" data-stepper=${p.id}>
       <button type="button" aria-label=${'Decrease ' + (p.label || '')} disabled=${p.disabled || value <= min} onClick=${function () { bump(-step); }}><${Icon} name="minus" size=${12} /></button>
       <span class="stepper-val">
         <input id=${p.id} inputmode="decimal" aria-label=${p.label || 'Value'} value=${text} disabled=${p.disabled}
@@ -1598,7 +1598,7 @@
         <div class="grid-2">
           <label class="field"><span>Project currency</span>
             <select class="select" id="est-currency" aria-label="Project currency" value=${draft.currency || 'USD'} onChange=${function (e) { var c = e.target.value; p.change(function (n) { n.currency = c; }); }}>
-              ${E.CURRENCIES.map(function (c) { return html`<option key=${c.id} value=${c.id}>${c.name}</option>`; })}
+              ${E.CURRENCIES.map(function (c) { return html`<option key=${c.id} value=${c.id} selected=${c.id === (draft.currency || 'USD')}>${c.name}</option>`; })}
             </select>
           </label>
           <label class="field"><span>Billing rate</span>
@@ -2103,7 +2103,12 @@
     var sd = useState(function () { return E.clone(live || {}); }), draft = sd[0], setDraft = sd[1];
     var liveStr = JSON.stringify(live || {}), baseStr = JSON.stringify(base);
     var dirty = JSON.stringify(draft) !== baseStr;
-    useEffect(function () { if (!dirty) { setBase(E.clone(live || {})); setDraft(E.clone(live || {})); } }, [liveStr]);
+    var prevLive = useRef(liveStr);
+    useEffect(function () {
+      if (prevLive.current === liveStr) return;
+      prevLive.current = liveStr;
+      if (!dirty) { setBase(E.clone(live || {})); setDraft(E.clone(live || {})); }
+    }, [liveStr]);
     return {
       base: base, draft: draft, dirty: dirty, conflict: dirty && liveStr !== baseStr,
       mut: function (fn) { setDraft(function (d) { var n = E.clone(d); fn(n); return n; }); },
@@ -2665,7 +2670,7 @@
           <div class="grid-2">
             <label class="field"><span>Default currency</span>
               <select class="select" id="set-currency" aria-label="Default currency" value=${s.currency || 'USD'} onChange=${function (e) { var v = e.target.value; d.mut(function (n) { n.currency = v; }); }}>
-                ${E.CURRENCIES.map(function (c) { return html`<option key=${c.id} value=${c.id}>${c.name}</option>`; })}
+                ${E.CURRENCIES.map(function (c) { return html`<option key=${c.id} value=${c.id} selected=${c.id === (s.currency || 'USD')}>${c.name}</option>`; })}
               </select>
             </label>
             <label class="field"><span>Default billing rate</span>
