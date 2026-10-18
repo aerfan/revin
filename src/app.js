@@ -143,7 +143,14 @@
       } catch (e) { return null; }
     },
     getLogs: function () { return local.get('error_logs', []); },
-    clearLogs: function () { local.set('error_logs', []); }
+    clearLogs: function () { local.set('error_logs', []); },
+    track: function (name, data) {
+      try {
+        if (typeof window !== 'undefined' && typeof window.va === 'function') {
+          window.va('event', { name: name, data: data });
+        }
+      } catch (e) { /* silent */ }
+    }
   };
 
 var STEPS = [
@@ -1850,6 +1857,10 @@ var STEPS = [
         n.status = 'approved';
       });
       ctx.toast('Proposal accepted and digitally signed!', 'good');
+      Telemetry.track('proposal_accepted', {
+        package: String(tierLabel || '').slice(0, 50),
+        total: Math.round(m.totalCost || 0)
+      });
 
       // Dispatch outbound automation webhook if configured
       var wh = ctx.settings && ctx.settings.webhooks;

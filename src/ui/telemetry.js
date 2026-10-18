@@ -48,5 +48,12 @@
       } catch (e) { return null; }
     },
     getLogs: function () { return local.get('error_logs', []); },
-    clearLogs: function () { local.set('error_logs', []); }
+    clearLogs: function () { local.set('error_logs', []); },
+    track: function (name, data) {
+      try {
+        if (typeof window !== 'undefined' && typeof window.va === 'function') {
+          window.va('event', { name: name, data: data });
+        }
+      } catch (e) { /* silent */ }
+    }
   };

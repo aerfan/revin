@@ -30,6 +30,13 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   const urlPath = req.url.split('?')[0];
 
+  // Handle Vercel analytics/system endpoints in local dev without 404s
+  if (urlPath.startsWith('/_vercel/')) {
+    res.writeHead(204, { 'Content-Type': 'application/javascript; charset=utf-8' });
+    res.end();
+    return;
+  }
+
   // Route root and index to the interactive dev harness
   let filePath;
   if (urlPath === '/' || urlPath === '/index.html') {

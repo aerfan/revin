@@ -372,6 +372,10 @@
         n.status = 'approved';
       });
       ctx.toast('Proposal accepted and digitally signed!', 'good');
+      Telemetry.track('proposal_accepted', {
+        package: String(tierLabel || '').slice(0, 50),
+        total: Math.round(m.totalCost || 0)
+      });
 
       // Dispatch outbound automation webhook if configured
       var wh = ctx.settings && ctx.settings.webhooks;

@@ -301,5 +301,13 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
      - *Resolution*: Added `@media (max-width: 420px)` and `@media (max-width: 360px)` ultra-compact rules in `src/styles.css` adjusting `.side` padding (6px), navtab padding (4px), brand padding, theme switcher button size (19px), and signout button size (26px).
      - *Verification*: Screen sweeps in `test/canary.screens.js` across all 12 viewports (including 320px with authenticated Sign Out button active) pass with 0 defects and 0px horizontal overflow.
 
-
-
+### Session 14: Vercel Web Analytics Integration (Completed)
+- **Status**: Completed (100% pass).
+- **Scope**:
+  - Integrated native Vercel Web Analytics tracking snippet into `web/template.html` (`window.va` stub + `/_vercel/insights/script.js`).
+  - Installed `@vercel/analytics` (`^2.0.1`) in `package.json` with 0 vulnerabilities.
+  - Excluded `_vercel/` from SPA rewrites in `vercel.json` (`/((?!_vercel/|vendor/|sw\\.js).*)`) ensuring edge insights endpoints are never intercepted by client-side routing.
+  - Added bypass in `web/sw.js` for `url.pathname.startsWith('/_vercel/')` ensuring PWA Service Worker never caches or intercepts telemetry.
+  - Added 204 handler in `server.js` for local development server cleanliness.
+  - Extended `src/ui/telemetry.js` with `Telemetry.track(name, data)` hooking into `window.va('event', ...)` for custom event tracking (e.g. `proposal_accepted`).
+- **Verification**: 100% pass across all engine tests (5,754 checks), security penetration suite (10 vectors), compatibility suites (Chromium & WebKit), 12 responsive screen viewports, and proposal portal sign-off contracts.
