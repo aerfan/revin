@@ -1,0 +1,30 @@
+{
+  "name": "design-hours-estimator",
+  "private": true,
+  "dependencies": {
+    "axe-core": "^4.10.2",
+    "exceljs": "^4.4.0"
+  },
+  "devDependencies": {
+    "pg": "^8.12.0",
+    "ws": "^8.18.0"
+  },
+  "version": "1.1.0",
+  "description": "Design-hours estimation tool: shared library, estimates, packages, versions, client proposals and actual-hours tracking.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "node web/build.js",
+    "build:claude": "node build.js",
+    "build:harness": "node build.js && node dev/break-ui/build-harness.js",
+    "test": "npm run test:engine && npm run test:db",
+    "test:engine": "node test/engine.test.js && node test/engine.f1.js && node test/engine.fuzz.js",
+    "test:db": "node test/db.test.js",
+    "test:web": "node test/web/web.e2e.js",
+    "test:ui": "node build.js && node test/css.check.js && node test/ui.test.js && node test/ui.qa.js && node test/ui.v2.js && node test/ui.f1.js && node test/ui.a11y.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

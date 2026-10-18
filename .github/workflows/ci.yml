@@ -1,48 +1,21 @@
-name: CI Workflow
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+name: CI
+on: [push, pull_request]
 jobs:
-  validate:
-    name: Repository Verification & CI
+  test:
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: pg }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: ${{ hashFiles('package-lock.json') != '' && 'npm' || '' }}
-
-      - name: Verify Project Setup
-        run: |
-          echo "Repository checked out successfully."
-          if [ -f package.json ]; then
-            echo "package.json found. Installing dependencies and running scripts..."
-            if [ -f package-lock.json ]; then
-              npm ci
-            else
-              npm install
-            fi
-            if npm run | grep -q "lint"; then
-              echo "Running lint..."
-              npm run lint
-            fi
-            if npm run | grep -q "test"; then
-              echo "Running tests..."
-              npm test
-            fi
-            if npm run | grep -q "build"; then
-              echo "Running build..."
-              npm run build
-            fi
-          else
-            echo "No package.json detected yet. Baseline repository check passed."
-          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npm run test:engine
+      - run: npm run test:db
+        env: { PGHOST: 127.0.0.1, PGPASSWORD: pg }
+      - run: node web/build.js

@@ -1,0 +1,3732 @@
+{
+ "app": "design-hours-estimator",
+ "version": 1,
+ "exportedAt": "2026-10-18T04:28:57.464617Z",
+ "source": "claude.ai artifact",
+ "docs": {
+  "config/settings": {
+   "agencyName": "",
+   "bufferPercent": 10,
+   "complexity": [
+    {
+     "description": "Standard patterns, few states",
+     "id": "simple",
+     "multiplier": 0.75,
+     "name": "Simple"
+    },
+    {
+     "description": "Typical effort",
+     "id": "standard",
+     "multiplier": 1,
+     "name": "Standard"
+    },
+    {
+     "description": "Custom interactions, many states or heavy data",
+     "id": "complex",
+     "multiplier": 1.5,
+     "name": "Complex"
+    }
+   ],
+   "defaultAssumptions": [
+    "The client provides final copy, images and brand assets before design starts",
+    "Feedback is consolidated and sent by one point of contact within 3 working days",
+    "Up to two revision rounds per deliverable are covered by the feedback allowance",
+    "The estimate covers UX/UI design only; development and QA are quoted separately"
+   ],
+   "defaultExclusions": [
+    "Copywriting and content creation",
+    "Stock photography and font licence fees",
+    "Development, testing and deployment"
+   ],
+   "overhead": [
+    {
+     "description": "Brief review, feature breakdown and questions for the client",
+     "enabled": true,
+     "id": "requirements",
+     "name": "Requirement breakdown & analysis",
+     "rule": "fixed",
+     "value": 6
+    },
+    {
+     "description": "Files, styles, tokens and handoff structure",
+     "enabled": true,
+     "id": "setup",
+     "name": "Project setup",
+     "rule": "fixed",
+     "value": 3
+    },
+    {
+     "description": "Kick-off, reviews and design presentations",
+     "enabled": true,
+     "id": "meetings",
+     "name": "Meetings & presentations",
+     "rule": "percent",
+     "value": 8
+    },
+    {
+     "description": "Revision rounds after client feedback",
+     "enabled": true,
+     "id": "feedback",
+     "name": "Feedback & iterations",
+     "rule": "percent",
+     "value": 15
+    }
+   ],
+   "phases": [
+    "Phase 1 (MVP)",
+    "Phase 2",
+    "Phase 3"
+   ]
+  },
+  "services/mobile-app": {
+   "active": true,
+   "categories": [
+    {
+     "id": "onboarding",
+     "name": "Onboarding"
+    },
+    {
+     "id": "auth",
+     "name": "Authentication"
+    },
+    {
+     "id": "home",
+     "name": "Home & discovery"
+    },
+    {
+     "id": "account",
+     "name": "Account & profile"
+    },
+    {
+     "id": "notifications",
+     "name": "Notifications"
+    },
+    {
+     "id": "commerce",
+     "name": "Commerce & payments"
+    },
+    {
+     "id": "communication",
+     "name": "Communication"
+    },
+    {
+     "id": "system",
+     "name": "Settings & system"
+    }
+   ],
+   "description": "Native or cross-platform apps for iOS and Android",
+   "gapRules": [
+    {
+     "id": "m-login-forgot",
+     "message": "People who sign in will need to reset a forgotten password.",
+     "suggest": {
+      "kind": "item",
+      "ref": "forgot"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "login"
+     }
+    },
+    {
+     "id": "m-signup-login",
+     "message": "Sign up usually comes with a login screen.",
+     "suggest": {
+      "kind": "item",
+      "ref": "login"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "signup"
+     }
+    },
+    {
+     "id": "m-signup-otp",
+     "message": "Sign-ups often verify an email or phone number.",
+     "suggest": {
+      "kind": "item",
+      "ref": "otp"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "signup"
+     }
+    },
+    {
+     "id": "m-signup-delete",
+     "message": "The App Store and Google Play require apps with sign-up to offer account deletion in the app.",
+     "suggest": {
+      "kind": "item",
+      "ref": "delete-account"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "signup"
+     }
+    },
+    {
+     "id": "m-profile-settings",
+     "message": "Profiles usually link to account settings.",
+     "suggest": {
+      "kind": "item",
+      "ref": "account-settings"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "profile"
+     }
+    },
+    {
+     "id": "m-cart-checkout",
+     "message": "A cart usually leads to a checkout flow.",
+     "suggest": {
+      "kind": "item",
+      "ref": "checkout"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "cart"
+     }
+    },
+    {
+     "id": "m-checkout-payment",
+     "message": "Checkout needs a way to add and choose payment methods.",
+     "suggest": {
+      "kind": "item",
+      "ref": "payment-methods"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "checkout"
+     }
+    },
+    {
+     "id": "m-checkout-orders",
+     "message": "Customers expect to track an order after checkout.",
+     "suggest": {
+      "kind": "item",
+      "ref": "order-detail"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "checkout"
+     }
+    },
+    {
+     "id": "m-notif-push",
+     "message": "In-app notifications usually have matching push notifications.",
+     "suggest": {
+      "kind": "item",
+      "ref": "push-templates"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "notification-list"
+     }
+    },
+    {
+     "id": "m-home-states",
+     "message": "Every data screen needs empty, error and offline states.",
+     "suggest": {
+      "kind": "item",
+      "ref": "system-states"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "home-dashboard"
+     }
+    },
+    {
+     "id": "m-lang-selector",
+     "message": "Multi-language apps need a language selector.",
+     "suggest": {
+      "kind": "item",
+      "ref": "language-selector"
+     },
+     "trigger": {
+      "group": "localization",
+      "kind": "option",
+      "ref": "languages"
+     }
+    },
+    {
+     "id": "m-lang-rtl",
+     "message": "Supporting Arabic, Hebrew or Urdu? Right-to-left layouts need extra design time.",
+     "suggest": {
+      "group": "localization",
+      "kind": "option",
+      "ref": "rtl"
+     },
+     "trigger": {
+      "group": "localization",
+      "kind": "option",
+      "ref": "languages"
+     }
+    }
+   ],
+   "icon": "smartphone",
+   "items": [
+    {
+     "allowMultiple": false,
+     "categoryId": "onboarding",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "splash",
+     "includes": "",
+     "name": "Splash screen"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "onboarding",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "carousel",
+     "includes": "Up to 4 intro screens with skip and progress",
+     "name": "Onboarding carousel"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "onboarding",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "permissions",
+     "includes": "Pre-permission screens for notifications and location",
+     "name": "Permission requests"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "Sign in with email or phone and password.",
+     "excludes": "Social login and biometric login (separate features)",
+     "hours": 6,
+     "id": "login",
+     "includes": "Email/phone + password, validation and error states, show/hide password",
+     "name": "Login"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "signup",
+     "includes": "Registration form, terms consent, validation and error states",
+     "name": "Sign up"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "forgot",
+     "includes": "Request, email sent and new password screens",
+     "name": "Forgot / reset password"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "otp",
+     "includes": "Code entry, resend timer, error states",
+     "name": "OTP verification"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "social",
+     "includes": "",
+     "name": "Social login (Google, Apple)"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "biometric",
+     "includes": "",
+     "name": "Biometric login"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "home",
+     "defaultSubs": [
+      "home-header",
+      "quick-actions",
+      "content-feed",
+      "promo-banner"
+     ],
+     "description": "The main screen after sign-in.",
+     "excludes": "",
+     "hours": 0,
+     "id": "home-dashboard",
+     "includes": "",
+     "name": "Home dashboard"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "home",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "search",
+     "includes": "Recent searches, results, no-results state",
+     "name": "Search"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "home",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "filters",
+     "includes": "",
+     "name": "Filters & sorting"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "home",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "category-list",
+     "includes": "",
+     "name": "Category listing"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "home",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 6,
+     "id": "item-detail",
+     "includes": "",
+     "name": "Item detail"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "account",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "profile",
+     "includes": "",
+     "name": "Profile view / edit"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "account",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "account-settings",
+     "includes": "",
+     "name": "Account settings"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "account",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "change-password",
+     "includes": "",
+     "name": "Change password"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "account",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "delete-account",
+     "includes": "Confirmation, reason picker and success state",
+     "name": "Delete account flow"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "notifications",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "notification-list",
+     "includes": "Read/unread states, empty state",
+     "name": "Notification list"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "notifications",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "push-templates",
+     "includes": "",
+     "name": "Push notification templates"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "cart",
+     "includes": "",
+     "name": "Cart"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "Payment provider native sheets (Apple Pay, Google Pay)",
+     "hours": 8,
+     "id": "checkout",
+     "includes": "Address, delivery, payment and review steps",
+     "name": "Checkout"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "payment-methods",
+     "includes": "",
+     "name": "Payment methods"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "order-history",
+     "includes": "",
+     "name": "Order history"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "order-detail",
+     "includes": "",
+     "name": "Order detail & tracking"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "communication",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 10,
+     "id": "chat",
+     "includes": "Conversation list, chat thread, attachments, typing and delivery states",
+     "name": "In-app chat"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "communication",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "help",
+     "includes": "",
+     "name": "Help center & support"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "communication",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 2.5,
+     "id": "feedback",
+     "includes": "",
+     "name": "Feedback & ratings"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "app-settings",
+     "includes": "",
+     "name": "App settings"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 1,
+     "id": "language-selector",
+     "includes": "",
+     "name": "Language selector"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "A shared set of system states used across the app.",
+     "excludes": "",
+     "hours": 4,
+     "id": "system-states",
+     "includes": "",
+     "name": "Empty, error & offline states"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "force-update",
+     "includes": "",
+     "name": "Force update / maintenance"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "about-legal",
+     "includes": "",
+     "name": "About & legal screens"
+    }
+   ],
+   "labels": {
+    "category": "Module",
+    "item": "Feature",
+    "items": "Features",
+    "sub": "Screen",
+    "subs": "Screens"
+   },
+   "name": "Mobile application",
+   "optionGroups": [
+    {
+     "description": "Platforms and form factors to design for.",
+     "id": "platforms",
+     "name": "Platforms",
+     "options": [
+      {
+       "default": true,
+       "description": "Feature hours are for one platform.",
+       "free": 0,
+       "id": "primary",
+       "input": "toggle",
+       "locked": true,
+       "max": 99,
+       "min": 0,
+       "name": "Primary platform (iOS or Android)",
+       "rule": "none",
+       "unit": "",
+       "value": 0
+      },
+      {
+       "default": false,
+       "description": "Adapting to the other platform's patterns and components.",
+       "free": 0,
+       "id": "second-platform",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Second platform adaptation",
+       "rule": "percent",
+       "unit": "",
+       "value": 30
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "tablet",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Tablet layouts",
+       "rule": "percent",
+       "unit": "",
+       "value": 35
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "How many languages the design must support.",
+     "id": "localization",
+     "name": "Localization",
+     "options": [
+      {
+       "default": 1,
+       "description": "Each language after the first adds layout checks for text length and formatting.",
+       "free": 1,
+       "id": "languages",
+       "input": "quantity",
+       "locked": false,
+       "max": 30,
+       "min": 1,
+       "name": "Languages",
+       "rule": "percent",
+       "unit": "language",
+       "value": 15
+      },
+      {
+       "default": false,
+       "description": "Mirrored layouts for right-to-left scripts.",
+       "free": 0,
+       "id": "rtl",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "RTL support (e.g. Arabic, Hebrew, Urdu)",
+       "rule": "percent",
+       "unit": "",
+       "value": 20
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "Colour themes to design.",
+     "id": "theming",
+     "name": "Theming",
+     "options": [
+      {
+       "default": true,
+       "description": "",
+       "free": 0,
+       "id": "light",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Light only",
+       "rule": "none",
+       "unit": "",
+       "value": 0
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "dark",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Dark only",
+       "rule": "none",
+       "unit": "",
+       "value": 0
+      },
+      {
+       "default": false,
+       "description": "A second full colour theme for every screen.",
+       "free": 0,
+       "id": "both",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Light + Dark",
+       "rule": "percent",
+       "unit": "",
+       "value": 25
+      }
+     ],
+     "selection": "single"
+    },
+    {
+     "description": "Extra design work beyond features and screens.",
+     "id": "deliverables",
+     "name": "Other deliverables",
+     "options": [
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "design-system",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Design system / UI kit",
+       "rule": "percent",
+       "unit": "",
+       "value": 15
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "prototype",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Interactive prototype",
+       "rule": "percent",
+       "unit": "",
+       "value": 10
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "app-icon",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "App icon & splash artwork",
+       "rule": "fixed",
+       "unit": "",
+       "value": 8
+      },
+      {
+       "default": 0,
+       "description": "",
+       "free": 0,
+       "id": "store-screens",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "App store screenshot sets",
+       "rule": "fixed",
+       "unit": "set",
+       "value": 6
+      },
+      {
+       "default": 0,
+       "description": "",
+       "free": 0,
+       "id": "illustrations",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Custom illustrations",
+       "rule": "fixed",
+       "unit": "illustration",
+       "value": 6
+      },
+      {
+       "default": 0,
+       "description": "",
+       "free": 0,
+       "id": "animations",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Custom animations (Lottie)",
+       "rule": "fixed",
+       "unit": "animation",
+       "value": 4
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "Non-functional scope that affects design effort.",
+     "id": "quality",
+     "name": "Quality & handoff",
+     "options": [
+      {
+       "default": false,
+       "description": "Contrast, focus states, touch targets and annotations for assistive tech.",
+       "free": 0,
+       "id": "a11y",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Accessibility (WCAG 2.1 AA)",
+       "rule": "percent",
+       "unit": "",
+       "value": 8
+      },
+      {
+       "default": true,
+       "description": "Annotated specs, redlines and asset export for developers.",
+       "free": 0,
+       "id": "handoff",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Developer handoff & specs",
+       "rule": "percent",
+       "unit": "",
+       "value": 5
+      },
+      {
+       "default": 1,
+       "description": "Reviewing the built product against the design.",
+       "free": 0,
+       "id": "qa",
+       "input": "quantity",
+       "locked": false,
+       "max": 10,
+       "min": 0,
+       "name": "Design QA rounds",
+       "rule": "fixed",
+       "unit": "round",
+       "value": 6
+      }
+     ],
+     "selection": "multiple"
+    }
+   ],
+   "order": 2,
+   "starterPacks": [
+    {
+     "description": "Login, sign up, reset, OTP",
+     "id": "standard-auth",
+     "items": [
+      "login",
+      "signup",
+      "forgot",
+      "otp"
+     ],
+     "name": "Standard auth"
+    },
+    {
+     "description": "Screens almost every app needs",
+     "id": "essentials",
+     "items": [
+      "splash",
+      "carousel",
+      "home-dashboard",
+      "profile",
+      "account-settings",
+      "notification-list",
+      "app-settings",
+      "system-states"
+     ],
+     "name": "App essentials"
+    },
+    {
+     "description": "Browse, buy and track",
+     "id": "commerce",
+     "items": [
+      "search",
+      "filters",
+      "category-list",
+      "item-detail",
+      "cart",
+      "checkout",
+      "payment-methods",
+      "order-history",
+      "order-detail"
+     ],
+     "name": "Commerce"
+    }
+   ],
+   "subItems": [
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "home-header",
+     "includes": "",
+     "name": "Header & greeting"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "quick-actions",
+     "includes": "",
+     "name": "Quick actions"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "content-feed",
+     "includes": "",
+     "name": "Content cards / feed"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "promo-banner",
+     "includes": "",
+     "name": "Promotional banner"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2.5,
+     "id": "stories",
+     "includes": "",
+     "name": "Stories / highlights"
+    }
+   ]
+  },
+  "services/web-app": {
+   "active": true,
+   "categories": [
+    {
+     "id": "auth",
+     "name": "Authentication & access"
+    },
+    {
+     "id": "onboarding",
+     "name": "Onboarding"
+    },
+    {
+     "id": "data",
+     "name": "Dashboard & data"
+    },
+    {
+     "id": "collab",
+     "name": "Collaboration"
+    },
+    {
+     "id": "users",
+     "name": "Users & teams"
+    },
+    {
+     "id": "billing",
+     "name": "Billing"
+    },
+    {
+     "id": "system",
+     "name": "System"
+    }
+   ],
+   "description": "SaaS products, admin panels and dashboards",
+   "gapRules": [
+    {
+     "id": "a-login-forgot",
+     "message": "People who sign in will need to reset a forgotten password.",
+     "suggest": {
+      "kind": "item",
+      "ref": "forgot"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "login"
+     }
+    },
+    {
+     "id": "a-signup-onboarding",
+     "message": "New sign-ups usually go through a setup flow.",
+     "suggest": {
+      "kind": "item",
+      "ref": "onboarding-wizard"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "signup"
+     }
+    },
+    {
+     "id": "a-table-detail",
+     "message": "Table rows usually open a detail view.",
+     "suggest": {
+      "kind": "item",
+      "ref": "detail-view"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "data-table"
+     }
+    },
+    {
+     "id": "a-table-form",
+     "message": "Records in a table need a create / edit form.",
+     "suggest": {
+      "kind": "item",
+      "ref": "form"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "data-table"
+     }
+    },
+    {
+     "id": "a-users-roles",
+     "message": "Managing users usually includes roles and permissions.",
+     "suggest": {
+      "kind": "item",
+      "ref": "roles"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "user-management"
+     }
+    },
+    {
+     "id": "a-dash-empty",
+     "message": "Dashboards need empty states for new accounts.",
+     "suggest": {
+      "kind": "item",
+      "ref": "first-run"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "dashboard"
+     }
+    },
+    {
+     "id": "a-dash-nav",
+     "message": "Every app screen sits inside the global navigation.",
+     "suggest": {
+      "kind": "item",
+      "ref": "navigation"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "dashboard"
+     }
+    },
+    {
+     "id": "a-plans-payment",
+     "message": "Choosing a plan leads to checkout and payment.",
+     "suggest": {
+      "kind": "item",
+      "ref": "payment"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "plans"
+     }
+    },
+    {
+     "id": "a-lang-rtl",
+     "message": "Supporting Arabic, Hebrew or Urdu? Right-to-left layouts need extra design time.",
+     "suggest": {
+      "group": "localization",
+      "kind": "option",
+      "ref": "rtl"
+     },
+     "trigger": {
+      "group": "localization",
+      "kind": "option",
+      "ref": "languages"
+     }
+    }
+   ],
+   "icon": "layout",
+   "items": [
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "SSO (separate feature)",
+     "hours": 5,
+     "id": "login",
+     "includes": "Email + password, validation and error states",
+     "name": "Login"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "signup",
+     "includes": "",
+     "name": "Sign up"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "forgot",
+     "includes": "",
+     "name": "Forgot / reset password"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "2fa",
+     "includes": "",
+     "name": "Two-factor authentication"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "sso",
+     "includes": "",
+     "name": "SSO login"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "auth",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "invite",
+     "includes": "",
+     "name": "Invite & accept invitation"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "onboarding",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 6,
+     "id": "onboarding-wizard",
+     "includes": "Up to 4 setup steps with progress",
+     "name": "Onboarding wizard"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "onboarding",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "first-run",
+     "includes": "",
+     "name": "Empty states & first run"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "data",
+     "defaultSubs": [
+      "kpi-cards",
+      "charts",
+      "recent-activity",
+      "dash-actions"
+     ],
+     "description": "The overview screen users land on.",
+     "excludes": "",
+     "hours": 0,
+     "id": "dashboard",
+     "includes": "",
+     "name": "Main dashboard"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "data",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 8,
+     "id": "reports",
+     "includes": "",
+     "name": "Reports & analytics"
+    },
+    {
+     "allowMultiple": true,
+     "categoryId": "data",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 6,
+     "id": "data-table",
+     "includes": "Sorting, filtering, pagination, bulk actions, empty state",
+     "name": "Data table with filters"
+    },
+    {
+     "allowMultiple": true,
+     "categoryId": "data",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "detail-view",
+     "includes": "",
+     "name": "Detail view"
+    },
+    {
+     "allowMultiple": true,
+     "categoryId": "data",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "form",
+     "includes": "Validation, error and success states",
+     "name": "Create / edit form"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "collab",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "comments",
+     "includes": "",
+     "name": "Comments & mentions"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "collab",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "activity-log",
+     "includes": "",
+     "name": "Activity log / audit trail"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "collab",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "notifications",
+     "includes": "",
+     "name": "Notifications center"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "users",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 6,
+     "id": "user-management",
+     "includes": "User list, invite, deactivate",
+     "name": "User management"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "users",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "roles",
+     "includes": "",
+     "name": "Roles & permissions"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "users",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "workspace",
+     "includes": "",
+     "name": "Team / workspace settings"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "users",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "profile",
+     "includes": "",
+     "name": "Profile & account settings"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "billing",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "plans",
+     "includes": "",
+     "name": "Plans & pricing"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "billing",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "payment",
+     "includes": "",
+     "name": "Checkout & payment"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "billing",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "invoices",
+     "includes": "",
+     "name": "Billing history & invoices"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "The app shell used on every screen.",
+     "excludes": "",
+     "hours": 6,
+     "id": "navigation",
+     "includes": "",
+     "name": "Global navigation (sidebar + top bar)"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "command-palette",
+     "includes": "",
+     "name": "Global search / command palette"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "settings",
+     "includes": "",
+     "name": "App preferences"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "integrations",
+     "includes": "",
+     "name": "Integrations & API keys"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "help",
+     "includes": "",
+     "name": "Help & support"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "system",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "error-pages",
+     "includes": "",
+     "name": "Error pages (404 / 500)"
+    }
+   ],
+   "labels": {
+    "category": "Module",
+    "item": "Feature",
+    "items": "Features",
+    "sub": "View",
+    "subs": "Views"
+   },
+   "name": "Web application",
+   "optionGroups": [
+    {
+     "description": "Screen sizes to design for.",
+     "id": "responsive",
+     "name": "Responsiveness",
+     "options": [
+      {
+       "default": true,
+       "description": "Primary design. Feature hours are desktop hours.",
+       "free": 0,
+       "id": "desktop",
+       "input": "toggle",
+       "locked": true,
+       "max": 99,
+       "min": 0,
+       "name": "Desktop",
+       "rule": "none",
+       "unit": "",
+       "value": 0
+      },
+      {
+       "default": false,
+       "description": "Dense app screens take more work to adapt than marketing pages.",
+       "free": 0,
+       "id": "mobile",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Mobile responsive",
+       "rule": "percent",
+       "unit": "",
+       "value": 45
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "tablet",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Tablet responsive",
+       "rule": "percent",
+       "unit": "",
+       "value": 25
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "How many languages the design must support.",
+     "id": "localization",
+     "name": "Localization",
+     "options": [
+      {
+       "default": 1,
+       "description": "Each language after the first adds layout checks for text length and formatting.",
+       "free": 1,
+       "id": "languages",
+       "input": "quantity",
+       "locked": false,
+       "max": 30,
+       "min": 1,
+       "name": "Languages",
+       "rule": "percent",
+       "unit": "language",
+       "value": 15
+      },
+      {
+       "default": false,
+       "description": "Mirrored layouts for right-to-left scripts.",
+       "free": 0,
+       "id": "rtl",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "RTL support (e.g. Arabic, Hebrew, Urdu)",
+       "rule": "percent",
+       "unit": "",
+       "value": 20
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "Colour themes to design.",
+     "id": "theming",
+     "name": "Theming",
+     "options": [
+      {
+       "default": true,
+       "description": "",
+       "free": 0,
+       "id": "light",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Light only",
+       "rule": "none",
+       "unit": "",
+       "value": 0
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "dark",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Dark only",
+       "rule": "none",
+       "unit": "",
+       "value": 0
+      },
+      {
+       "default": false,
+       "description": "A second full colour theme for every screen.",
+       "free": 0,
+       "id": "both",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Light + Dark",
+       "rule": "percent",
+       "unit": "",
+       "value": 25
+      }
+     ],
+     "selection": "single"
+    },
+    {
+     "description": "Extra design work beyond features and views.",
+     "id": "deliverables",
+     "name": "Other deliverables",
+     "options": [
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "design-system",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Design system / UI kit",
+       "rule": "percent",
+       "unit": "",
+       "value": 15
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "prototype",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Interactive prototype",
+       "rule": "percent",
+       "unit": "",
+       "value": 10
+      },
+      {
+       "default": 0,
+       "description": "",
+       "free": 0,
+       "id": "email-templates",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Transactional email templates",
+       "rule": "fixed",
+       "unit": "template",
+       "value": 3
+      },
+      {
+       "default": 0,
+       "description": "",
+       "free": 0,
+       "id": "illustrations",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Custom illustrations",
+       "rule": "fixed",
+       "unit": "illustration",
+       "value": 6
+      },
+      {
+       "default": 0,
+       "description": "",
+       "free": 0,
+       "id": "animations",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Custom animations",
+       "rule": "fixed",
+       "unit": "animation",
+       "value": 4
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "Non-functional scope that affects design effort.",
+     "id": "quality",
+     "name": "Quality & handoff",
+     "options": [
+      {
+       "default": false,
+       "description": "Contrast, focus states, touch targets and annotations for assistive tech.",
+       "free": 0,
+       "id": "a11y",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Accessibility (WCAG 2.1 AA)",
+       "rule": "percent",
+       "unit": "",
+       "value": 8
+      },
+      {
+       "default": true,
+       "description": "Annotated specs, redlines and asset export for developers.",
+       "free": 0,
+       "id": "handoff",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Developer handoff & specs",
+       "rule": "percent",
+       "unit": "",
+       "value": 5
+      },
+      {
+       "default": 1,
+       "description": "Reviewing the built product against the design.",
+       "free": 0,
+       "id": "qa",
+       "input": "quantity",
+       "locked": false,
+       "max": 10,
+       "min": 0,
+       "name": "Design QA rounds",
+       "rule": "fixed",
+       "unit": "round",
+       "value": 6
+      }
+     ],
+     "selection": "multiple"
+    }
+   ],
+   "order": 3,
+   "starterPacks": [
+    {
+     "description": "App shell, auth and settings",
+     "id": "saas",
+     "items": [
+      "navigation",
+      "login",
+      "signup",
+      "forgot",
+      "dashboard",
+      "profile",
+      "notifications",
+      "settings",
+      "error-pages"
+     ],
+     "name": "SaaS foundation"
+    },
+    {
+     "description": "Manage records and users",
+     "id": "admin",
+     "items": [
+      "navigation",
+      "login",
+      "dashboard",
+      "data-table",
+      "detail-view",
+      "form",
+      "user-management",
+      "roles",
+      "activity-log"
+     ],
+     "name": "Admin panel"
+    },
+    {
+     "description": "Plans, payment and invoices",
+     "id": "billing",
+     "items": [
+      "plans",
+      "payment",
+      "invoices"
+     ],
+     "name": "Billing"
+    }
+   ],
+   "subItems": [
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "kpi-cards",
+     "includes": "",
+     "name": "KPI cards"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "charts",
+     "includes": "",
+     "name": "Charts"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "recent-activity",
+     "includes": "",
+     "name": "Recent activity"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "dash-actions",
+     "includes": "",
+     "name": "Quick actions"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2.5,
+     "id": "date-filters",
+     "includes": "",
+     "name": "Filters & date range"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "widgets",
+     "includes": "",
+     "name": "Widget customization"
+    }
+   ]
+  },
+  "services/website": {
+   "active": true,
+   "categories": [
+    {
+     "id": "global",
+     "name": "Global elements"
+    },
+    {
+     "id": "core",
+     "name": "Core pages"
+    },
+    {
+     "id": "content",
+     "name": "Content & marketing"
+    },
+    {
+     "id": "commerce",
+     "name": "Commerce"
+    },
+    {
+     "id": "utility",
+     "name": "Utility & legal"
+    }
+   ],
+   "description": "Marketing, corporate, campaign and e-commerce websites",
+   "gapRules": [
+    {
+     "id": "w-home-header",
+     "message": "Every site needs a header and navigation.",
+     "suggest": {
+      "kind": "item",
+      "ref": "header"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "home"
+     }
+    },
+    {
+     "id": "w-home-footer",
+     "message": "Every site needs a footer.",
+     "suggest": {
+      "kind": "item",
+      "ref": "footer"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "home"
+     }
+    },
+    {
+     "id": "w-home-404",
+     "message": "Broken links need a designed error page.",
+     "suggest": {
+      "kind": "item",
+      "ref": "not-found"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "home"
+     }
+    },
+    {
+     "id": "w-cart-checkout",
+     "message": "A cart usually leads to a checkout flow.",
+     "suggest": {
+      "kind": "item",
+      "ref": "checkout"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "cart"
+     }
+    },
+    {
+     "id": "w-checkout-confirm",
+     "message": "Checkout needs a confirmation page.",
+     "suggest": {
+      "kind": "item",
+      "ref": "order-confirmation"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "checkout"
+     }
+    },
+    {
+     "id": "w-plp-pdp",
+     "message": "Product listings link to product detail pages.",
+     "suggest": {
+      "kind": "item",
+      "ref": "pdp"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "plp"
+     }
+    },
+    {
+     "id": "w-blog-article",
+     "message": "A blog listing needs an article template.",
+     "suggest": {
+      "kind": "item",
+      "ref": "blog-article"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "blog-list"
+     }
+    },
+    {
+     "id": "w-case-detail",
+     "message": "A case study listing needs a detail template.",
+     "suggest": {
+      "kind": "item",
+      "ref": "case-detail"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "case-list"
+     }
+    },
+    {
+     "id": "w-contact-thanks",
+     "message": "Form submissions need a confirmation page.",
+     "suggest": {
+      "kind": "item",
+      "ref": "thank-you"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "contact"
+     }
+    },
+    {
+     "id": "w-lang-rtl",
+     "message": "Supporting Arabic, Hebrew or Urdu? Right-to-left layouts need extra design time.",
+     "suggest": {
+      "group": "localization",
+      "kind": "option",
+      "ref": "rtl"
+     },
+     "trigger": {
+      "group": "localization",
+      "kind": "option",
+      "ref": "languages"
+     }
+    }
+   ],
+   "icon": "globe",
+   "items": [
+    {
+     "allowMultiple": false,
+     "categoryId": "global",
+     "defaultSubs": [
+      "primary-nav"
+     ],
+     "description": "Site-wide header, designed once and reused on every page.",
+     "excludes": "Mobile navigation drawer (covered by Mobile responsive)",
+     "hours": 0,
+     "id": "header",
+     "includes": "",
+     "name": "Header & navigation"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "global",
+     "defaultSubs": [],
+     "description": "Site-wide footer with links, contact details and legal links.",
+     "excludes": "",
+     "hours": 2.5,
+     "id": "footer",
+     "includes": "",
+     "name": "Footer"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "global",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 1,
+     "id": "cookie",
+     "includes": "",
+     "name": "Cookie consent banner"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "core",
+     "defaultSubs": [
+      "hero",
+      "logo-strip",
+      "features-grid",
+      "feature-detail",
+      "stats",
+      "testimonials",
+      "cta-banner"
+     ],
+     "description": "The main landing page of the site.",
+     "excludes": "",
+     "hours": 0,
+     "id": "home",
+     "includes": "",
+     "name": "Home"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "core",
+     "defaultSubs": [
+      "page-header",
+      "rich-text",
+      "process",
+      "team-grid",
+      "stats",
+      "cta-banner"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "about",
+     "includes": "",
+     "name": "About us"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "core",
+     "defaultSubs": [
+      "page-header",
+      "features-grid",
+      "feature-detail",
+      "testimonials",
+      "cta-banner"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "services",
+     "includes": "",
+     "name": "Services / solutions"
+    },
+    {
+     "allowMultiple": true,
+     "categoryId": "core",
+     "defaultSubs": [
+      "page-header",
+      "feature-detail",
+      "process",
+      "faq",
+      "cta-banner"
+     ],
+     "description": "Template for an individual service page. Add a quantity when several services need their own layout.",
+     "excludes": "",
+     "hours": 0,
+     "id": "service-detail",
+     "includes": "",
+     "name": "Service detail"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "core",
+     "defaultSubs": [
+      "page-header",
+      "contact-form",
+      "map"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "contact",
+     "includes": "",
+     "name": "Contact"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "content",
+     "defaultSubs": [
+      "page-header",
+      "pricing-table",
+      "faq",
+      "cta-banner"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "pricing",
+     "includes": "",
+     "name": "Pricing"
+    },
+    {
+     "allowMultiple": true,
+     "categoryId": "content",
+     "defaultSubs": [
+      "hero",
+      "features-grid",
+      "testimonials",
+      "faq",
+      "cta-banner"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "landing",
+     "includes": "",
+     "name": "Campaign landing page"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "content",
+     "defaultSubs": [
+      "page-header",
+      "filters",
+      "article-cards",
+      "newsletter"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "blog-list",
+     "includes": "",
+     "name": "Blog listing"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "content",
+     "defaultSubs": [
+      "article-body",
+      "article-cards",
+      "newsletter"
+     ],
+     "description": "One reusable article template.",
+     "excludes": "",
+     "hours": 0,
+     "id": "blog-article",
+     "includes": "",
+     "name": "Blog article"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "content",
+     "defaultSubs": [
+      "page-header",
+      "filters",
+      "case-grid",
+      "cta-banner"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "case-list",
+     "includes": "",
+     "name": "Case studies listing"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "content",
+     "defaultSubs": [
+      "page-header",
+      "rich-text",
+      "gallery",
+      "stats",
+      "testimonials",
+      "cta-banner"
+     ],
+     "description": "One reusable case study template.",
+     "excludes": "",
+     "hours": 0,
+     "id": "case-detail",
+     "includes": "",
+     "name": "Case study detail"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "content",
+     "defaultSubs": [
+      "page-header",
+      "rich-text",
+      "features-grid",
+      "job-list",
+      "cta-banner"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "careers",
+     "includes": "",
+     "name": "Careers"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [
+      "page-header",
+      "filters",
+      "product-grid"
+     ],
+     "description": "Category or collection page with filtering.",
+     "excludes": "",
+     "hours": 0,
+     "id": "plp",
+     "includes": "",
+     "name": "Product listing"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [
+      "buy-box",
+      "product-info",
+      "reviews",
+      "product-grid"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "pdp",
+     "includes": "",
+     "name": "Product detail"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 6,
+     "id": "cart",
+     "includes": "Line items, quantity edits, promo code, empty state",
+     "name": "Cart"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "Payment provider hosted pages",
+     "hours": 10,
+     "id": "checkout",
+     "includes": "Address, shipping, payment and review steps with error states",
+     "name": "Checkout"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "order-confirmation",
+     "includes": "",
+     "name": "Order confirmation"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "commerce",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 6,
+     "id": "account",
+     "includes": "Sign in, register, forgot password, order history",
+     "name": "Customer account"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "utility",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "search-results",
+     "includes": "Results list, no-results state",
+     "name": "Search results"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "utility",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "not-found",
+     "includes": "",
+     "name": "404 / error page"
+    },
+    {
+     "allowMultiple": true,
+     "categoryId": "utility",
+     "defaultSubs": [],
+     "description": "Text-only template for privacy, terms and similar pages.",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "legal",
+     "includes": "",
+     "name": "Legal page (privacy, terms)"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "utility",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 1,
+     "id": "thank-you",
+     "includes": "",
+     "name": "Thank-you page"
+    }
+   ],
+   "labels": {
+    "category": "Page group",
+    "item": "Page",
+    "items": "Pages",
+    "sub": "Section",
+    "subs": "Sections"
+   },
+   "name": "Website",
+   "optionGroups": [
+    {
+     "description": "Screen sizes to design for.",
+     "id": "responsive",
+     "name": "Responsiveness",
+     "options": [
+      {
+       "default": true,
+       "description": "Primary design. Page and section hours are desktop hours.",
+       "free": 0,
+       "id": "desktop",
+       "input": "toggle",
+       "locked": true,
+       "max": 99,
+       "min": 0,
+       "name": "Desktop",
+       "rule": "none",
+       "unit": "",
+       "value": 0
+      },
+      {
+       "default": true,
+       "description": "Adapting every page and section to phone widths.",
+       "free": 0,
+       "id": "mobile",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Mobile responsive",
+       "rule": "percent",
+       "unit": "",
+       "value": 40
+      },
+      {
+       "default": false,
+       "description": "Adapting every page and section to tablet widths.",
+       "free": 0,
+       "id": "tablet",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Tablet responsive",
+       "rule": "percent",
+       "unit": "",
+       "value": 25
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "How many languages the design must support.",
+     "id": "localization",
+     "name": "Localization",
+     "options": [
+      {
+       "default": 1,
+       "description": "Each language after the first adds layout checks for text length and formatting.",
+       "free": 1,
+       "id": "languages",
+       "input": "quantity",
+       "locked": false,
+       "max": 30,
+       "min": 1,
+       "name": "Languages",
+       "rule": "percent",
+       "unit": "language",
+       "value": 15
+      },
+      {
+       "default": false,
+       "description": "Mirrored layouts for right-to-left scripts.",
+       "free": 0,
+       "id": "rtl",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "RTL support (e.g. Arabic, Hebrew, Urdu)",
+       "rule": "percent",
+       "unit": "",
+       "value": 20
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "Colour themes to design.",
+     "id": "theming",
+     "name": "Theming",
+     "options": [
+      {
+       "default": true,
+       "description": "",
+       "free": 0,
+       "id": "light",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Light only",
+       "rule": "none",
+       "unit": "",
+       "value": 0
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "dark",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Dark only",
+       "rule": "none",
+       "unit": "",
+       "value": 0
+      },
+      {
+       "default": false,
+       "description": "A second full colour theme for every screen.",
+       "free": 0,
+       "id": "both",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Light + Dark",
+       "rule": "percent",
+       "unit": "",
+       "value": 25
+      }
+     ],
+     "selection": "single"
+    },
+    {
+     "description": "Extra design work beyond pages and sections.",
+     "id": "deliverables",
+     "name": "Other deliverables",
+     "options": [
+      {
+       "default": false,
+       "description": "Reusable components, tokens and documentation.",
+       "free": 0,
+       "id": "design-system",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Design system / UI kit",
+       "rule": "percent",
+       "unit": "",
+       "value": 15
+      },
+      {
+       "default": false,
+       "description": "Clickable prototype for key journeys.",
+       "free": 0,
+       "id": "prototype",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Interactive prototype",
+       "rule": "percent",
+       "unit": "",
+       "value": 10
+      },
+      {
+       "default": 0,
+       "description": "",
+       "free": 0,
+       "id": "illustrations",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Custom illustrations",
+       "rule": "fixed",
+       "unit": "illustration",
+       "value": 6
+      },
+      {
+       "default": 0,
+       "description": "Micro-interactions or Lottie animations.",
+       "free": 0,
+       "id": "animations",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Custom animations",
+       "rule": "fixed",
+       "unit": "animation",
+       "value": 4
+      },
+      {
+       "default": 0,
+       "description": "",
+       "free": 0,
+       "id": "icons",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Custom icons",
+       "rule": "fixed",
+       "unit": "icon",
+       "value": 0.75
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "Non-functional scope that affects design effort.",
+     "id": "quality",
+     "name": "Quality & handoff",
+     "options": [
+      {
+       "default": false,
+       "description": "Contrast, focus states, touch targets and annotations for assistive tech.",
+       "free": 0,
+       "id": "a11y",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Accessibility (WCAG 2.1 AA)",
+       "rule": "percent",
+       "unit": "",
+       "value": 8
+      },
+      {
+       "default": true,
+       "description": "Annotated specs, redlines and asset export for developers.",
+       "free": 0,
+       "id": "handoff",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Developer handoff & specs",
+       "rule": "percent",
+       "unit": "",
+       "value": 5
+      },
+      {
+       "default": 1,
+       "description": "Reviewing the built product against the design.",
+       "free": 0,
+       "id": "qa",
+       "input": "quantity",
+       "locked": false,
+       "max": 10,
+       "min": 0,
+       "name": "Design QA rounds",
+       "rule": "fixed",
+       "unit": "round",
+       "value": 6
+      }
+     ],
+     "selection": "multiple"
+    }
+   ],
+   "order": 1,
+   "starterPacks": [
+    {
+     "description": "Typical company site",
+     "id": "corporate",
+     "items": [
+      "header",
+      "footer",
+      "cookie",
+      "home",
+      "about",
+      "services",
+      "service-detail",
+      "contact",
+      "not-found",
+      "legal"
+     ],
+     "name": "Corporate website"
+    },
+    {
+     "description": "Single campaign page",
+     "id": "campaign",
+     "items": [
+      "header",
+      "footer",
+      "landing",
+      "thank-you"
+     ],
+     "name": "Campaign landing page"
+    },
+    {
+     "description": "Core shopping journey",
+     "id": "ecommerce",
+     "items": [
+      "header",
+      "footer",
+      "home",
+      "plp",
+      "pdp",
+      "cart",
+      "checkout",
+      "order-confirmation",
+      "account",
+      "search-results"
+     ],
+     "name": "E-commerce essentials"
+    },
+    {
+     "description": "Editorial content",
+     "id": "content-hub",
+     "items": [
+      "blog-list",
+      "blog-article",
+      "search-results"
+     ],
+     "name": "Blog / content hub"
+    }
+   ],
+   "subItems": [
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2.5,
+     "id": "primary-nav",
+     "includes": "Desktop navigation with hover and active states",
+     "name": "Primary navigation"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "mega-menu",
+     "includes": "",
+     "name": "Mega menu"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "search-overlay",
+     "includes": "",
+     "name": "Search overlay"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 0.5,
+     "id": "announcement-bar",
+     "includes": "",
+     "name": "Announcement bar"
+    },
+    {
+     "description": "",
+     "excludes": "Custom illustration, 3D or video production",
+     "hours": 4,
+     "id": "hero",
+     "includes": "Headline, supporting copy, primary and secondary CTA, visual composition",
+     "name": "Hero"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "page-header",
+     "includes": "",
+     "name": "Page header (inner pages)"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1,
+     "id": "logo-strip",
+     "includes": "",
+     "name": "Logo strip / social proof"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "features-grid",
+     "includes": "",
+     "name": "Features / services grid"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "feature-detail",
+     "includes": "",
+     "name": "Feature detail (alternating rows)"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "stats",
+     "includes": "",
+     "name": "Stats / numbers"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "testimonials",
+     "includes": "",
+     "name": "Testimonials"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "case-grid",
+     "includes": "",
+     "name": "Case studies / portfolio grid"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "pricing-table",
+     "includes": "Plan comparison with monthly/annual toggle",
+     "name": "Pricing table"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "faq",
+     "includes": "",
+     "name": "FAQ"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1,
+     "id": "cta-banner",
+     "includes": "",
+     "name": "CTA banner"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "team-grid",
+     "includes": "",
+     "name": "Team grid"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2.5,
+     "id": "process",
+     "includes": "",
+     "name": "Process / timeline"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "article-cards",
+     "includes": "",
+     "name": "Article cards"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "article-body",
+     "includes": "Typography for headings, quotes, images, embeds and lists",
+     "name": "Article body template"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "contact-form",
+     "includes": "Field validation, error and success states",
+     "name": "Contact form"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "map",
+     "includes": "",
+     "name": "Map / locations"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1,
+     "id": "newsletter",
+     "includes": "",
+     "name": "Newsletter signup"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "gallery",
+     "includes": "",
+     "name": "Gallery / media"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1.5,
+     "id": "video",
+     "includes": "",
+     "name": "Video section"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 1,
+     "id": "rich-text",
+     "includes": "",
+     "name": "Rich text block"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "filters",
+     "includes": "",
+     "name": "Filters & search bar"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "product-grid",
+     "includes": "",
+     "name": "Product grid"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "buy-box",
+     "includes": "Image gallery, variant pickers, price, add to cart, stock states",
+     "name": "Product gallery & buy box"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "product-info",
+     "includes": "",
+     "name": "Product information tabs"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2.5,
+     "id": "reviews",
+     "includes": "",
+     "name": "Reviews & ratings"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 2,
+     "id": "job-list",
+     "includes": "",
+     "name": "Job listings"
+    }
+   ]
+  },
+  "services/branding": {
+   "active": false,
+   "categories": [
+    {
+     "id": "strategy",
+     "name": "Strategy"
+    },
+    {
+     "id": "identity",
+     "name": "Identity"
+    },
+    {
+     "id": "guidelines",
+     "name": "Guidelines"
+    }
+   ],
+   "description": "Logo design, visual identity and brand guidelines",
+   "gapRules": [
+    {
+     "id": "b-logo-guidelines",
+     "message": "A new logo usually ships with usage guidelines.",
+     "suggest": {
+      "kind": "item",
+      "ref": "guidelines"
+     },
+     "trigger": {
+      "kind": "item",
+      "ref": "logo"
+     }
+    }
+   ],
+   "icon": "pen",
+   "items": [
+    {
+     "allowMultiple": false,
+     "categoryId": "strategy",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 6,
+     "id": "workshop",
+     "includes": "",
+     "name": "Brand discovery workshop"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "strategy",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 5,
+     "id": "research",
+     "includes": "",
+     "name": "Competitor & moodboard research"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "identity",
+     "defaultSubs": [
+      "concepts",
+      "refinement",
+      "variations"
+     ],
+     "description": "",
+     "excludes": "",
+     "hours": 0,
+     "id": "logo",
+     "includes": "",
+     "name": "Logo design"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "identity",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "colour",
+     "includes": "",
+     "name": "Colour palette"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "identity",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 3,
+     "id": "type",
+     "includes": "",
+     "name": "Typography system"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "identity",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "iconography",
+     "includes": "",
+     "name": "Iconography style"
+    },
+    {
+     "allowMultiple": false,
+     "categoryId": "guidelines",
+     "defaultSubs": [],
+     "description": "",
+     "excludes": "",
+     "hours": 12,
+     "id": "guidelines",
+     "includes": "",
+     "name": "Brand guidelines document"
+    }
+   ],
+   "labels": {
+    "category": "Area",
+    "item": "Deliverable",
+    "items": "Deliverables",
+    "sub": "Stage",
+    "subs": "Stages"
+   },
+   "name": "Branding & logo",
+   "optionGroups": [
+    {
+     "description": "Logo design includes 3 concepts.",
+     "id": "concepts",
+     "name": "Concepts",
+     "options": [
+      {
+       "default": 0,
+       "description": "",
+       "free": 0,
+       "id": "extra-concepts",
+       "input": "quantity",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Additional logo concepts",
+       "rule": "fixed",
+       "unit": "concept",
+       "value": 4
+      }
+     ],
+     "selection": "multiple"
+    },
+    {
+     "description": "",
+     "id": "applications",
+     "name": "Brand applications",
+     "options": [
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "cards",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Business cards",
+       "rule": "fixed",
+       "unit": "",
+       "value": 3
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "social",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Social media kit",
+       "rule": "fixed",
+       "unit": "",
+       "value": 6
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "deck",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Presentation template",
+       "rule": "fixed",
+       "unit": "",
+       "value": 8
+      },
+      {
+       "default": false,
+       "description": "",
+       "free": 0,
+       "id": "signature",
+       "input": "toggle",
+       "locked": false,
+       "max": 99,
+       "min": 0,
+       "name": "Email signature",
+       "rule": "fixed",
+       "unit": "",
+       "value": 1.5
+      }
+     ],
+     "selection": "multiple"
+    }
+   ],
+   "order": 4,
+   "starterPacks": [
+    {
+     "description": "Logo, colour, type, guidelines",
+     "id": "identity",
+     "items": [
+      "logo",
+      "colour",
+      "type",
+      "guidelines"
+     ],
+     "name": "Visual identity"
+    }
+   ],
+   "subItems": [
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 10,
+     "id": "concepts",
+     "includes": "3 initial logo concepts",
+     "name": "Concept exploration"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 6,
+     "id": "refinement",
+     "includes": "",
+     "name": "Refinement"
+    },
+    {
+     "description": "",
+     "excludes": "",
+     "hours": 4,
+     "id": "variations",
+     "includes": "",
+     "name": "Logo variations (horizontal, stacked, icon)"
+    }
+   ]
+  },
+  "estimates/est-mvdaz0ya-4s357": {
+   "bufferPercent": 10,
+   "client": "",
+   "createdAt": 1792296353169,
+   "createdBy": "u_yU3_mfN78HY63dsrSfAHMw",
+   "customDeliverables": [],
+   "dismissedSuggestions": [],
+   "hiddenAuto": [],
+   "items": [],
+   "name": "Website estimate",
+   "overhead": [
+    {
+     "description": "Brief review, feature breakdown and questions for the client",
+     "enabled": true,
+     "id": "requirements",
+     "name": "Requirement breakdown & analysis",
+     "rule": "fixed",
+     "value": 6
+    },
+    {
+     "description": "Files, styles, tokens and handoff structure",
+     "enabled": true,
+     "id": "setup",
+     "name": "Project setup",
+     "rule": "fixed",
+     "value": 3
+    },
+    {
+     "description": "Kick-off, reviews and design presentations",
+     "enabled": true,
+     "id": "meetings",
+     "name": "Meetings & presentations",
+     "rule": "percent",
+     "value": 8
+    },
+    {
+     "description": "Revision rounds after client feedback",
+     "enabled": true,
+     "id": "feedback",
+     "name": "Feedback & iterations",
+     "rule": "percent",
+     "value": 15
+    }
+   ],
+   "register": {
+    "assumptions": [
+     {
+      "id": "a-mvdaz0yachvi4",
+      "text": "The client provides final copy, images and brand assets before design starts"
+     },
+     {
+      "id": "a-mvdaz0yazv4nl",
+      "text": "Feedback is consolidated and sent by one point of contact within 3 working days"
+     },
+     {
+      "id": "a-mvdaz0ya2xjt0",
+      "text": "Up to two revision rounds per deliverable are covered by the feedback allowance"
+     },
+     {
+      "id": "a-mvdaz0yam7gqt",
+      "text": "The estimate covers UX/UI design only; development and QA are quoted separately"
+     }
+    ],
+    "dependencies": [],
+    "exclusions": [
+     {
+      "id": "x-mvdaz0ya3ousc",
+      "text": "Copywriting and content creation"
+     },
+     {
+      "id": "x-mvdaz0yakksuq",
+      "text": "Stock photography and font licence fees"
+     },
+     {
+      "id": "x-mvdaz0ya60vw3",
+      "text": "Development, testing and deployment"
+     }
+    ],
+    "risks": []
+   },
+   "scope": {
+    "choice": {
+     "theming": "light"
+    },
+    "values": {
+     "a11y": false,
+     "animations": 0,
+     "design-system": false,
+     "desktop": true,
+     "handoff": true,
+     "icons": 0,
+     "illustrations": 0,
+     "languages": 1,
+     "mobile": true,
+     "prototype": false,
+     "qa": 1,
+     "rtl": false,
+     "tablet": false
+    }
+   },
+   "serviceId": "website",
+   "serviceName": "Website",
+   "snapshot": {
+    "complexity": [
+     {
+      "description": "Standard patterns, few states",
+      "id": "simple",
+      "multiplier": 0.75,
+      "name": "Simple"
+     },
+     {
+      "description": "Typical effort",
+      "id": "standard",
+      "multiplier": 1,
+      "name": "Standard"
+     },
+     {
+      "description": "Custom interactions, many states or heavy data",
+      "id": "complex",
+      "multiplier": 1.5,
+      "name": "Complex"
+     }
+    ],
+    "gapRules": [
+     {
+      "id": "w-home-header",
+      "message": "Every site needs a header and navigation.",
+      "suggest": {
+       "kind": "item",
+       "ref": "header"
+      },
+      "trigger": {
+       "kind": "item",
+       "ref": "home"
+      }
+     },
+     {
+      "id": "w-home-footer",
+      "message": "Every site needs a footer.",
+      "suggest": {
+       "kind": "item",
+       "ref": "footer"
+      },
+      "trigger": {
+       "kind": "item",
+       "ref": "home"
+      }
+     },
+     {
+      "id": "w-home-404",
+      "message": "Broken links need a designed error page.",
+      "suggest": {
+       "kind": "item",
+       "ref": "not-found"
+      },
+      "trigger": {
+       "kind": "item",
+       "ref": "home"
+      }
+     },
+     {
+      "id": "w-cart-checkout",
+      "message": "A cart usually leads to a checkout flow.",
+      "suggest": {
+       "kind": "item",
+       "ref": "checkout"
+      },
+      "trigger": {
+       "kind": "item",
+       "ref": "cart"
+      }
+     },
+     {
+      "id": "w-checkout-confirm",
+      "message": "Checkout needs a confirmation page.",
+      "suggest": {
+       "kind": "item",
+       "ref": "order-confirmation"
+      },
+      "trigger": {
+       "kind": "item",
+       "ref": "checkout"
+      }
+     },
+     {
+      "id": "w-plp-pdp",
+      "message": "Product listings link to product detail pages.",
+      "suggest": {
+       "kind": "item",
+       "ref": "pdp"
+      },
+      "trigger": {
+       "kind": "item",
+       "ref": "plp"
+      }
+     },
+     {
+      "id": "w-blog-article",
+      "message": "A blog listing needs an article template.",
+      "suggest": {
+       "kind": "item",
+       "ref": "blog-article"
+      },
+      "trigger": {
+       "kind": "item",
+       "ref": "blog-list"
+      }
+     },
+     {
+      "id": "w-case-detail",
+      "message": "A case study listing needs a detail template.",
+      "suggest": {
+       "kind": "item",
+       "ref": "case-detail"
+      },
+      "trigger": {
+       "kind": "item",
+       "ref": "case-list"
+      }
+     },
+     {
+      "id": "w-contact-thanks",
+      "message": "Form submissions need a confirmation page.",
+      "suggest": {
+       "kind": "item",
+       "ref": "thank-you"
+      },
+      "trigger": {
+       "kind": "item",
+       "ref": "contact"
+      }
+     },
+     {
+      "id": "w-lang-rtl",
+      "message": "Supporting Arabic, Hebrew or Urdu? Right-to-left layouts need extra design time.",
+      "suggest": {
+       "group": "localization",
+       "kind": "option",
+       "ref": "rtl"
+      },
+      "trigger": {
+       "group": "localization",
+       "kind": "option",
+       "ref": "languages"
+      }
+     }
+    ],
+    "labels": {
+     "category": "Page group",
+     "item": "Page",
+     "items": "Pages",
+     "sub": "Section",
+     "subs": "Sections"
+    },
+    "optionGroups": [
+     {
+      "description": "Screen sizes to design for.",
+      "id": "responsive",
+      "name": "Responsiveness",
+      "options": [
+       {
+        "default": true,
+        "description": "Primary design. Page and section hours are desktop hours.",
+        "free": 0,
+        "id": "desktop",
+        "input": "toggle",
+        "locked": true,
+        "max": 99,
+        "min": 0,
+        "name": "Desktop",
+        "rule": "none",
+        "unit": "",
+        "value": 0
+       },
+       {
+        "default": true,
+        "description": "Adapting every page and section to phone widths.",
+        "free": 0,
+        "id": "mobile",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Mobile responsive",
+        "rule": "percent",
+        "unit": "",
+        "value": 40
+       },
+       {
+        "default": false,
+        "description": "Adapting every page and section to tablet widths.",
+        "free": 0,
+        "id": "tablet",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Tablet responsive",
+        "rule": "percent",
+        "unit": "",
+        "value": 25
+       }
+      ],
+      "selection": "multiple"
+     },
+     {
+      "description": "How many languages the design must support.",
+      "id": "localization",
+      "name": "Localization",
+      "options": [
+       {
+        "default": 1,
+        "description": "Each language after the first adds layout checks for text length and formatting.",
+        "free": 1,
+        "id": "languages",
+        "input": "quantity",
+        "locked": false,
+        "max": 30,
+        "min": 1,
+        "name": "Languages",
+        "rule": "percent",
+        "unit": "language",
+        "value": 15
+       },
+       {
+        "default": false,
+        "description": "Mirrored layouts for right-to-left scripts.",
+        "free": 0,
+        "id": "rtl",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "RTL support (e.g. Arabic, Hebrew, Urdu)",
+        "rule": "percent",
+        "unit": "",
+        "value": 20
+       }
+      ],
+      "selection": "multiple"
+     },
+     {
+      "description": "Colour themes to design.",
+      "id": "theming",
+      "name": "Theming",
+      "options": [
+       {
+        "default": true,
+        "description": "",
+        "free": 0,
+        "id": "light",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Light only",
+        "rule": "none",
+        "unit": "",
+        "value": 0
+       },
+       {
+        "default": false,
+        "description": "",
+        "free": 0,
+        "id": "dark",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Dark only",
+        "rule": "none",
+        "unit": "",
+        "value": 0
+       },
+       {
+        "default": false,
+        "description": "A second full colour theme for every screen.",
+        "free": 0,
+        "id": "both",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Light + Dark",
+        "rule": "percent",
+        "unit": "",
+        "value": 25
+       }
+      ],
+      "selection": "single"
+     },
+     {
+      "description": "Extra design work beyond pages and sections.",
+      "id": "deliverables",
+      "name": "Other deliverables",
+      "options": [
+       {
+        "default": false,
+        "description": "Reusable components, tokens and documentation.",
+        "free": 0,
+        "id": "design-system",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Design system / UI kit",
+        "rule": "percent",
+        "unit": "",
+        "value": 15
+       },
+       {
+        "default": false,
+        "description": "Clickable prototype for key journeys.",
+        "free": 0,
+        "id": "prototype",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Interactive prototype",
+        "rule": "percent",
+        "unit": "",
+        "value": 10
+       },
+       {
+        "default": 0,
+        "description": "",
+        "free": 0,
+        "id": "illustrations",
+        "input": "quantity",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Custom illustrations",
+        "rule": "fixed",
+        "unit": "illustration",
+        "value": 6
+       },
+       {
+        "default": 0,
+        "description": "Micro-interactions or Lottie animations.",
+        "free": 0,
+        "id": "animations",
+        "input": "quantity",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Custom animations",
+        "rule": "fixed",
+        "unit": "animation",
+        "value": 4
+       },
+       {
+        "default": 0,
+        "description": "",
+        "free": 0,
+        "id": "icons",
+        "input": "quantity",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Custom icons",
+        "rule": "fixed",
+        "unit": "icon",
+        "value": 0.75
+       }
+      ],
+      "selection": "multiple"
+     },
+     {
+      "description": "Non-functional scope that affects design effort.",
+      "id": "quality",
+      "name": "Quality & handoff",
+      "options": [
+       {
+        "default": false,
+        "description": "Contrast, focus states, touch targets and annotations for assistive tech.",
+        "free": 0,
+        "id": "a11y",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Accessibility (WCAG 2.1 AA)",
+        "rule": "percent",
+        "unit": "",
+        "value": 8
+       },
+       {
+        "default": true,
+        "description": "Annotated specs, redlines and asset export for developers.",
+        "free": 0,
+        "id": "handoff",
+        "input": "toggle",
+        "locked": false,
+        "max": 99,
+        "min": 0,
+        "name": "Developer handoff & specs",
+        "rule": "percent",
+        "unit": "",
+        "value": 5
+       },
+       {
+        "default": 1,
+        "description": "Reviewing the built product against the design.",
+        "free": 0,
+        "id": "qa",
+        "input": "quantity",
+        "locked": false,
+        "max": 10,
+        "min": 0,
+        "name": "Design QA rounds",
+        "rule": "fixed",
+        "unit": "round",
+        "value": 6
+       }
+      ],
+      "selection": "multiple"
+     }
+    ],
+    "phases": [
+     "Phase 1 (MVP)",
+     "Phase 2",
+     "Phase 3"
+    ],
+    "takenAt": 1792296353169
+   },
+   "status": "draft",
+   "step": "scope",
+   "totalHours": 0,
+   "updatedAt": 1792296353169,
+   "updatedBy": "u_yU3_mfN78HY63dsrSfAHMw"
+  }
+ }
+}
