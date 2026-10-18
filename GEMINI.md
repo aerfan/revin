@@ -19,3 +19,5 @@ Welcome to the **Revin** workspace in Google Antigravity.
 - Preserve existing documentation and docstrings.
 - Follow Git conventional commits (e.g. `feat:`, `fix:`, `chore:`, `docs:`, `ci:`).
 - Verify code quality and ensure CI compatibility before finalizing changes.
+- **Automatic Commit & Remote Sync**: Whenever building, updating, or improving the application, always create a local Git commit with a descriptive message and push it directly to GitHub (`git push origin <branch>`) so the remote repository is always up to date.
+
