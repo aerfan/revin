@@ -43,7 +43,7 @@ Welcome to the **Revin** workspace in Google Antigravity.
     - `node test/canary.stress.js`: 500-estimate load, rapid concurrency, and 1,000-estimate extreme benchmarks.
     - `node test/canary.telemetry.js`: Telemetry & health diagnostics verification.
     - `node test/canary.proposal.js`: Interactive proposal portal, presentation mode, tier switching, digital sign-off, certificate seal, and revocation.
-    - `node test/canary.security.js`: Penetration checks across all 6 core vulnerability surfaces.
+    - `node test/canary.security.js`: Penetration checks across all 10 vulnerability surfaces.
     - `node test/canary.webhook.js`: Post-acceptance webhooks, Slack BlockKit formatting, and outbound automation contracts.
     - `npm run test:ui`: 53 UI automation checks, 42 QA scenarios, 28 axe audits, 143 responsive width checks.
   - All checks must pass (100%) with zero errors before finalizing any commit.
@@ -51,10 +51,14 @@ Welcome to the **Revin** workspace in Google Antigravity.
   - Digital proposal acceptance triggers outbound webhook payloads (`proposal.accepted`) carrying full commercial financials, milestones, and client signature data.
   - Automatic Slack/Discord BlockKit card formatting when endpoint matches `hooks.slack.com` or `discord.com`.
   - All webhooks strictly enforce HTTPS protocols and execute non-blocking via `AbortController` timeouts (8000ms).
-- **Security & Penetration Hardening**:
+- **Security, Audit Remediation & Penetration Hardening**:
   - Always guard against CSV Formula & DDE injection in export routines (OWASP CWE-1236). Neutralize formula triggers (`=`, `+`, `-`, `@`, `|`) with single quote prefixing and quote cells containing tabs or semicolons.
   - Guard recursive object merges against Prototype Pollution (`__proto__`, `constructor`, `prototype`) (OWASP CWE-1321).
   - Enforce strict input bounds, regex verification, and text escaping across all user inputs and digital sign-off flows.
+  - Development Server Path Confinement (SEC-01): Guard development server against sibling directory traversal and escapes using `path.relative` validation and bind to `127.0.0.1`.
+  - Atomic Data Operations (FUNC-01): Pre-flight validate path formats (even segments, <= 8) and 256 KiB size limits; maintain pre-import snapshots and execute automatic rollbacks on mid-flight failure.
+  - Build Pipeline Configuration Gate (OPS-01): Fail closed with `process.exit(1)` in CI/Vercel/strict builds if required Supabase backend variables are missing.
+  - CSP Hardening (SEC-03): Keep `script-src` locked to `'self' 'unsafe-inline'` (no external CDNs) and scope `connect-src` strictly to project domain.
 - **Human-Readable Git Discipline & Remote Sync**:
   - Write clear, descriptive conventional commits (e.g. `feat(observability): ...`, `fix(stepper): ...`, `refactor(ui): ...`, `feat(proposal): ...`).
   - Always explain the rationale and component scope in the commit message.

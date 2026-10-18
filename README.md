@@ -118,15 +118,15 @@ Add `http://localhost:3000/**` to the Supabase redirect URLs while developing.
 
 | Command | What it covers |
 |---|---|
-| `npm run test:canary` | Runs all Canary test suites across engines, viewports, stress benchmarks, proposal contracts, and security audits |
-| `npm run test:security` | Automated penetration suite: CSV formula injection (CWE-1236), prototype pollution (CWE-1321), stored XSS (CWE-79), commercial privacy (CWE-200), boundary overflows, and ReDoS |
+| `npm run test:canary` | Runs all 8 Canary test suites across engines, viewports, stress benchmarks, proposal contracts, security audits, and outbound webhooks |
+| `npm run test:security` | Automated penetration suite: CSV formula injection, prototype pollution, stored XSS, commercial privacy, boundary overflows, ReDoS, path confinement (SEC-01), atomic import rollback (FUNC-01), strict build gates (OPS-01), and CSP hardening (SEC-03) |
 | `npm run test:engine` | Pure math calculations, agency financials, margins, milestones, and 5,754 randomised fuzz checks |
 | `node test/canary.compat.js` | Cross-browser rendering & interaction contracts on Chromium & WebKit (Safari engine) |
-| `node test/canary.screens.js` | 12 responsive viewport sweeps (320px ultra-compact to 2560px QHD Ultrawide) |
+| `node test/canary.screens.js` | 12 responsive viewport sweeps (320px ultra-compact to 2560px QHD Ultrawide with 0px overflow) |
 | `node test/canary.stress.js` | 500-estimate load benchmarks, rapid stepper click storms, memory stability churn |
 | `node test/canary.telemetry.js` | Circular telemetry breadcrumbs, local error persistence, and Settings health diagnostics |
 | `node test/canary.proposal.js` | Interactive proposal portal, presentation mode, tier switching, digital sign-off, certificate seal, and revocation |
-| `node test/canary.security.js` | Fuzz testing and exploit verification against 6 core web attack vectors |
+| `node test/canary.security.js` | Automated exploit verification across 10 security penetration surfaces |
 | `node test/canary.webhook.js` | Post-acceptance webhooks, Slack BlockKit formatting, and outbound automation contracts |
 | `npm run test:ui` | Full interface: 53 UI automation checks, 42 QA scenarios, 7 v2 scenarios, 3 F1 scenarios, 28 axe accessibility audits, 143 responsive sweeps |
 | `npm run test:db` | The migration on real Postgres: sign-up roles, access rules, path and size limits, ordering, team rules, first-admin race |

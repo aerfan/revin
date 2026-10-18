@@ -31,6 +31,13 @@ You are an expert engineer working on Revin. Follow these non-negotiable guideli
 6. **Observability & Diagnostics**:
    - Telemetry automatically maintains a 15-event circular breadcrumbs buffer.
    - Settings includes a **Health & Diagnostics** card with 1-click **Copy for AI** debugging reports.
-7. **Git Sync & Readable Commits**:
+7. **Security, Audit Remediation & Defense-in-Depth**:
+   - Server path confinement: Use `path.relative` containment and bind `127.0.0.1` (SEC-01).
+   - Atomic backup imports: Pre-validate format/size (256 KiB) and execute snapshot-based rollback (FUNC-01).
+   - Strict build gates: Fail closed with `process.exit(1)` in CI/Vercel/strict builds if configuration is missing (OPS-01).
+   - Content Security Policy: Lock `script-src` to `'self' 'unsafe-inline'` and scope `connect-src` strictly to project domain (SEC-03).
+   - Mobile responsive layout: Maintain 0px horizontal overflow across all viewports (320px to 2560px) (A11Y-02).
+   - Accessibility: Maintain `aria-label` accessible names on all mobile navigation buttons (A11Y-01).
+8. **Git Sync & Readable Commits**:
    - Use descriptive conventional commits with explanatory details.
    - Push all commits to `origin <branch>`.

@@ -31,7 +31,8 @@
     var recent = (ctx.estimates || []).slice(0, 5);
     var svcById = ctx.services || {};
     function tab(view, label, icon, color, active, count) {
-      return html`<button class="navtab" aria-current=${active ? 'page' : null} onClick=${function () { ctx.setRoute({ view: view }); }}>
+      var fullLabel = label + (count !== undefined ? ' (' + count + ')' : '');
+      return html`<button class="navtab" aria-label=${fullLabel} aria-current=${active ? 'page' : null} onClick=${function () { ctx.setRoute({ view: view }); }}>
         <${Tile} size="sm" icon=${icon} color=${color} /><span class="lbl">${label}</span>${count !== undefined ? html`<span class="count">${count}</span>` : null}
       </button>`;
     }

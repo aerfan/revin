@@ -19,6 +19,13 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
 | **ISSUE-004** | High | `src/ui/files.js` (`merge3`) | Prototype Pollution (CWE-1321): Unfiltered object keys in three-way merge could poison `Object.prototype` | **Resolved** | Explicitly filtered out `__proto__`, `constructor`, and `prototype` keys during object key aggregation | Verified in `test/canary.security.js` (Attack 2) |
 | **ISSUE-005** | Medium | `src/ui/views/advanced.js` | Unbounded sign-off input fields and missing email format validation on digital proposal acceptance | **Resolved** | Added `maxlength` attributes, string slicing (name: 100, email: 120, org: 100), work email regex validation, and safe date fallback on rendering | Verified in `test/canary.security.js` (Attack 3) |
 | **ISSUE-006** | Medium | `src/engine.js` | Extreme / adversarial numeric values (`NaN`, negative rates, `1e308`) causing unbounded calculation cascades | **Resolved** | Added rate clamping to `[0, 100,000,000]`, capped labor costs to `MAX_SAFE_INTEGER`, bounded milestone percentages to `[0, 100]`, and added try/catch to `clone(o)` | Verified in `test/canary.security.js` (Attack 5) |
+| **ISSUE-007** (A11Y-01) | High | `src/ui/navigation.js` | Mobile main navigation buttons (`.navtab`) have no accessible names when text labels are hidden at `<= 768px` | **Resolved** | Added dynamic `aria-label` attribute on `<button class="navtab">` reflecting the destination and count badge | Verified across mobile screen sweeps and axe a11y audits |
+| **ISSUE-008** (SEC-01) | Medium | `server.js` | Local development server permits sibling-directory traversal via string-prefix check `resolved.startsWith(ROOT)` (CWE-22) | **Resolved** | Replaced prefix check with robust containment using `!path.relative(ROOT, resolved).startsWith('..') && !path.isAbsolute(rel)`; bound server to loopback host `127.0.0.1` | Verified in `test/canary.security.js` (Attack 7) |
+| **ISSUE-009** (FUNC-01) | Medium | `web/runtime.js` | Non-atomic backup import (`importAll`): mid-stream database failure leaves partially overwritten records | **Resolved** | Implemented pre-flight validation (regex, segment parity, 256 KiB size check) and snapshot-based atomic rollback of written records upon failure | Verified in `test/canary.security.js` (Attack 8) and `settings.js` |
+| **ISSUE-010** (SEC-02) | Medium | `package.json` | Dependency inventory vulnerabilities reported in `npm audit` (`ws` High DoS, `uuid` Moderate via `exceljs`) | **Resolved** | Upgraded `ws` to `^8.22.0` and added `overrides` for `uuid` to `^11.1.1`; `npm audit` dropped to 0 vulnerabilities | Verified with `npm audit` and 5,754 engine fuzz checks |
+| **ISSUE-011** (OPS-01) | Medium | `web/build.js` | Missing Supabase configuration fails open with exit code 0, emitting setup placeholder in CI pipelines | **Resolved** | Added strict configuration gate (`isStrict` checking `process.env.CI || process.env.VERCEL || process.env.STRICT_BUILD`) exiting with code 1 | Verified in `test/canary.security.js` (Attack 9) |
+| **ISSUE-012** (SEC-03) | Low | `web/build.js`, `vercel.json` | Overly broad CSP allowlists (`script-src` includes unneeded CDNs, wildcard `*.supabase.co`) | **Resolved** | Restricted `script-src` to `'self' 'unsafe-inline'` (removed external CDNs) and scoped `connect-src` strictly to project Supabase domain and Google OAuth | Verified in `test/canary.security.js` (Attack 10) |
+| **ISSUE-013** (A11Y-02) | Low | `src/styles.css` | Header elements with Sign Out button introduce 9px horizontal overflow on 320 CSS pixels | **Resolved** | Added `@media (max-width: 420px)` and `@media (max-width: 360px)` ultra-compact styles for side header, buttons, and avatar | Verified in `test/canary.screens.js` across all 12 viewports (0px overflow) |
 
 ---
 
@@ -256,5 +263,43 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
   - `node test/canary.webhook.js`: Passed (100%).
   - `npm run test:canary`: All 8 canary suites passed (100%).
   - `npm run test:engine`: 5,754 checks passed (100%).
+
+### Session 13: Independent Audit Report Remediation (Completed)
+- **Status**: Completed (100% pass across all 8 canary suites, 5,754 engine tests, 10 security penetration checks, and 53 UI automation suites).
+- **Target Report**: `Revin_Test_Report.md` (Dated 19 Oct 2026).
+- **Audit Findings Resolved**:
+  1. **A11Y-01 (High — Mobile Navigation Accessibility)**:
+     - *Finding*: `.navtab .lbl { display: none; }` at `<= 768px` left navigation buttons without accessible names in the browser accessibility tree.
+     - *Resolution*: Updated `src/ui/navigation.js` (`Sidebar.tab`) to add dynamic `aria-label=${label + (count !== undefined ? ' (' + count + ')' : '')}` directly to `<button class="navtab">`.
+     - *Verification*: Verified across all screen profiles and 28 axe audits. Screen readers and automated accessibility trees now receive clear names at any viewport width.
+  2. **SEC-01 (Medium — Development Server Path Confinement)**:
+     - *Finding*: `server.js` used `resolved.startsWith(ROOT)`, allowing sibling directory traversal (e.g. `/../app-sibling/marker.txt`).
+     - *Resolution*: Replaced string prefix matching with strict path containment: `const rel = path.relative(ROOT, resolved); if (rel.startsWith('..') || path.isAbsolute(rel)) ...`; bound local server explicitly to loopback host `127.0.0.1`.
+     - *Verification*: Added Attack 7 in `test/canary.security.js` confirming sibling directory escapes, parent escapes, and encoded traversals are rejected with HTTP 403.
+  3. **FUNC-01 (Medium — Non-Atomic Backup Import)**:
+     - *Finding*: `web/runtime.js` (`importAll`) wrote documents sequentially via RPC without pre-validation or rollback, leaving partially overwritten datasets on mid-stream failure.
+     - *Resolution*:
+       - Added pre-flight validation phase: checks path regex (`^[A-Za-z0-9_.-]{1,100}(/[A-Za-z0-9_.-]{1,100})*$`), even segment count (<= 8), object type check, and UTF-8 byte length limit `<= 262,144` bytes (256 KiB) before touching the database.
+       - Added pre-import snapshotting: queries existing document state for all target paths.
+       - Added automatic rollback: on write failure, restores pre-existing documents or deletes newly inserted documents, returning clean `{ rolledBack: true, error: ... }`.
+       - Updated `src/ui/views/settings.js` to report clean rollback status to users.
+     - *Verification*: Added Attack 8 in `test/canary.security.js`.
+  4. **SEC-02 (Medium — Dependency Inventory Vulnerabilities)**:
+     - *Finding*: `npm audit` flagged 3 vulnerabilities (`ws` High DoS via memory exhaustion in `ws@8.18.0`, `uuid` Moderate via `exceljs@4.4.0`).
+     - *Resolution*: Upgraded `ws` to `^8.22.0` in `package.json` and added `"overrides": { "uuid": "^11.1.1" }`.
+     - *Verification*: `npm audit` returns **0 vulnerabilities**; 5,754 engine fuzz tests and Excel workbook generation pass 100%.
+  5. **OPS-01 (Medium — Build Gate Fail-Open on Missing Configuration)**:
+     - *Finding*: `web/build.js` only warned on missing `SUPABASE_URL` / `SUPABASE_ANON_KEY` and exited 0, risking deploying a broken placeholder build in CI.
+     - *Resolution*: Added strict configuration check: if `process.env.CI || process.env.VERCEL || process.env.STRICT_BUILD || process.argv.includes('--strict')`, missing backend keys exit immediately with code 1 (`process.exit(1)`).
+     - *Verification*: Verified with `--strict` subshell test and Attack 9 in `test/canary.security.js`.
+  6. **SEC-03 (Low — Overly Broad Content Security Policy)**:
+     - *Finding*: Live CSP headers and HTML meta policy included unneeded CDNs (`unpkg.com`, `cdnjs`, `jsdelivr`) and wildcard `*.supabase.co` in `connect-src`.
+     - *Resolution*: Locked down `script-src` to `'self' 'unsafe-inline'` across both `web/build.js` and `vercel.json`; restricted `connect-src` strictly to configured project origin, WebSocket endpoint, and Google OAuth endpoints.
+     - *Verification*: Attack 10 in `test/canary.security.js` verified zero external unneeded CDNs in script policy.
+  7. **A11Y-02 (Low — Mobile Header 320px Viewport Overflow)**:
+     - *Finding*: At 320 CSS pixels, header controls with the Sign Out button extended 9px past the viewport (`scrollWidth = 329px`).
+     - *Resolution*: Added `@media (max-width: 420px)` and `@media (max-width: 360px)` ultra-compact rules in `src/styles.css` adjusting `.side` padding (6px), navtab padding (4px), brand padding, theme switcher button size (19px), and signout button size (26px).
+     - *Verification*: Screen sweeps in `test/canary.screens.js` across all 12 viewports (including 320px with authenticated Sign Out button active) pass with 0 defects and 0px horizontal overflow.
+
 
 

@@ -148,7 +148,15 @@
     f.json = run;
     return f;
   })();
-  var caps = { sample: sample, db: cfg.signedOut ? null : db, user: cfg.noUser ? null : user, downloads: cfg.noDownloads ? null : downloads };
+  var team = Object.freeze({
+    me: { user_id: 'u_me', name: 'Arfan Test', role: 'admin' },
+    isAdmin: admin,
+    signOut: function () { return Promise.resolve(); },
+    members: function () { return Promise.resolve([]); },
+    invites: function () { return Promise.resolve([]); },
+    settings: function () { return Promise.resolve({ allowed_domain: null, domain_role: 'estimator' }); },
+  });
+  var caps = { sample: sample, db: cfg.signedOut ? null : db, user: cfg.noUser ? null : user, downloads: cfg.noDownloads ? null : downloads, team: cfg.noTeam ? null : team };
   window.__store = store;
   window.__listenerCount = function () { return listeners.size; };
   window.__remoteSet = function (path, data) { store.set(path, JSON.parse(JSON.stringify(data))); notify(path); };

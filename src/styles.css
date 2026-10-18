@@ -633,6 +633,8 @@ span.icon-btn { pointer-events: none; }
 }
 @media (max-width: 560px) {
   .brand-name { display: none; }
+  .side { padding: 8px max(12px, env(safe-area-inset-right, 0px)) 8px max(12px, env(safe-area-inset-left, 0px)); gap: 6px; }
+  .side-foot { gap: 6px; }
   .side-foot .role { display: none; }
   .grid-2, .grid-3, .opt-grid { grid-template-columns: minmax(0, 1fr); }
   .page-head h1 { font-size: 24px; }
@@ -649,12 +651,15 @@ span.icon-btn { pointer-events: none; }
   .inspector .insp-nav .btn { padding: 0 10px; }
   .deliv-row { padding: 12px 16px; }
 }
-@media (max-width: 380px) {
-  .side { padding: 8px 10px; gap: 4px; }
+@media (max-width: 420px) {
+  .side { padding: 8px max(8px, env(safe-area-inset-right, 0px)) 8px max(8px, env(safe-area-inset-left, 0px)); gap: 4px; }
   .side-foot { gap: 4px; }
-  .brand-logo { font-size: 19px; }
-  .theme-switcher button { width: 22px; height: 22px; }
-  .theme-switcher { padding: 1px; gap: 1px; }
+  .side-foot .av { width: 24px; height: 24px; }
+  .side .brand-logo { font-size: 18px; }
+  .side-nav .navtab { padding: 0 6px; height: 32px; }
+  .theme-switcher { padding: 1px; gap: 1px; border-radius: 6px; }
+  .theme-switcher button { width: 20px; height: 20px; border-radius: 4px; }
+  .theme-switcher button svg { width: 12px; height: 12px; }
   .inspector .insp-nav .btn:not(.primary) { display: none; }
   .inspector .insp-total .num { font-size: 30px; }
   .inspector .insp-card { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "head nav" "toggle toggle" "lines lines" "count count" "export export"; }
@@ -915,14 +920,18 @@ table.bd.act td { vertical-align: middle; }
   display: block;
 }
 
-@media (max-width: 380px) {
-  .side { padding: 8px 8px; gap: 4px; }
-  .side-foot { gap: 4px; }
-  .side-foot .av { width: 24px; height: 24px; }
-  .side .brand-logo { font-size: 18px; }
-  .side-nav .navtab { padding: 0 6px; height: 32px; }
-  .theme-switcher { padding: 1px; gap: 1px; border-radius: 6px; }
-  .theme-switcher button { width: 20px; height: 20px; border-radius: 4px; }
-  .theme-switcher button svg { width: 12px; height: 12px; }
+@media (max-width: 360px) {
+  .side { padding: 6px max(6px, env(safe-area-inset-right, 0px)) 6px max(6px, env(safe-area-inset-left, 0px)); gap: 3px; }
+  .side-brand { padding: 2px; }
+  .side-brand .brand-logo { font-size: 17px; }
+  .side-nav { gap: 2px; }
+  .side-nav .navtab { padding: 0 4px; height: 30px; }
+  .side-theme { padding: 0; }
+  .theme-switcher { padding: 1px; gap: 1px; }
+  .theme-switcher button { width: 19px; height: 19px; }
+  .theme-switcher button svg { width: 11px; height: 11px; }
+  .side-foot { gap: 2px; }
+  .side-foot .av { width: 22px; height: 22px; }
+  .side-foot .signout { width: 26px; height: 26px; margin-left: 0; }
 }
 

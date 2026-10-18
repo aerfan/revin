@@ -585,6 +585,13 @@ Motion follows Emil Kowalski's rules: animate only when it gives feedback, shows
     - Non-blocking asynchronous dispatch with 8000ms `AbortController` timeout; errors are captured in Telemetry without interrupting the client sign-off flow.
   - **Verification:** Verified by `test/canary.webhook.js` across unit payload contracts, protocol security enforcement, Settings test ping, and end-to-end browser proposal sign-off interception.
 
-
-
-
+### 21.7 Independent Audit Remediation & Defense-in-Depth Hardening
+- **Context:** Following the 19 October 2026 independent application audit report (`Revin_Test_Report.md`), all 7 identified findings were remediated and verified under the Canary-First protocol:
+  1. **Mobile Navigation Accessibility (A11Y-01):** Added dynamic `aria-label` attribute on `<button class="navtab">` in `src/ui/navigation.js` preserving screen-reader accessible names when `.lbl` is hidden below 768px.
+  2. **Development Server Path Confinement (SEC-01):** Eliminated sibling-prefix traversal vulnerability in `server.js` using `path.relative` directory boundary validation; bound local server explicitly to loopback host `127.0.0.1`.
+  3. **Atomic Backup Import & Rollback (FUNC-01):** Implemented pre-flight format/segment/size (256 KiB) validation and automatic snapshot rollback in `web/runtime.js` (`importAll`) ensuring dataset consistency on mid-flight failures.
+  4. **Dependency Inventory Remediation (SEC-02):** Upgraded `ws` to `^8.22.0` and pinned transitive `uuid` to `^11.1.1` via overrides; `npm audit` dropped to 0 vulnerabilities.
+  5. **Build Configuration Gate (OPS-01):** Added strict build enforcement in `web/build.js` (`--strict` / `CI` / `VERCEL`) exiting with code 1 if required Supabase backend variables are missing.
+  6. **Content Security Policy Hardening (SEC-03):** Removed external CDN allowlists (`unpkg.com`, `cdnjs`, `jsdelivr`) from `script-src` across `web/build.js` and `vercel.json`; locked connections to configured backend origin and Google OAuth.
+  7. **Mobile Header Reflow at 320px (A11Y-02):** Added `@media (max-width: 420px)` and `@media (max-width: 360px)` ultra-compact rules in `src/styles.css` ensuring 0px horizontal overflow with the authenticated Sign Out button active.
+- **Verification:** 100% pass across all 8 Canary suites, 5,754 engine tests, 10 automated security penetration vectors, and 53 UI automation scenarios.

@@ -17,22 +17,44 @@ try { // local convenience: .env.local / .env
 const env = (...names) => names.map((n) => process.env[n]).find((v) => v && v.trim()) || '';
 const url = env('SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL').replace(/\/+$/, '');
 const key = env('SUPABASE_ANON_KEY', 'NEXT_PUBLIC_SUPABASE_ANON_KEY', 'SUPABASE_PUBLISHABLE_KEY', 'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY');
-if (url && !/^https:\/\/[a-z0-9.-]+(:\d+)?$/i.test(url) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(url)) throw new Error('SUPABASE_URL should look like https://xyz.supabase.co, got: ' + url);
-if (!url || !key) console.warn('warning: SUPABASE_URL / SUPABASE_ANON_KEY not set — the app will show a setup message');
+const isStrict = Boolean(process.env.CI || process.env.VERCEL || process.env.STRICT_BUILD || process.argv.includes('--strict'));
+if (!url || !key) {
+  if (isStrict) {
+    console.error('ERROR (OPS-01): SUPABASE_URL and SUPABASE_ANON_KEY are required in CI/Vercel/strict builds. Set them in your environment.');
+    process.exit(1);
+  } else {
+    console.warn('warning: SUPABASE_URL / SUPABASE_ANON_KEY not set — the app will show a setup message (local unconfigured mode)');
+  }
+}
 const config = { supabaseUrl: url, supabaseAnonKey: key, agencyName: env('AGENCY_NAME').slice(0, 80) };
 
 const origin = url ? new URL(url).origin : '';
 const ws = origin.replace(/^http/, 'ws');
+const connectTargets = [
+  "'self'",
+  origin,
+  ws,
+  origin ? '' : 'https://*.supabase.co wss://*.supabase.co',
+  'https://accounts.google.com',
+  'https://*.googleapis.com',
+].filter(Boolean).join(' ');
+
+const formActionTargets = [
+  "'self'",
+  'https://accounts.google.com',
+  origin || 'https://*.supabase.co',
+].filter(Boolean).join(' ');
+
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com",
+  "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: blob: https:",
-  `connect-src 'self' ${origin} ${ws} https://*.supabase.co wss://*.supabase.co https://accounts.google.com https://*.googleapis.com`.trim(),
+  `connect-src ${connectTargets}`,
   "worker-src 'self' blob:",
   "base-uri 'none'",
-  "form-action 'self' https://accounts.google.com https://*.supabase.co",
+  `form-action ${formActionTargets}`,
   "object-src 'none'",
 ].join('; ');
 

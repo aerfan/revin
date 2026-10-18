@@ -24,7 +24,7 @@
       catch (e) { ctx.toast(/own role/i.test(e.message) ? 'You can’t change your own role. Ask another admin.' : 'That didn’t work: ' + String(e.message || e).slice(0, 120), 'bad'); }
       setBusy(false);
     }
-    var mine = team.me.user_id;
+    var mine = (team.me && team.me.user_id) || null;
     var pending = (members || []).filter(function (m) { return m.role === 'pending'; });
     var active = (members || []).filter(function (m) { return m.role === 'admin' || m.role === 'estimator'; });
     var removed = (members || []).filter(function (m) { return m.role === 'disabled'; });
@@ -97,7 +97,13 @@
             setProg('Importing 0 of ' + paths.length + '…');
             var r = await team.importAll(sub, function (d, t) { setProg('Importing ' + d + ' of ' + t + '…'); });
             setProg(null);
-            ctx.toast(r.failed.length ? 'Imported ' + (r.total - r.failed.length) + ' of ' + r.total + '. ' + r.failed.length + ' couldn’t be saved (too large or invalid).' : 'Imported ' + r.total + ' records', r.failed.length ? 'bad' : null);
+            if (r.rolledBack) {
+              ctx.toast('Import failed and rolled back cleanly: ' + (r.error || 'Write error'), 'bad');
+            } else if (r.failed && r.failed.length) {
+              ctx.toast(r.error || ('Imported ' + (r.total - r.failed.length) + ' of ' + r.total + '. ' + r.failed.length + ' couldn’t be saved.'), 'bad');
+            } else {
+              ctx.toast('Imported ' + r.total + ' records successfully');
+            }
           } });
       });
     }

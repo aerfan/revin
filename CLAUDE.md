@@ -50,9 +50,14 @@ Welcome to the **Revin** codebase.
 6. **Observability & Health Diagnostics**:
    - Telemetry tracks user action breadcrumbs and fingerprints errors to `dhe:error_logs` and `public.error_logs`.
    - Use the **Copy for AI** button in Settings -> Health & Diagnostics for 1-click Markdown error payloads during triage.
-7. **Security & Penetration Hardening**:
+7. **Security, Audit Remediation & Hardening**:
    - Always sanitize user inputs and CSV formulas (`=`, `+`, `-`, `@`, `|` prefixed with `'`).
    - Guard object merging against Prototype Pollution (`__proto__`, `constructor`, `prototype`).
+   - Guard development server (`server.js`) against sibling-directory traversal using `path.relative` containment and bind to `127.0.0.1` (SEC-01).
+   - Ensure atomic backup imports in `runtime.js` (`importAll`) with pre-flight path/size (256 KiB) validation and snapshot-based automatic rollback (FUNC-01).
+   - Enforce strict build failure (`web/build.js`) when backend configuration is absent in CI/Vercel pipelines (OPS-01).
+   - Lock CSP `script-src` to `'self' 'unsafe-inline'` without external CDNs; restrict backend connections to project origin (SEC-03).
+   - Ensure 0px horizontal overflow at 320px viewport with compact mobile header rules (A11Y-02).
    - Never leak sensitive internal margins, cost rates, or private notes in client presentation mode or exports.
 8. **Outbound Webhooks & Post-Acceptance Automation**:
    - Digital proposal acceptance triggers outbound webhook payloads (`proposal.accepted`).

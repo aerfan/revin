@@ -160,13 +160,94 @@
         return out;
       },
       importAll: async function (obj, onProgress) {
-        var paths = Object.keys(obj || {}).filter(function (p) { return obj[p] && typeof obj[p] === 'object' && !Array.isArray(obj[p]); });
-        var done = 0, failed = [];
-        for (var i = 0; i < paths.length; i++) {
-          try { await call(sb, 'set_doc', { p_path: paths[i], p_data: obj[paths[i]] }); } catch (e) { failed.push(paths[i]); }
-          done++; if (onProgress) onProgress(done, paths.length);
+        var rawKeys = Object.keys(obj || {});
+        var pathRegex = /^[A-Za-z0-9_.-]{1,100}(\/[A-Za-z0-9_.-]{1,100})*$/;
+
+        // 1. Pre-validation phase: strictly validate all keys and payload constraints before touching database
+        var paths = [];
+        for (var i = 0; i < rawKeys.length; i++) {
+          var p = rawKeys[i];
+          var val = obj[p];
+          if (!val || typeof val !== 'object' || Array.isArray(val)) {
+            continue;
+          }
+          if (!pathRegex.test(p)) {
+            return { total: 0, failed: [p], rolledBack: false, error: 'Invalid document path format: ' + p };
+          }
+          var segs = p.split('/');
+          if (segs.length % 2 !== 0 || segs.length > 8) {
+            return { total: 0, failed: [p], rolledBack: false, error: 'Document path must have an even number of segments (<= 8): ' + p };
+          }
+          var jsonStr;
+          try {
+            jsonStr = JSON.stringify(val);
+          } catch (err) {
+            return { total: 0, failed: [p], rolledBack: false, error: 'Document serialization failed: ' + p };
+          }
+          var byteLen = typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(jsonStr).length : jsonStr.length;
+          if (byteLen > 262144) {
+            return { total: 0, failed: [p], rolledBack: false, error: 'Document exceeds 256 KiB size limit: ' + p + ' (' + byteLen + ' bytes)' };
+          }
+          paths.push(p);
         }
-        return { total: paths.length, failed: failed };
+
+        if (paths.length === 0) {
+          return { total: 0, failed: [], rolledBack: false };
+        }
+
+        // 2. Snapshot phase: query current state for target paths to enable clean rollback
+        var snapshot = {};
+        try {
+          var chunkSize = 100;
+          for (var c = 0; c < paths.length; c += chunkSize) {
+            var chunk = paths.slice(c, c + chunkSize);
+            var existing = q(await sb.from('docs').select('path,data').in('path', chunk));
+            var found = {};
+            (existing || []).forEach(function (row) { found[row.path] = row.data; });
+            chunk.forEach(function (cp) {
+              snapshot[cp] = found[cp] !== undefined ? found[cp] : null;
+            });
+          }
+        } catch (snapErr) {
+          return { total: paths.length, failed: paths, rolledBack: false, error: 'Failed to create pre-import snapshot: ' + (snapErr.message || String(snapErr)) };
+        }
+
+        // 3. Write phase with automatic rollback on failure
+        var written = [];
+        var done = 0;
+        for (var w = 0; w < paths.length; w++) {
+          var targetPath = paths[w];
+          try {
+            await call(sb, 'set_doc', { p_path: targetPath, p_data: obj[targetPath] });
+            written.push(targetPath);
+            done++;
+            if (onProgress) onProgress(done, paths.length);
+          } catch (writeErr) {
+            var rollbackErrors = [];
+            for (var rb = written.length - 1; rb >= 0; rb--) {
+              var rbPath = written[rb];
+              var origData = snapshot[rbPath];
+              try {
+                if (origData !== null) {
+                  await call(sb, 'set_doc', { p_path: rbPath, p_data: origData });
+                } else {
+                  await sb.from('docs').delete().eq('path', rbPath);
+                }
+              } catch (rbErr) {
+                rollbackErrors.push(rbPath);
+              }
+            }
+            return {
+              total: paths.length,
+              failed: [targetPath],
+              rolledBack: true,
+              rollbackErrors: rollbackErrors,
+              error: 'Write failed at "' + targetPath + '": ' + (writeErr.message || String(writeErr)) + (rollbackErrors.length ? ' (Rollback incomplete for ' + rollbackErrors.length + ' records)' : ' (Clean rollback completed; dataset restored to pre-import state)')
+            };
+          }
+        }
+
+        return { total: paths.length, failed: [], rolledBack: false };
       },
     });
   }

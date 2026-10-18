@@ -40,10 +40,11 @@ const server = http.createServer((req, res) => {
     filePath = path.join(ROOT, urlPath);
   }
 
-  // Security check to avoid directory traversal
+  // Security check to avoid directory traversal and sibling directory escapes
   const resolved = path.resolve(filePath);
-  if (!resolved.startsWith(ROOT)) {
-    res.writeHead(403);
+  const rel = path.relative(ROOT, resolved);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('Access denied');
     return;
   }
@@ -68,8 +69,9 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  const url = `http://localhost:${PORT}`;
+const HOST = process.env.HOST || '127.0.0.1';
+server.listen(PORT, HOST, () => {
+  const url = `http://${HOST === '127.0.0.1' ? 'localhost' : HOST}:${PORT}`;
   console.log(`\n🚀 Revin (Design Hours Estimator) local server running!`);
   console.log(`👉 Open: ${url}\n`);
   
