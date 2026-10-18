@@ -380,7 +380,21 @@
     var s10 = useState([]), toasts = s10[0], setToasts = s10[1];
     var s11 = useState(null), dialog = s11[0], setDialog = s11[1];
     var s14 = useState(null), sampleFn = s14[0], setSampleFn = s14[1];
+    var sTheme = useState(function () { try { return localStorage.getItem('dhe_theme') || 'system'; } catch (e) { return 'system'; } }), theme = sTheme[0], setTheme = sTheme[1];
     var roleRef = useRef(role); roleRef.current = role;
+
+    useEffect(function () {
+      if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      else if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      else document.documentElement.removeAttribute('data-theme');
+      try { localStorage.setItem('dhe_theme', theme); } catch (e) {}
+    }, [theme]);
+    var toggleTheme = useCallback(function () {
+      setTheme(function (cur) {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        return isDark ? 'light' : 'dark';
+      });
+    }, []);
 
     var toast = useCallback(function (text, kind, action) {
       var id = Math.random();
@@ -533,6 +547,7 @@
     var ctx = {
       caps: caps, api: api, me: me, role: role, readOnly: readOnly, services: services, serviceList: serviceList,
       settings: settings, settingsDoc: settingsDoc, estimates: estimates, toast: toast, confirm: confirm,
+      theme: theme, toggleTheme: toggleTheme,
       route: route, setRoute: setRoute, hasMore: hasMore, sample: sampleFn, moreEstimates: function () { setEstLimit(function (n) { return n + EST_PAGE; }); }, startEstimate: startEstimate, duplicateEstimate: duplicateEstimate, deleteEstimate: deleteEstimate,
     };
 
@@ -626,6 +641,7 @@
         <${Avatar} key=${me.avatarUrl || 'none'} url=${me.avatarUrl} name=${me.name || 'You'} />
         <div class="who-text"><div class="who-name" title=${nm(me.name, 'You')}><bdi>${nm(me.name, 'You')}</bdi></div></div>
         <span class=${'role ' + (ctx.role === 'admin' ? 'admin' : '')}>${ctx.role === 'admin' ? 'Admin' : 'Estimator'}</span>
+        <button class="icon-btn theme-toggle-btn" aria-label="Toggle light or dark theme" title="Toggle Light / Dark mode" onClick=${ctx.toggleTheme}><${Icon} name="theme" /></button>
         ${ctx.caps && ctx.caps.team ? html`<button class="icon-btn signout" aria-label="Sign out" title="Sign out" onClick=${function () { ctx.caps.team.signOut(); }}><${Icon} name="logout" /></button>` : null}
       </div>
     </aside>`;

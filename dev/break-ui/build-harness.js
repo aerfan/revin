@@ -21,7 +21,8 @@ const embedded = {
 const json = JSON.stringify(embedded).replace(/</g, '\\u003c');
 
 const harness = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>try{var t=localStorage.getItem("dhe_theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 </head><body>
 <script>
 /* ---- dev-only data switch (break-ui). Not part of the app. ---- */
@@ -87,6 +88,23 @@ ${page}
     }
   };
   bar.appendChild(rst);
+  var thBtn = document.createElement('button');
+  thBtn.type = 'button';
+  thBtn.title = 'Switch theme (Light / Dark / System)';
+  function updateThText() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    thBtn.textContent = cur === 'dark' ? '🌙 Dark' : (cur === 'light' ? '☀️ Light' : '🌓 Theme');
+  }
+  updateThText();
+  thBtn.onclick = function () {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var isDark = cur === 'dark' || (!cur && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('dhe_theme', next); } catch (e) {}
+    updateThText();
+  };
+  bar.appendChild(thBtn);
   var min = document.createElement('button'); min.type = 'button'; min.className = 'dev-min'; min.textContent = '–'; min.title = 'Minimise';
   min.onclick = function () { bar.classList.toggle('min'); min.textContent = bar.classList.contains('min') ? cfg.labels[cfg.sel] + ' ▴' : '–'; };
   bar.appendChild(min);
