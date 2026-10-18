@@ -5,7 +5,7 @@
   "buildCommand": "node web/build.js",
   "outputDirectory": "dist-web",
   "cleanUrls": true,
-  "rewrites": [{ "source": "/((?!vendor/).*)", "destination": "/index.html" }],
+  "rewrites": [{ "source": "/((?!vendor/|sw\\.js).*)", "destination": "/index.html" }],
   "headers": [
     { "source": "/(.*)", "headers": [
       { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://accounts.google.com https://*.googleapis.com; worker-src 'self' blob:; base-uri 'none'; form-action 'self' https://accounts.google.com https://*.supabase.co; object-src 'none'; frame-ancestors 'none';" },
@@ -17,6 +17,7 @@
       { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" }
     ] },
     { "source": "/vendor/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
+    { "source": "/sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }] },
     { "source": "/", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
   ]
 }

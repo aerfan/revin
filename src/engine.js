@@ -138,6 +138,7 @@
       customDeliverables: arr(est.customDeliverables).map(function (c) { return Object.assign({}, c, { name: txt(c.name) }); }),
       overhead: arr(est.overhead).map(function (o) { return Object.assign({}, o, { name: txt(o.name) }); }),
       register: {}, hiddenAuto: strs(est.hiddenAuto), dismissedSuggestions: strs(est.dismissedSuggestions),
+      acceptance: est.acceptance ? Object.assign({}, est.acceptance) : null,
     });
     REGISTER_KINDS.forEach(function (k) { e.register[k.id] = arr(reg[k.id]).map(function (r) { return Object.assign({}, r, { text: txt(r.text) }); }); });
     Object.defineProperty(e, '__norm', { value: true, enumerable: false });
@@ -1016,7 +1017,8 @@
   // One model feeds both the in-app preview and the Word document, so they always match.
   function proposalModel(est, meta) {
     est = normalize(est); meta = meta || {};
-    var res = compute(est), pr = obj(est.proposal), labels = labelsOf(est);
+    var computeOpts = meta.maxTier !== undefined && meta.maxTier !== null ? { maxTier: meta.maxTier } : undefined;
+    var res = compute(est, computeOpts), pr = obj(est.proposal), labels = labelsOf(est);
     var cap = Math.max(1, num(pr.capacity, 40));
     var showHours = pr.showLineHours !== false;
     var cats = [], byCat = {};
@@ -1029,6 +1031,7 @@
     });
     var regs = {}; REGISTER_KINDS.forEach(function (k) { regs[k.id] = registerFor(est, k.id).all.map(function (e) { return e.text; }); });
     var pk = packagesOf(est);
+    var pkBreakdown = packageBreakdown(est);
     return {
       title: est.name || 'Untitled estimate', client: est.client || '', service: est.serviceName || '',
       hourlyRate: res.hourlyRate, currency: res.currency, totalCost: res.totalCost,
@@ -1036,8 +1039,11 @@
       intro: txt(pr.intro).trim() || ('This proposal sets out the design work for ' + (est.name || 'the project') + (est.client ? ' for ' + est.client : '') + ': what is included, what each part takes and the assumptions behind the estimate.'),
       total: res.total, capacity: cap, weeks: res.total / cap, showHours: showHours, labels: labels,
       summary: [['Design', res.designSubtotal], ['Project management, meetings and iterations', res.overhead], ['Contingency (' + fmtNum(res.bufferPercent) + '%)', res.buffer]],
-      packages: pk.enabled ? packageBreakdown(est).map(function (p) { return { name: p.name, total: p.total, weeks: p.total / cap, count: p.count, added: p.added.map(function (a) { return a.name; }), names: pk.names }; }) : null,
+      packages: pk.enabled ? pkBreakdown.map(function (p) { return { name: p.name, total: p.total, totalCost: p.totalCost, weeks: p.total / cap, count: p.count, added: p.added.map(function (a) { return a.name; }), names: pk.names }; }) : null,
       packageNames: pk.names,
+      packageTiers: pkBreakdown,
+      milestones: res.milestones || [],
+      acceptance: est.acceptance || null,
       scope: cats, deliverables: deliverables(est, res),
       timeline: phaseBreakdown(est, res).filter(function (p) { return p.total > 0; }).map(function (p) { return { phase: p.phase, hours: p.total, weeks: p.total / cap }; }),
       register: regs, outOfScope: outOfScope(est).map(function (o) { return o.name; }),

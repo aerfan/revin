@@ -68,6 +68,9 @@
     folder: '<path d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"/>',
     clock: '<path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"/>',
     coins: '<path d="M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM232,132c0,13.22-30.79,28-72,28-3.73,0-7.43-.13-11.08-.37C170.49,151.77,184,139,184,124V105.74C213.87,110.19,232,122.27,232,132ZM72,150.25V126.46A183.74,183.74,0,0,0,96,128a183.74,183.74,0,0,0,24-1.54v23.79A163,163,0,0,1,96,152,163,163,0,0,1,72,150.25Zm96-40.32V124c0,8.39-12.41,17.4-32,22.87V123.5C148.91,120.37,159.84,115.71,168,109.93ZM96,56c41.21,0,72,14.78,72,28s-30.79,28-72,28S24,97.22,24,84,54.79,56,96,56ZM24,124V109.93c8.16,5.78,19.09,10.44,32,13.57v23.37C36.41,141.4,24,132.39,24,124Zm64,48v-4.17c2.63.1,5.29.17,8,.17,3.88,0,7.67-.13,11.39-.35A121.92,121.92,0,0,0,120,171.41v23.46C100.41,189.4,88,180.39,88,172Zm48,26.25V174.4a179.48,179.48,0,0,0,24,1.6,183.74,183.74,0,0,0,24-1.54v23.79a165.45,165.45,0,0,1-48,0Zm64-3.38V171.5c12.91-3.13,23.84-7.79,32-13.57V172C232,180.39,219.59,189.4,200,194.87Z"/>',
+    presentation: '<path d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,136H40V56H216V176Z"/>',
+    sealCheck: '<path d="M225.86,102.82c-3.77-3.94-7.67-8-9.14-11.57-1.36-3.27-1.44-8.69-1.52-13.94-.15-9.76-.31-20.82-8-28.51s-18.75-7.85-28.51-8c-5.25-.08-10.67-.16-13.94-1.52-3.56-1.47-7.63-5.37-11.57-9.14C146.28,23.51,138.44,16,128,16s-18.27,7.51-25.18,14.14c-3.94,3.77-8,7.67-11.57,9.14C88,40.64,82.56,40.72,77.31,40.8c-9.76.15-20.82.31-28.51,8S41,67.55,40.8,77.31c-.08,5.25-.16,10.67-1.52,13.94-1.47,3.56-5.37,7.63-9.14,11.57C23.51,109.72,16,117.56,16,128s7.51,18.27,14.14,25.18c3.77,3.94,7.67,8,9.14,11.57,1.36,3.27,1.44,8.69,1.52,13.94.15,9.76.31,20.82,8,28.51s18.75,7.85,28.51,8c5.25.08,10.67.16,13.94,1.52,3.56,1.47,7.63,5.37,11.57,9.14C109.72,232.49,117.56,240,128,240s18.27-7.51,25.18-14.14c3.94-3.77,8-7.67,11.57-9.14,3.27-1.36,8.69-1.44,13.94-1.52,9.76-.15,20.82-.31,28.51-8s7.85-18.75,8-28.51c.08-5.25.16-10.67,1.52-13.94,1.47-3.56,5.37-7.63,9.14-11.57C232.49,146.28,240,138.44,240,128S232.49,109.73,225.86,102.82Zm-11.55,39.29c-4.79,5-9.75,10.17-12.38,16.52-2.52,6.1-2.63,13.07-2.73,19.82-.1,7-.21,14.33-3.32,17.43s-10.39,3.22-17.43,3.32c-6.75.1-13.72.21-19.82,2.73-6.35,2.63-11.52,7.59-16.52,12.38S132,224,128,224s-9.15-4.92-14.11-9.69-10.17-9.75-16.52-12.38c-6.1-2.52-13.07-2.63-19.82-2.73-7-.1-14.33-.21-17.43-3.32s-3.22-10.39-3.32-17.43c-.1-6.75-.21-13.72-2.73-19.82-2.63-6.35-7.59-11.52-12.38-16.52S32,132,32,128s4.92-9.15,9.69-14.11,9.75-10.17,12.38-16.52c2.52-6.1,2.63-13.07,2.73-19.82.1-7,.21-14.33,3.32-17.43S70.51,56.9,77.55,56.8c6.75-.1,13.72-.21,19.82-2.73,6.35-2.63,11.52-7.59,16.52-12.38S124,32,128,32s9.15,4.92,14.11,9.69,10.17,9.75,16.52,12.38c6.1,2.52,13.07,2.63,19.82,2.73,7,.1,14.33.21,17.43,3.32s3.22,10.39,3.32,17.43c.1,6.75.21,13.72,2.73,19.82,2.63,6.35,7.59,11.52,12.38,16.52S224,124,224,128,219.08,137.15,214.31,142.11ZM173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"/>',
+    pencilLine: '<path d="M227.32,73.37,182.63,28.69a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H216a8,8,0,0,0,0-16H115.32l112-112A16,16,0,0,0,227.32,73.37ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.69,147.32,64l24-24L216,84.69Z"/>',
   };
   // Duotone filled icons for services (reference: category table with two-tone icons).
   var DUO = {
@@ -590,12 +593,12 @@ var STEPS = [
           </div>
         </div>
         <div class="est-head" aria-hidden="true"><span>Estimate</span><span>Service</span><span>Status</span><span style="text-align:right">Hours</span><span>Updated</span><span></span><span></span></div>
-        ${list.length ? list.map(function (e) {
+        ${list.length ? list.map(function (e, idx) {
           var svc = svcById[e.serviceId];
           var prof = e.createdBy ? profiles[e.createdBy] : null;
           var st = statusOf(e.status), ename = nm(e.name, 'Untitled estimate'), client = nm(e.client, '');
           function open() { ctx.setRoute({ view: 'estimate', id: e.id, step: 'review' }); }
-          return html`<div class="est-row" key=${e.id} onClick=${function (ev) { if (!ev.target.closest('.est-actions, .est-open')) open(); }}>
+          return html`<div class=${'est-row' + (idx >= 12 ? ' est-card-deferred' : '')} key=${e.id} onClick=${function (ev) { if (!ev.target.closest('.est-actions, .est-open')) open(); }}>
             <div class="est-main"><${SvcTile} svc=${svc} /><button type="button" class="est-open est-name" title=${ename + (client ? ' (' + client + ')' : '')} onClick=${open}><bdi>${ename}</bdi>${client ? html` <span class="paren">(<bdi>${client}</bdi>)</span>` : null}</button></div>
             <div class="est-svc"><span title=${e.serviceName || ''}><bdi>${e.serviceName || ''}</bdi></span></div>
             <div><span class=${'pill s-' + st.id}>${st.name}</span></div>
@@ -815,6 +818,9 @@ var STEPS = [
           <input class="client-input" id="est-client" maxlength="200" aria-label="Client" value=${draft.client} placeholder="Add client name" onInput=${function (e) { var v = e.target.value; change(function (n) { n.client = v; }); }} />
         </div>
         <div class="ed-meta">
+          <button class="btn sm light" id="btn-toggle-client-mode" title=${step === 'proposal' ? 'Back to Editor' : 'Client Proposal View (Internal margins hidden)'} onClick=${function () { goStep(step === 'proposal' ? 'review' : 'proposal'); }}>
+            <${Icon} name=${step === 'proposal' ? 'arrowL' : 'presentation'} size=${14} /> ${step === 'proposal' ? 'Editor View' : 'Client Mode'}
+          </button>
           <span class=${'savestate ' + (save === 'error' || gone ? 'error' : '')} aria-live="polite"><${Icon} name=${save === 'error' || gone ? 'alert' : save === 'saved' ? 'check' : 'refresh'} size=${14} />${saveLabel}</span>
           <label class="sr" for="est-status">Status</label>
           <select class="select status-select" id="est-status" value=${draft.status || 'draft'} onChange=${function (e) { var v = e.target.value; change(function (n) { n.status = v; }); }}>
@@ -1798,41 +1804,161 @@ var STEPS = [
 
   function ProposalView(p) {
     var ctx = p.ctx, d = p.draft, pr = d.proposal || {};
-    var m = E.proposalModel(d, { agency: ctx.settings.agencyName || '', preparedBy: (ctx.me && ctx.me.name) || '', date: today() });
+    var sClean = useState(false), cleanMode = sClean[0], setCleanMode = sClean[1];
+    var sTier = useState(null), selectedTier = sTier[0], setSelectedTier = sTier[1];
+    var sName = useState(''), signName = sName[0], setSignName = sName[1];
+    var sEmail = useState(''), signEmail = sEmail[0], setSignEmail = sEmail[1];
+    var sOrg = useState(d.client || ''), signOrg = sOrg[0], setSignOrg = sOrg[1];
+    var sAgree = useState(false), agreed = sAgree[0], setAgreed = sAgree[1];
+
+    var m = E.proposalModel(d, {
+      agency: ctx.settings.agencyName || '',
+      preparedBy: (ctx.me && ctx.me.name) || '',
+      date: today(),
+      maxTier: selectedTier !== null ? selectedTier : undefined,
+    });
+
     function set(k, v) { p.change(function (n) { n.proposal = Object.assign({}, n.proposal || {}); n.proposal[k] = v; }); }
-    var hrs = function (v) { return E.fmtHours(E.round(v, 1)); }, wk = function (v) { var r = E.round(v, 1); return E.fmtNum(r) + (r === 1 ? ' week' : ' weeks'); };
-    return html`<div class="proposal-layout">
+    var hrs = function (v) { return E.fmtHours(E.round(v, 1)); };
+    var wk = function (v) { var r = E.round(v, 1); return E.fmtNum(r) + (r === 1 ? ' week' : ' weeks'); };
+
+    function signProposal() {
+      if (!signName.trim() || !agreed) return;
+      var tierLabel = selectedTier !== null && m.packageNames ? m.packageNames[selectedTier] : 'Full Scope';
+      p.change(function (n) {
+        n.acceptance = {
+          name: signName.trim(),
+          email: signEmail.trim(),
+          org: signOrg.trim(),
+          timestamp: Date.now(),
+          package: tierLabel,
+          totalHours: E.round(m.total, 1),
+          totalCost: m.totalCost,
+        };
+        n.status = 'approved';
+      });
+      ctx.toast('Proposal accepted and digitally signed!', 'good');
+    }
+
+    function revokeSignature() {
+      ctx.confirm({
+        title: 'Revoke proposal acceptance?',
+        body: 'This reopens the estimate for editing and clears the digital signature record.',
+        confirmLabel: 'Revoke signature',
+        danger: true,
+        onConfirm: function () {
+          p.change(function (n) {
+            n.acceptance = null;
+            n.status = 'draft';
+          });
+          ctx.toast('Proposal signature revoked');
+        },
+      });
+    }
+
+    var tiers = m.packageTiers || [];
+    var isAccepted = !!d.acceptance;
+
+    return html`<div class=${'proposal-layout' + (cleanMode ? ' clean-mode' : '')}>
       <aside class="panel panel-pad prop-opts">
         <div class="crumbs" style="margin-bottom:6px"><button onClick=${function () { p.goStep('review'); }}><${Icon} name="arrowL" size=${12} /> Back to review</button></div>
         <h2 style="font-size:17px">Client proposal</h2>
-        <p class="muted" style="font-size:13px;margin:2px 0 14px">What the client sees. Edits here change only the proposal.</p>
+        <p class="muted" style="font-size:13px;margin:2px 0 14px">What the client sees. Internal rates and margins are hidden in this view.</p>
+        <button class="btn light" style="width:100%;margin-bottom:14px" onClick=${function () { setCleanMode(true); }}><${Icon} name="presentation" /> Presentation mode</button>
         <label class="field"><span>Introduction</span><textarea class="textarea" id="prop-intro" maxlength="2000" rows="5" placeholder=${m.intro} value=${pr.intro || ''} onInput=${function (e) { set('intro', e.target.value); }}></textarea></label>
         <label class="check-line" style="margin-top:12px"><${Switch} id="prop-hours" label="Show hours per line" checked=${pr.showLineHours !== false} onChange=${function (v) { set('showLineHours', v); }} /> Show hours per line</label>
         <label class="field" style="margin-top:12px"><span>Design hours per week (for durations)</span><${Stepper} id="prop-cap" value=${E.num(pr.capacity, 40)} step=${1} min=${1} max=${400} unit="h" label="Hours per week" onChange=${function (v) { set('capacity', v); }} /></label>
         <label class="field" style="margin-top:12px"><span>Valid for</span><${Stepper} id="prop-valid" value=${E.num(pr.validDays, 30)} step=${1} min=${0} max=${365} unit="days" label="Valid for days" onChange=${function (v) { set('validDays', v); }} /></label>
         <button class="btn primary" style="width:100%;margin-top:18px" disabled=${!!p.exporting} onClick=${function () { p.onExport('docx'); }}><${Icon} name="download" /> ${p.exporting === 'docx' ? 'Preparing document…' : 'Download Word document'}</button>
-        <p class="opt-hint" style="margin-top:8px">Opens in Word, Pages and Google Docs, where you can add your letterhead and save as PDF.</p>
+        <button class="btn light" style="width:100%;margin-top:8px" onClick=${function () { window.print(); }} title="Print or save as PDF"><${Icon} name="file" /> Print / PDF</button>
+        <p class="opt-hint" style="margin-top:8px">Ready for client review, digital sign-off and exports.</p>
       </aside>
-      <article class="paper" aria-label="Proposal preview">
-        ${m.agency ? html`<div class="paper-eyebrow">${m.agency}</div>` : null}
-        <h1 class="paper-title"><bdi>${m.title}</bdi></h1>
-        <p class="paper-meta">${[m.client ? 'Prepared for ' + m.client : '', m.date, m.preparedBy ? 'by ' + m.preparedBy : ''].filter(Boolean).join(' · ')}</p>
-        <p class="paper-intro">${m.intro}</p>
-        <h2>Summary</h2>
-        <table class="paper-table"><tbody>${m.summary.map(function (r) { return html`<tr key=${r[0]}><td>${r[0]}</td><td class="n">${hrs(r[1])}</td></tr>`; })}<tr class="tot"><td>Total</td><td class="n">${hrs(m.total)}</td></tr></tbody></table>
-        <p class="paper-note">About ${wk(m.weeks)} at ${E.fmtNum(m.capacity)} design hours a week.</p>
-        ${m.packages ? html`<h2>Packages</h2><div class="paper-pk">${m.packages.map(function (pk, i) { return html`<div key=${i}><b>${pk.name}</b><span class="n">${hrs(pk.total)}</span><span class="paper-note">${wk(pk.weeks)}${i ? ' · everything in ' + m.packageNames[i - 1] + (pk.added.length ? ', plus ' + pk.added.slice(0, 4).join(', ') + (pk.added.length > 4 ? ' and ' + (pk.added.length - 4) + ' more' : '') : '') : ''}</span></div>`; })}</div>` : null}
-        <h2>Scope</h2>
-        ${m.scope.map(function (c) { return html`<div class="paper-cat" key=${c.name}><h3><bdi>${c.name}</bdi>${m.showHours ? html`<span class="n">${hrs(c.hours)}</span>` : null}</h3><ul>${c.items.map(function (it, i) { return html`<li key=${i}><span class="li-head"><bdi>${it.name}</bdi>${it.qty > 1 ? ' ×' + E.fmtNum(it.qty) : ''}${m.packages && it.tier ? html` <span class="mini pk">${m.packageNames[it.tier]}</span>` : null}${m.showHours ? html`<span class="n">${hrs(it.hours)}</span>` : null}</span>${it.description || it.subs.length ? html`<span class="li-sub">${it.description}${it.subs.length ? (it.description ? ' ' : '') + m.labels.subs + ': ' + it.subs.join(', ') + '.' : ''}</span>` : null}</li>`; })}</ul></div>`; })}
-        ${m.scope.length ? null : html`<p class="paper-note">No ${lower(m.labels.items)} in scope yet.</p>`}
-        <h2>Deliverables</h2><ul>${m.deliverables.map(function (x) { return html`<li key=${x.group}><b><bdi>${x.group}</bdi>:</b> <bdi>${x.text}</bdi></li>`; })}</ul>
-        ${m.timeline.length ? html`<h2>Timeline</h2><table class="paper-table"><tbody>${m.timeline.map(function (t) { return html`<tr key=${t.phase}><td>${t.phase}</td><td class="n">${hrs(t.hours)}</td><td class="n">${wk(t.weeks)}</td></tr>`; })}</tbody></table>` : null}
-        ${E.REGISTER_KINDS.map(function (k) { var l = m.register[k.id]; return l.length ? html`<div key=${k.id}><h2>${k.name}</h2><ul>${l.map(function (t, i) { return html`<li key=${i}><bdi>${t}</bdi></li>`; })}</ul></div>` : null; })}
-        ${m.outOfScope.length ? html`<h2>Not included</h2><ul>${m.outOfScope.map(function (t, i) { return html`<li key=${i}>${t}</li>`; })}</ul>` : null}
-        <h2>Validity and acceptance</h2>
-        <p>This estimate is valid for ${m.validDays} days from ${m.date}. Hours are estimates based on the scope above; changes to scope are estimated separately.</p>
-        <div class="paper-sign"><span>Accepted for ${m.client || 'the client'}</span><span>Date</span></div>
-      </article>
+      <div style="min-width:0;width:100%">
+        ${cleanMode ? html`<div class="prop-clean-bar">
+          <div class="bar-title"><${Icon} name="presentation" /> <span><b>Client Presentation View</b> · Internal margins hidden</span></div>
+          <div class="bar-actions">
+            <button class="btn sm" onClick=${function () { window.print(); }}><${Icon} name="file" /> Print / PDF</button>
+            <button class="btn sm light" onClick=${function () { setCleanMode(false); }}>Show options</button>
+            <button class="btn sm" onClick=${function () { p.goStep('review'); }}><${Icon} name="arrowL" /> Back to editor</button>
+          </div>
+        </div>` : null}
+        <article class="paper" aria-label="Proposal preview">
+          ${m.agency ? html`<div class="paper-eyebrow">${m.agency}</div>` : null}
+          <h1 class="paper-title"><bdi>${m.title}</bdi></h1>
+          <p class="paper-meta">${[m.client ? 'Prepared for ' + m.client : '', m.date, m.preparedBy ? 'by ' + m.preparedBy : ''].filter(Boolean).join(' · ')}</p>
+          <p class="paper-intro">${m.intro}</p>
+
+          ${m.packages ? html`<h2>Packages</h2><div class="paper-pk">${m.packages.map(function (pk, i) {
+            var isSel = selectedTier === i;
+            return html`<div key=${i} class=${isSel ? 'selected' : ''} style="cursor:pointer" onClick=${function () { setSelectedTier(selectedTier === i ? null : i); }}>
+              <b>${pk.name}</b>
+              <span class="n">${hrs(pk.total)}</span>
+              <span class="paper-note">${wk(pk.weeks)}${i ? ' · everything in ' + m.packageNames[i - 1] + (pk.added.length ? ', plus ' + pk.added.slice(0, 4).join(', ') + (pk.added.length > 4 ? ' and ' + (pk.added.length - 4) + ' more' : '') : '') : ''}</span>
+              <div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center">
+                <span style="font-weight:700;font-size:13px;color:#0C8468">${E.fmtMoney(pk.totalCost, m.currency)}</span>
+                <span class=${'pill ' + (isSel ? 's-approved' : 's-review')} style="font-size:11px">${isSel ? '✓ Active Tier' : 'Compare'}</span>
+              </div>
+            </div>`;
+          })}</div>
+          ${selectedTier !== null ? html`<div style="margin:8px 0 16px"><button class="btn sm light" onClick=${function () { setSelectedTier(null); }}><${Icon} name="refresh" size=${12} /> Reset to full scope</button></div>` : null}
+          ` : null}
+
+          <h2>Summary</h2>
+          <table class="paper-table"><tbody>${m.summary.map(function (r) { return html`<tr key=${r[0]}><td>${r[0]}</td><td class="n">${hrs(r[1])}</td></tr>`; })}<tr class="tot"><td>Total Investment</td><td class="n" style="font-size:16px">${hrs(m.total)} · ${E.fmtMoney(m.totalCost, m.currency)}</td></tr></tbody></table>
+          <p class="paper-note">Estimated duration: about ${wk(m.weeks)} at ${E.fmtNum(m.capacity)} design hours per week.</p>
+
+          <h2>Scope</h2>
+          ${m.scope.map(function (c) { return html`<div class="paper-cat" key=${c.name}><h3><bdi>${c.name}</bdi>${m.showHours ? html`<span class="n">${hrs(c.hours)}</span>` : null}</h3><ul>${c.items.map(function (it, i) { return html`<li key=${i}><span class="li-head"><bdi>${it.name}</bdi>${it.qty > 1 ? ' ×' + E.fmtNum(it.qty) : ''}${m.packages && it.tier ? html` <span class="mini pk">${m.packageNames[it.tier]}</span>` : null}${m.showHours ? html`<span class="n">${hrs(it.hours)}</span>` : null}</span>${it.description || it.subs.length ? html`<span class="li-sub">${it.description}${it.subs.length ? (it.description ? ' ' : '') + m.labels.subs + ': ' + it.subs.join(', ') + '.' : ''}</span>` : null}</li>`; })}</ul></div>`; })}
+          ${m.scope.length ? null : html`<p class="paper-note">No ${lower(m.labels.items)} in scope yet.</p>`}
+
+          <h2>Deliverables</h2><ul>${m.deliverables.map(function (x) { return html`<li key=${x.group}><b><bdi>${x.group}</bdi>:</b> <bdi>${x.text}</bdi></li>`; })}</ul>
+          ${m.timeline.length ? html`<h2>Timeline by phase</h2><table class="paper-table"><tbody>${m.timeline.map(function (t) { return html`<tr key=${t.phase}><td>${t.phase}</td><td class="n">${hrs(t.hours)}</td><td class="n">${wk(t.weeks)}</td></tr>`; })}</tbody></table>` : null}
+
+          ${(m.milestones || []).length ? html`<div>
+            <h2>Payment milestone schedule</h2>
+            <div class="paper-milestones">${m.milestones.map(function (ms) {
+              return html`<div class="paper-ms-card" key=${ms.id}>
+                <div class="paper-ms-head"><span class="paper-ms-pct">${ms.percent}%</span><span class="paper-ms-val">${E.fmtMoney(Math.round((m.totalCost * ms.percent) / 100), m.currency)}</span></div>
+                <div class="paper-ms-name">${ms.name}</div>
+              </div>`;
+            })}</div>
+          </div>` : null}
+
+          ${E.REGISTER_KINDS.map(function (k) { var l = m.register[k.id]; return l.length ? html`<div key=${k.id}><h2>${k.name}</h2><ul>${l.map(function (t, i) { return html`<li key=${i}><bdi>${t}</bdi></li>`; })}</ul></div>` : null; })}
+          ${m.outOfScope.length ? html`<h2>Not included</h2><ul>${m.outOfScope.map(function (t, i) { return html`<li key=${i}>${t}</li>`; })}</ul>` : null}
+
+          <h2>Validity and acceptance</h2>
+          <p>This estimate is valid for ${m.validDays} days from ${m.date}. Hours and figures are based on the agreed scope above; changes to scope are estimated separately.</p>
+
+          ${isAccepted ? html`<div class="paper-signed-cert">
+            <div class="signed-cert-head"><${Icon} name="sealCheck" size=${22} /> <span>Digitally Accepted & Signed</span></div>
+            <dl class="signed-cert-grid">
+              <div><dt>Accepted by</dt><dd>${d.acceptance.name}</dd></div>
+              <div><dt>Email</dt><dd>${d.acceptance.email || '—'}</dd></div>
+              <div><dt>Organization</dt><dd>${d.acceptance.org || d.client || '—'}</dd></div>
+              <div><dt>Signed timestamp</dt><dd>${new Date(d.acceptance.timestamp).toLocaleString()}</dd></div>
+              <div><dt>Agreed package</dt><dd>${d.acceptance.package || 'Standard'}</dd></div>
+              <div><dt>Contract value</dt><dd>${E.fmtMoney(d.acceptance.totalCost, m.currency)} (${hrs(d.acceptance.totalHours)})</dd></div>
+            </dl>
+            <div style="margin-top:8px"><button class="btn sm danger" onClick=${revokeSignature}><${Icon} name="refresh" size=${13} /> Revoke / Reopen estimate</button></div>
+          </div>` : html`<div class="paper-sign-card">
+            <h3>Digital Proposal Acceptance</h3>
+            <p>Review the scope above and sign below to accept this proposal and initiate project scheduling.</p>
+            <div class="paper-sign-fields">
+              <label class="field"><span>Full Name</span><input class="input" id="prop-sign-name" placeholder="Client Stakeholder Name" value=${signName} onInput=${function (e) { setSignName(e.target.value); }} /></label>
+              <label class="field"><span>Work Email</span><input class="input" type="email" id="prop-sign-email" placeholder="client@company.com" value=${signEmail} onInput=${function (e) { setSignEmail(e.target.value); }} /></label>
+              <label class="field"><span>Organization</span><input class="input" id="prop-sign-org" placeholder="Client Organization" value=${signOrg} onInput=${function (e) { setSignOrg(e.target.value); }} /></label>
+            </div>
+            <label class="check-line" style="margin-bottom:16px;cursor:pointer">
+              <input type="checkbox" id="prop-sign-agree" checked=${agreed} onChange=${function (e) { setAgreed(e.target.checked); }} />
+              <span>I confirm acceptance of this project proposal, scope, timeline, milestones, and commercial investment on behalf of <b>${signOrg || 'the client'}</b>.</span>
+            </label>
+            <button class="btn primary" id="btn-prop-accept" disabled=${!agreed || !signName.trim()} onClick=${signProposal}>
+              <${Icon} name="sealCheck" /> Accept & Sign Proposal
+            </button>
+          </div>`}
+        </article>
+      </div>
     </div>`;
   }
 

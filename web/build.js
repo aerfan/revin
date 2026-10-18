@@ -49,4 +49,5 @@ fs.mkdirSync(path.join(OUT, 'vendor'), { recursive: true });
 fs.writeFileSync(path.join(OUT, 'index.html'), html);
 for (const f of ['preact.umd.min.js', 'hooks.umd.min.js', 'htm.umd.min.js', 'supabase.js', 'exceljs.min.js', 'docx.umd.js']) fs.copyFileSync(path.join(ROOT, 'libs', f), path.join(OUT, 'vendor', f));
 fs.writeFileSync(path.join(OUT, 'vendor', 'preact-core.min.js'), read('libs', 'preact.umd.min.js') + '\n;' + read('libs', 'hooks.umd.min.js') + '\n;' + read('libs', 'htm.umd.min.js'));
+if (fs.existsSync(path.join(ROOT, 'web', 'sw.js'))) fs.copyFileSync(path.join(ROOT, 'web', 'sw.js'), path.join(OUT, 'sw.js'));
 console.log(`built dist-web/index.html ${(html.length / 1024).toFixed(1)} KB · supabase ${url ? origin : '(not configured)'}`);

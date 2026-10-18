@@ -330,41 +330,161 @@
 
   function ProposalView(p) {
     var ctx = p.ctx, d = p.draft, pr = d.proposal || {};
-    var m = E.proposalModel(d, { agency: ctx.settings.agencyName || '', preparedBy: (ctx.me && ctx.me.name) || '', date: today() });
+    var sClean = useState(false), cleanMode = sClean[0], setCleanMode = sClean[1];
+    var sTier = useState(null), selectedTier = sTier[0], setSelectedTier = sTier[1];
+    var sName = useState(''), signName = sName[0], setSignName = sName[1];
+    var sEmail = useState(''), signEmail = sEmail[0], setSignEmail = sEmail[1];
+    var sOrg = useState(d.client || ''), signOrg = sOrg[0], setSignOrg = sOrg[1];
+    var sAgree = useState(false), agreed = sAgree[0], setAgreed = sAgree[1];
+
+    var m = E.proposalModel(d, {
+      agency: ctx.settings.agencyName || '',
+      preparedBy: (ctx.me && ctx.me.name) || '',
+      date: today(),
+      maxTier: selectedTier !== null ? selectedTier : undefined,
+    });
+
     function set(k, v) { p.change(function (n) { n.proposal = Object.assign({}, n.proposal || {}); n.proposal[k] = v; }); }
-    var hrs = function (v) { return E.fmtHours(E.round(v, 1)); }, wk = function (v) { var r = E.round(v, 1); return E.fmtNum(r) + (r === 1 ? ' week' : ' weeks'); };
-    return html`<div class="proposal-layout">
+    var hrs = function (v) { return E.fmtHours(E.round(v, 1)); };
+    var wk = function (v) { var r = E.round(v, 1); return E.fmtNum(r) + (r === 1 ? ' week' : ' weeks'); };
+
+    function signProposal() {
+      if (!signName.trim() || !agreed) return;
+      var tierLabel = selectedTier !== null && m.packageNames ? m.packageNames[selectedTier] : 'Full Scope';
+      p.change(function (n) {
+        n.acceptance = {
+          name: signName.trim(),
+          email: signEmail.trim(),
+          org: signOrg.trim(),
+          timestamp: Date.now(),
+          package: tierLabel,
+          totalHours: E.round(m.total, 1),
+          totalCost: m.totalCost,
+        };
+        n.status = 'approved';
+      });
+      ctx.toast('Proposal accepted and digitally signed!', 'good');
+    }
+
+    function revokeSignature() {
+      ctx.confirm({
+        title: 'Revoke proposal acceptance?',
+        body: 'This reopens the estimate for editing and clears the digital signature record.',
+        confirmLabel: 'Revoke signature',
+        danger: true,
+        onConfirm: function () {
+          p.change(function (n) {
+            n.acceptance = null;
+            n.status = 'draft';
+          });
+          ctx.toast('Proposal signature revoked');
+        },
+      });
+    }
+
+    var tiers = m.packageTiers || [];
+    var isAccepted = !!d.acceptance;
+
+    return html`<div class=${'proposal-layout' + (cleanMode ? ' clean-mode' : '')}>
       <aside class="panel panel-pad prop-opts">
         <div class="crumbs" style="margin-bottom:6px"><button onClick=${function () { p.goStep('review'); }}><${Icon} name="arrowL" size=${12} /> Back to review</button></div>
         <h2 style="font-size:17px">Client proposal</h2>
-        <p class="muted" style="font-size:13px;margin:2px 0 14px">What the client sees. Edits here change only the proposal.</p>
+        <p class="muted" style="font-size:13px;margin:2px 0 14px">What the client sees. Internal rates and margins are hidden in this view.</p>
+        <button class="btn light" style="width:100%;margin-bottom:14px" onClick=${function () { setCleanMode(true); }}><${Icon} name="presentation" /> Presentation mode</button>
         <label class="field"><span>Introduction</span><textarea class="textarea" id="prop-intro" maxlength="2000" rows="5" placeholder=${m.intro} value=${pr.intro || ''} onInput=${function (e) { set('intro', e.target.value); }}></textarea></label>
         <label class="check-line" style="margin-top:12px"><${Switch} id="prop-hours" label="Show hours per line" checked=${pr.showLineHours !== false} onChange=${function (v) { set('showLineHours', v); }} /> Show hours per line</label>
         <label class="field" style="margin-top:12px"><span>Design hours per week (for durations)</span><${Stepper} id="prop-cap" value=${E.num(pr.capacity, 40)} step=${1} min=${1} max=${400} unit="h" label="Hours per week" onChange=${function (v) { set('capacity', v); }} /></label>
         <label class="field" style="margin-top:12px"><span>Valid for</span><${Stepper} id="prop-valid" value=${E.num(pr.validDays, 30)} step=${1} min=${0} max=${365} unit="days" label="Valid for days" onChange=${function (v) { set('validDays', v); }} /></label>
         <button class="btn primary" style="width:100%;margin-top:18px" disabled=${!!p.exporting} onClick=${function () { p.onExport('docx'); }}><${Icon} name="download" /> ${p.exporting === 'docx' ? 'Preparing document…' : 'Download Word document'}</button>
-        <p class="opt-hint" style="margin-top:8px">Opens in Word, Pages and Google Docs, where you can add your letterhead and save as PDF.</p>
+        <button class="btn light" style="width:100%;margin-top:8px" onClick=${function () { window.print(); }} title="Print or save as PDF"><${Icon} name="file" /> Print / PDF</button>
+        <p class="opt-hint" style="margin-top:8px">Ready for client review, digital sign-off and exports.</p>
       </aside>
-      <article class="paper" aria-label="Proposal preview">
-        ${m.agency ? html`<div class="paper-eyebrow">${m.agency}</div>` : null}
-        <h1 class="paper-title"><bdi>${m.title}</bdi></h1>
-        <p class="paper-meta">${[m.client ? 'Prepared for ' + m.client : '', m.date, m.preparedBy ? 'by ' + m.preparedBy : ''].filter(Boolean).join(' · ')}</p>
-        <p class="paper-intro">${m.intro}</p>
-        <h2>Summary</h2>
-        <table class="paper-table"><tbody>${m.summary.map(function (r) { return html`<tr key=${r[0]}><td>${r[0]}</td><td class="n">${hrs(r[1])}</td></tr>`; })}<tr class="tot"><td>Total</td><td class="n">${hrs(m.total)}</td></tr></tbody></table>
-        <p class="paper-note">About ${wk(m.weeks)} at ${E.fmtNum(m.capacity)} design hours a week.</p>
-        ${m.packages ? html`<h2>Packages</h2><div class="paper-pk">${m.packages.map(function (pk, i) { return html`<div key=${i}><b>${pk.name}</b><span class="n">${hrs(pk.total)}</span><span class="paper-note">${wk(pk.weeks)}${i ? ' · everything in ' + m.packageNames[i - 1] + (pk.added.length ? ', plus ' + pk.added.slice(0, 4).join(', ') + (pk.added.length > 4 ? ' and ' + (pk.added.length - 4) + ' more' : '') : '') : ''}</span></div>`; })}</div>` : null}
-        <h2>Scope</h2>
-        ${m.scope.map(function (c) { return html`<div class="paper-cat" key=${c.name}><h3><bdi>${c.name}</bdi>${m.showHours ? html`<span class="n">${hrs(c.hours)}</span>` : null}</h3><ul>${c.items.map(function (it, i) { return html`<li key=${i}><span class="li-head"><bdi>${it.name}</bdi>${it.qty > 1 ? ' ×' + E.fmtNum(it.qty) : ''}${m.packages && it.tier ? html` <span class="mini pk">${m.packageNames[it.tier]}</span>` : null}${m.showHours ? html`<span class="n">${hrs(it.hours)}</span>` : null}</span>${it.description || it.subs.length ? html`<span class="li-sub">${it.description}${it.subs.length ? (it.description ? ' ' : '') + m.labels.subs + ': ' + it.subs.join(', ') + '.' : ''}</span>` : null}</li>`; })}</ul></div>`; })}
-        ${m.scope.length ? null : html`<p class="paper-note">No ${lower(m.labels.items)} in scope yet.</p>`}
-        <h2>Deliverables</h2><ul>${m.deliverables.map(function (x) { return html`<li key=${x.group}><b><bdi>${x.group}</bdi>:</b> <bdi>${x.text}</bdi></li>`; })}</ul>
-        ${m.timeline.length ? html`<h2>Timeline</h2><table class="paper-table"><tbody>${m.timeline.map(function (t) { return html`<tr key=${t.phase}><td>${t.phase}</td><td class="n">${hrs(t.hours)}</td><td class="n">${wk(t.weeks)}</td></tr>`; })}</tbody></table>` : null}
-        ${E.REGISTER_KINDS.map(function (k) { var l = m.register[k.id]; return l.length ? html`<div key=${k.id}><h2>${k.name}</h2><ul>${l.map(function (t, i) { return html`<li key=${i}><bdi>${t}</bdi></li>`; })}</ul></div>` : null; })}
-        ${m.outOfScope.length ? html`<h2>Not included</h2><ul>${m.outOfScope.map(function (t, i) { return html`<li key=${i}>${t}</li>`; })}</ul>` : null}
-        <h2>Validity and acceptance</h2>
-        <p>This estimate is valid for ${m.validDays} days from ${m.date}. Hours are estimates based on the scope above; changes to scope are estimated separately.</p>
-        <div class="paper-sign"><span>Accepted for ${m.client || 'the client'}</span><span>Date</span></div>
-      </article>
+      <div style="min-width:0;width:100%">
+        ${cleanMode ? html`<div class="prop-clean-bar">
+          <div class="bar-title"><${Icon} name="presentation" /> <span><b>Client Presentation View</b> · Internal margins hidden</span></div>
+          <div class="bar-actions">
+            <button class="btn sm" onClick=${function () { window.print(); }}><${Icon} name="file" /> Print / PDF</button>
+            <button class="btn sm light" onClick=${function () { setCleanMode(false); }}>Show options</button>
+            <button class="btn sm" onClick=${function () { p.goStep('review'); }}><${Icon} name="arrowL" /> Back to editor</button>
+          </div>
+        </div>` : null}
+        <article class="paper" aria-label="Proposal preview">
+          ${m.agency ? html`<div class="paper-eyebrow">${m.agency}</div>` : null}
+          <h1 class="paper-title"><bdi>${m.title}</bdi></h1>
+          <p class="paper-meta">${[m.client ? 'Prepared for ' + m.client : '', m.date, m.preparedBy ? 'by ' + m.preparedBy : ''].filter(Boolean).join(' · ')}</p>
+          <p class="paper-intro">${m.intro}</p>
+
+          ${m.packages ? html`<h2>Packages</h2><div class="paper-pk">${m.packages.map(function (pk, i) {
+            var isSel = selectedTier === i;
+            return html`<div key=${i} class=${isSel ? 'selected' : ''} style="cursor:pointer" onClick=${function () { setSelectedTier(selectedTier === i ? null : i); }}>
+              <b>${pk.name}</b>
+              <span class="n">${hrs(pk.total)}</span>
+              <span class="paper-note">${wk(pk.weeks)}${i ? ' · everything in ' + m.packageNames[i - 1] + (pk.added.length ? ', plus ' + pk.added.slice(0, 4).join(', ') + (pk.added.length > 4 ? ' and ' + (pk.added.length - 4) + ' more' : '') : '') : ''}</span>
+              <div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center">
+                <span style="font-weight:700;font-size:13px;color:#0C8468">${E.fmtMoney(pk.totalCost, m.currency)}</span>
+                <span class=${'pill ' + (isSel ? 's-approved' : 's-review')} style="font-size:11px">${isSel ? '✓ Active Tier' : 'Compare'}</span>
+              </div>
+            </div>`;
+          })}</div>
+          ${selectedTier !== null ? html`<div style="margin:8px 0 16px"><button class="btn sm light" onClick=${function () { setSelectedTier(null); }}><${Icon} name="refresh" size=${12} /> Reset to full scope</button></div>` : null}
+          ` : null}
+
+          <h2>Summary</h2>
+          <table class="paper-table"><tbody>${m.summary.map(function (r) { return html`<tr key=${r[0]}><td>${r[0]}</td><td class="n">${hrs(r[1])}</td></tr>`; })}<tr class="tot"><td>Total Investment</td><td class="n" style="font-size:16px">${hrs(m.total)} · ${E.fmtMoney(m.totalCost, m.currency)}</td></tr></tbody></table>
+          <p class="paper-note">Estimated duration: about ${wk(m.weeks)} at ${E.fmtNum(m.capacity)} design hours per week.</p>
+
+          <h2>Scope</h2>
+          ${m.scope.map(function (c) { return html`<div class="paper-cat" key=${c.name}><h3><bdi>${c.name}</bdi>${m.showHours ? html`<span class="n">${hrs(c.hours)}</span>` : null}</h3><ul>${c.items.map(function (it, i) { return html`<li key=${i}><span class="li-head"><bdi>${it.name}</bdi>${it.qty > 1 ? ' ×' + E.fmtNum(it.qty) : ''}${m.packages && it.tier ? html` <span class="mini pk">${m.packageNames[it.tier]}</span>` : null}${m.showHours ? html`<span class="n">${hrs(it.hours)}</span>` : null}</span>${it.description || it.subs.length ? html`<span class="li-sub">${it.description}${it.subs.length ? (it.description ? ' ' : '') + m.labels.subs + ': ' + it.subs.join(', ') + '.' : ''}</span>` : null}</li>`; })}</ul></div>`; })}
+          ${m.scope.length ? null : html`<p class="paper-note">No ${lower(m.labels.items)} in scope yet.</p>`}
+
+          <h2>Deliverables</h2><ul>${m.deliverables.map(function (x) { return html`<li key=${x.group}><b><bdi>${x.group}</bdi>:</b> <bdi>${x.text}</bdi></li>`; })}</ul>
+          ${m.timeline.length ? html`<h2>Timeline by phase</h2><table class="paper-table"><tbody>${m.timeline.map(function (t) { return html`<tr key=${t.phase}><td>${t.phase}</td><td class="n">${hrs(t.hours)}</td><td class="n">${wk(t.weeks)}</td></tr>`; })}</tbody></table>` : null}
+
+          ${(m.milestones || []).length ? html`<div>
+            <h2>Payment milestone schedule</h2>
+            <div class="paper-milestones">${m.milestones.map(function (ms) {
+              return html`<div class="paper-ms-card" key=${ms.id}>
+                <div class="paper-ms-head"><span class="paper-ms-pct">${ms.percent}%</span><span class="paper-ms-val">${E.fmtMoney(Math.round((m.totalCost * ms.percent) / 100), m.currency)}</span></div>
+                <div class="paper-ms-name">${ms.name}</div>
+              </div>`;
+            })}</div>
+          </div>` : null}
+
+          ${E.REGISTER_KINDS.map(function (k) { var l = m.register[k.id]; return l.length ? html`<div key=${k.id}><h2>${k.name}</h2><ul>${l.map(function (t, i) { return html`<li key=${i}><bdi>${t}</bdi></li>`; })}</ul></div>` : null; })}
+          ${m.outOfScope.length ? html`<h2>Not included</h2><ul>${m.outOfScope.map(function (t, i) { return html`<li key=${i}>${t}</li>`; })}</ul>` : null}
+
+          <h2>Validity and acceptance</h2>
+          <p>This estimate is valid for ${m.validDays} days from ${m.date}. Hours and figures are based on the agreed scope above; changes to scope are estimated separately.</p>
+
+          ${isAccepted ? html`<div class="paper-signed-cert">
+            <div class="signed-cert-head"><${Icon} name="sealCheck" size=${22} /> <span>Digitally Accepted & Signed</span></div>
+            <dl class="signed-cert-grid">
+              <div><dt>Accepted by</dt><dd>${d.acceptance.name}</dd></div>
+              <div><dt>Email</dt><dd>${d.acceptance.email || '—'}</dd></div>
+              <div><dt>Organization</dt><dd>${d.acceptance.org || d.client || '—'}</dd></div>
+              <div><dt>Signed timestamp</dt><dd>${new Date(d.acceptance.timestamp).toLocaleString()}</dd></div>
+              <div><dt>Agreed package</dt><dd>${d.acceptance.package || 'Standard'}</dd></div>
+              <div><dt>Contract value</dt><dd>${E.fmtMoney(d.acceptance.totalCost, m.currency)} (${hrs(d.acceptance.totalHours)})</dd></div>
+            </dl>
+            <div style="margin-top:8px"><button class="btn sm danger" onClick=${revokeSignature}><${Icon} name="refresh" size=${13} /> Revoke / Reopen estimate</button></div>
+          </div>` : html`<div class="paper-sign-card">
+            <h3>Digital Proposal Acceptance</h3>
+            <p>Review the scope above and sign below to accept this proposal and initiate project scheduling.</p>
+            <div class="paper-sign-fields">
+              <label class="field"><span>Full Name</span><input class="input" id="prop-sign-name" placeholder="Client Stakeholder Name" value=${signName} onInput=${function (e) { setSignName(e.target.value); }} /></label>
+              <label class="field"><span>Work Email</span><input class="input" type="email" id="prop-sign-email" placeholder="client@company.com" value=${signEmail} onInput=${function (e) { setSignEmail(e.target.value); }} /></label>
+              <label class="field"><span>Organization</span><input class="input" id="prop-sign-org" placeholder="Client Organization" value=${signOrg} onInput=${function (e) { setSignOrg(e.target.value); }} /></label>
+            </div>
+            <label class="check-line" style="margin-bottom:16px;cursor:pointer">
+              <input type="checkbox" id="prop-sign-agree" checked=${agreed} onChange=${function (e) { setAgreed(e.target.checked); }} />
+              <span>I confirm acceptance of this project proposal, scope, timeline, milestones, and commercial investment on behalf of <b>${signOrg || 'the client'}</b>.</span>
+            </label>
+            <button class="btn primary" id="btn-prop-accept" disabled=${!agreed || !signName.trim()} onClick=${signProposal}>
+              <${Icon} name="sealCheck" /> Accept & Sign Proposal
+            </button>
+          </div>`}
+        </article>
+      </div>
     </div>`;
   }
 

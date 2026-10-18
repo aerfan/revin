@@ -720,7 +720,63 @@ span.icon-btn { pointer-events: none; }
 .paper-sign { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 48px; } .paper-sign span { border-top: 1px solid #161A22; padding-top: 6px; font-size: 12.5px; color: #5A5F66; }
 .bd.cal td { vertical-align: middle; } .bd.cal .stepper { display: inline-flex; }
 @media (max-width: 900px) { .proposal-layout { grid-template-columns: minmax(0, 1fr); } .prop-opts { position: static; } .paper { padding: 28px 22px; } .pk-grid { grid-template-columns: minmax(0, 1fr); } }
-/* ---------- Motion (Emil Kowalski's rules: purposeful, fast, ease-out, transform + opacity only) ---------- */
+
+/* Client Presentation Mode & Interactive Proposal Portal */
+.proposal-layout.clean-mode { grid-template-columns: minmax(0, 1fr); max-width: 980px; margin: 0 auto; width: 100%; }
+.proposal-layout.clean-mode .prop-opts { display: none; }
+.prop-clean-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.prop-clean-bar .bar-title { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; color: var(--ink); }
+.prop-clean-bar .bar-actions { display: flex; align-items: center; gap: 8px; }
+
+.paper-pk-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 16px 0 24px; }
+.pk-card { border: 2px solid #E2E6EE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px; cursor: pointer; transition: all 160ms var(--ease-out); background: #FAFAFC; position: relative; text-align: left; }
+.pk-card:hover { border-color: #0C8468; background: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.pk-card.selected { border-color: #0C8468; background: #fff; box-shadow: 0 4px 18px rgba(12, 132, 104, 0.12); }
+.pk-card-badge { position: absolute; top: -10px; right: 14px; font-size: 11px; font-weight: 700; background: #0C8468; color: #fff; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+.pk-card-title { font-size: 15px; font-weight: 700; color: #161A22; }
+.pk-card-price { font-size: 22px; font-weight: 700; color: #161A22; letter-spacing: -0.02em; }
+.pk-card-hours { font-size: 12.5px; color: #5A5F66; }
+.pk-card-adds { font-size: 12px; color: #4A505C; margin-top: auto; padding-top: 8px; border-top: 1px dashed #E2E6EE; }
+
+.paper-addons { margin: 20px 0; display: flex; flex-direction: column; gap: 8px; }
+.paper-addon-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1px solid #DFE3EA; border-radius: 8px; background: #FAFAFC; }
+.paper-addon-info { display: flex; flex-direction: column; gap: 2px; }
+.paper-addon-name { font-weight: 600; font-size: 13.5px; color: #161A22; }
+.paper-addon-cost { font-weight: 600; font-size: 13px; color: #0C8468; }
+
+.paper-milestones { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 14px 0; }
+.paper-ms-card { border: 1px solid #DFE3EA; border-radius: 8px; padding: 12px; background: #FAFAFC; }
+.paper-ms-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.paper-ms-pct { font-size: 12px; font-weight: 700; color: #0C8468; }
+.paper-ms-val { font-size: 15px; font-weight: 700; color: #161A22; }
+.paper-ms-name { font-size: 13px; font-weight: 600; color: #323842; }
+
+.paper-sign-card { margin-top: 36px; padding: 24px; border-radius: 12px; border: 1px solid #DFE3EA; background: #F8F9FB; }
+.paper-sign-card h3 { font-size: 16px; margin: 0 0 6px; color: #161A22; }
+.paper-sign-card p { font-size: 13px; color: #5A5F66; margin: 0 0 16px; }
+.paper-sign-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+
+.paper-signed-cert { margin-top: 36px; padding: 24px; border-radius: 12px; border: 2px solid #0C8468; background: rgba(12, 132, 104, 0.04); display: flex; flex-direction: column; gap: 12px; }
+.signed-cert-head { display: flex; align-items: center; gap: 10px; color: #0C8468; font-size: 16px; font-weight: 700; }
+.signed-cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; font-size: 13px; }
+.signed-cert-grid dt { color: #5A5F66; font-size: 12px; }
+.signed-cert-grid dd { color: #161A22; font-weight: 600; margin: 2px 0 0; }
+
+/* High-count list deferred rendering (modern-web-guidance: defer-rendering-heavy-content) */
+.est-card-deferred { content-visibility: auto; contain-intrinsic-size: auto none auto 60px; }
+
+/* Clean Print to PDF */
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  .side, .crumbs, .steps, .prop-opts, .prop-clean-bar, .toasts, .theme-switcher, .insp-toggle, .banner, .btn, button { display: none !important; }
+  .main { padding: 0 !important; margin: 0 !important; }
+  .wrap { max-width: 100% !important; padding: 0 !important; }
+  .shell { display: block !important; }
+  .proposal-layout { display: block !important; max-width: 100% !important; }
+  .paper { box-shadow: none !important; border: none !important; padding: 0 !important; }
+  .pk-card { border: 1px solid #ccc !important; box-shadow: none !important; }
+  .paper-signed-cert { border: 1px solid #0C8468 !important; }
+}
 :root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); }
 /* Press feedback: the interface heard you */
 .btn, .chip, .icon-btn, .svc-card, .menu-item, .export-btn, .choice, .step, .start-card, .navtab, .seg button, .stepper button, .recent-item, .svc-item, .cms-tab { transition-property: transform, background, border-color, color, box-shadow; transition-duration: 160ms; transition-timing-function: var(--ease-out); }

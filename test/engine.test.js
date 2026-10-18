@@ -106,6 +106,34 @@ assert.strictEqual(refreshed.scope.values.tablet, true, 'scope kept');
 near(E.compute(refreshed).optionHours - r.optionHours, 87 * 0.10, 'refresh applies new mobile rate');
 console.log('refresh OK');
 
+// proposalModel and digital acceptance
+const pm = E.proposalModel(est, { agency: 'Acme Studio', preparedBy: 'Lead Designer', date: '2026-10-18' });
+assert.strictEqual(pm.title, est.name);
+assert.ok(pm.total > 0, 'proposal total hours computed');
+assert.ok(pm.packageTiers && pm.packageTiers.length === 3, 'package tiers computed');
+assert.ok(pm.milestones && pm.milestones.length >= 3, 'milestones computed');
+
+// maxTier parameter
+const pmTier0 = E.proposalModel(est, { maxTier: 0 });
+assert.ok(pmTier0.total <= pm.total, 'tier 0 total is <= full total');
+
+// digital acceptance normalization
+const acceptedEst = Object.assign({}, est, {
+  acceptance: {
+    name: 'Jane Doe',
+    email: 'jane@client.com',
+    org: 'Client Corp',
+    timestamp: 1792345678000,
+    package: 'Standard',
+    totalHours: pm.total,
+    totalCost: pm.totalCost,
+  }
+});
+const normAccepted = E.normalize(acceptedEst);
+assert.strictEqual(normAccepted.acceptance.name, 'Jane Doe');
+assert.strictEqual(normAccepted.acceptance.package, 'Standard');
+console.log('proposal/acceptance OK', pm.packageTiers.map((t) => `${t.name}: €${t.totalCost}`).join(' | '));
+
 // CSV
 const outDir = path.join(__dirname, 'out');
 fs.mkdirSync(outDir, { recursive: true });

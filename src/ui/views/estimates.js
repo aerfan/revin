@@ -79,12 +79,12 @@
           </div>
         </div>
         <div class="est-head" aria-hidden="true"><span>Estimate</span><span>Service</span><span>Status</span><span style="text-align:right">Hours</span><span>Updated</span><span></span><span></span></div>
-        ${list.length ? list.map(function (e) {
+        ${list.length ? list.map(function (e, idx) {
           var svc = svcById[e.serviceId];
           var prof = e.createdBy ? profiles[e.createdBy] : null;
           var st = statusOf(e.status), ename = nm(e.name, 'Untitled estimate'), client = nm(e.client, '');
           function open() { ctx.setRoute({ view: 'estimate', id: e.id, step: 'review' }); }
-          return html`<div class="est-row" key=${e.id} onClick=${function (ev) { if (!ev.target.closest('.est-actions, .est-open')) open(); }}>
+          return html`<div class=${'est-row' + (idx >= 12 ? ' est-card-deferred' : '')} key=${e.id} onClick=${function (ev) { if (!ev.target.closest('.est-actions, .est-open')) open(); }}>
             <div class="est-main"><${SvcTile} svc=${svc} /><button type="button" class="est-open est-name" title=${ename + (client ? ' (' + client + ')' : '')} onClick=${open}><bdi>${ename}</bdi>${client ? html` <span class="paren">(<bdi>${client}</bdi>)</span>` : null}</button></div>
             <div class="est-svc"><span title=${e.serviceName || ''}><bdi>${e.serviceName || ''}</bdi></span></div>
             <div><span class=${'pill s-' + st.id}>${st.name}</span></div>

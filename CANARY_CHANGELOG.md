@@ -168,5 +168,30 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
   - `npm run test:canary`: Passed across Chromium, WebKit, 12 screen profiles, telemetry, and 1,000-estimate stress benchmarks (100%).
   - `npm run test:ui`: All 53 UI checks, 42 QA scenarios, 28 axe audits, and 143 responsive width sweeps passed (100%).
 
-
-
+### Session 10: Interactive Client Proposal Portal, PWA Service Worker & Performance Virtualization (Completed)
+- **Status**: Completed (100% pass).
+- **Scope**: Executed Phase B of the CTO roadmap + Performance and caching optimizations.
+- **Architectural Enhancements**:
+  - `src/ui/views/advanced.js`:
+    - Converted static proposal into an interactive client proposal portal (`ProposalView`).
+    - Added one-click **Client Presentation Mode** toggle with `.clean-mode` layout (strictly hiding all sensitive agency internals, internal cost rates, margins, and private notes).
+    - Added interactive **Package Tier Comparison** (Essential / Standard / Complete): clients can click to switch packages, updating hours, scope, and total investment dynamically.
+    - Added **Payment milestone schedule** cards (e.g. Deposit 40%, Milestone 30%, Handover 30%).
+    - Added **Digital Proposal Acceptance & Sign-off Flow**: interactive sign-off form (Name, Work Email, Organization, Agreement checkbox) saving an immutable `acceptance` record with timestamp and setting status to `approved`.
+    - Added verified **Digital Acceptance Certificate Seal** with Phosphor `sealCheck` badge, signee metadata, contract value, and estimator revocation flow.
+  - `src/ui/views/editor.js`:
+    - Added 1-click **Client Mode** toolbar button (`#btn-toggle-client-mode`) directly in the editor header.
+  - `src/styles.css`:
+    - Added styles for `.clean-mode`, `.prop-clean-bar`, `.pk-card`, `.paper-signed-cert`, and `.paper-sign-card`.
+    - Added `@media print` rules hiding navigation, sidebars, and banners for pristine PDF printing via `window.print()`.
+    - Applied deferred rendering `.est-card-deferred` (`content-visibility: auto; contain-intrinsic-size: auto none auto 60px;`) following modern web performance guidelines.
+  - `web/sw.js` & `web/build.js`:
+    - Implemented Revin PWA Service Worker (`web/sw.js` -> `dist-web/sw.js`) with Cache-First strategy for `/vendor/*` assets and Google fonts, and Network-First for HTML documents.
+    - Registered in `web/template.html`.
+    - Configured `vercel.json` rewrites and headers to exclude `sw.js` and serve it with `no-cache, no-store, must-revalidate`.
+  - `test/canary.proposal.js`:
+    - Authored comprehensive end-to-end Canary test suite verifying Client Mode switching, internal margin suppression, tier switching, presentation mode, digital acceptance, and revocation.
+- **Verification Results**:
+  - `npm run test:engine`: 5,754 fuzz checks, oracles & corruption tests passed (100%).
+  - `npm run test:canary`: 6 suites (Chromium, WebKit, 12 screen viewports, stress, extreme stress, proposal) passed (100%).
+  - `npm run test:ui`: All 53 UI automation checks, 42 QA scenarios, 7 v2 scenarios, 3 F1 scenarios, 28 axe accessibility audits (0 violations), and 143 responsive width checks passed (100%).

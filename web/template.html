@@ -39,5 +39,12 @@ html { color-scheme: light; } body { margin: 0; font: 14px/1.5 system-ui, -apple
 <script>
 /*__APP__*/
 </script>
+<script>
+if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function() {});
+  });
+}
+</script>
 </body>
 </html>

@@ -146,6 +146,9 @@
           <input class="client-input" id="est-client" maxlength="200" aria-label="Client" value=${draft.client} placeholder="Add client name" onInput=${function (e) { var v = e.target.value; change(function (n) { n.client = v; }); }} />
         </div>
         <div class="ed-meta">
+          <button class="btn sm light" id="btn-toggle-client-mode" title=${step === 'proposal' ? 'Back to Editor' : 'Client Proposal View (Internal margins hidden)'} onClick=${function () { goStep(step === 'proposal' ? 'review' : 'proposal'); }}>
+            <${Icon} name=${step === 'proposal' ? 'arrowL' : 'presentation'} size=${14} /> ${step === 'proposal' ? 'Editor View' : 'Client Mode'}
+          </button>
           <span class=${'savestate ' + (save === 'error' || gone ? 'error' : '')} aria-live="polite"><${Icon} name=${save === 'error' || gone ? 'alert' : save === 'saved' ? 'check' : 'refresh'} size=${14} />${saveLabel}</span>
           <label class="sr" for="est-status">Status</label>
           <select class="select status-select" id="est-status" value=${draft.status || 'draft'} onChange=${function (e) { var v = e.target.value; change(function (n) { n.status = v; }); }}>
