@@ -13,3 +13,5 @@ dev/break-ui/break-ui.html
 .DS_Store
 *.zip
 
+.env*
+supabase/.temp/
