@@ -161,8 +161,12 @@
       ${p.right || null}
     </div>`;
   }
-  function BrandMark() {
-    return html`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-linecap="round" aria-hidden="true"><rect x="4" y="9" width="16" height="11" rx="2" stroke="currentColor" stroke-width="2"></rect><path d="M4 5h16M4 3.2v3.6M20 3.2v3.6" stroke="currentColor" stroke-opacity=".75" stroke-width="2"></path></svg>`;
+  function BrandLogo(p) {
+    var size = p && p.size;
+    return html`<span class="brand-logo" style=${size ? 'font-size:' + size + 'px' : ''} aria-label="Revin">Revin</span>`;
+  }
+  function BrandMark(p) {
+    return BrandLogo(p);
   }
   // Display text from data: trimmed, with a fallback when blank (a name of only spaces reads as missing).
   function nm(v, fb) { var t = String(v == null ? '' : v).trim(); return t || fb; }
@@ -657,9 +661,8 @@
       </button>`;
     }
     return html`<aside class="side" aria-label="Sidebar">
-      <button class="side-brand" onClick=${function () { ctx.setRoute({ view: 'estimates' }); }} aria-label="Design Hours Estimator home">
-        <span class="brand-mark"><${BrandMark} /></span>
-        <span class="brand-name">Design Hours<span>Estimator</span></span>
+      <button class="side-brand" onClick=${function () { ctx.setRoute({ view: 'estimates' }); }} aria-label="Revin home">
+        <${BrandLogo} size=${23} />
       </button>
       <button class="btn primary side-new" onClick=${function () { ctx.setRoute({ view: 'new' }); }}><${Icon} name="plus" /> New estimate</button>
       <div>

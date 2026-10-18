@@ -1,5 +1,5 @@
 {
-  "name": "design-hours-estimator",
+  "name": "revin",
   "private": true,
   "dependencies": {
     "axe-core": "^4.10.2",
@@ -10,7 +10,7 @@
     "ws": "^8.18.0"
   },
   "version": "1.1.0",
-  "description": "Design-hours estimation tool: shared library, estimates, packages, versions, client proposals and actual-hours tracking.",
+  "description": "Revin: Modern design-hours estimation tool with shared library, estimates, packages, versions, and client proposals.",
   "license": "UNLICENSED",
   "scripts": {
     "start": "node server.js",

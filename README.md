@@ -1,4 +1,4 @@
-# Design Hours Estimator
+# Revin - Design Hours Estimator
 
 A web app for estimating design hours from a shared library of pages, features and sections. Estimators pick a service, set the scope, tick items with preset hours, and get a reviewed breakdown with overhead, buffer, scope scenarios, phases, packages, versions, requirements traceability and actual-hours tracking. Exports are CSV, Excel (with live formulas) and a client proposal in Word.
 
