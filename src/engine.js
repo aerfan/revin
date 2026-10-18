@@ -66,6 +66,30 @@
     var sign = neg ? '−' : '';
     return c.pos === 'suffix' ? sign + absStr + ' ' + c.symbol : sign + c.symbol + absStr;
   }
+  var DEFAULT_ROLES = [
+    { id: 'lead', name: 'Design Lead', rate: 160, costRate: 85 },
+    { id: 'senior', name: 'Senior Product Designer', rate: 125, costRate: 65 },
+    { id: 'mid', name: 'UI/UX Designer', rate: 95, costRate: 50 },
+    { id: 'motion', name: 'Motion / 3D Designer', rate: 140, costRate: 70 },
+    { id: 'qa', name: 'Design QA & Specs', rate: 80, costRate: 40 },
+  ];
+  var DEFAULT_MILESTONES = [
+    { id: 'm1', name: 'Deposit / Project Kickoff', percent: 40 },
+    { id: 'm2', name: 'Concept & Prototype Approval', percent: 30 },
+    { id: 'm3', name: 'Final Design System & Handoff', percent: 30 }
+  ];
+  function computeMilestones(totalCost, milestones) {
+    var ms = Array.isArray(milestones) && milestones.length ? milestones : DEFAULT_MILESTONES;
+    var totalPct = ms.reduce(function (s, m) { return s + num(m.percent); }, 0) || 100;
+    var running = 0;
+    return ms.map(function (m, idx) {
+      var pct = num(m.percent);
+      var isLast = idx === ms.length - 1;
+      var amt = isLast ? Math.max(0, totalCost - running) : Math.round(totalCost * (pct / totalPct));
+      running += amt;
+      return { id: m.id || ('m' + (idx + 1)), name: m.name || ('Milestone ' + (idx + 1)), percent: pct, amount: amt };
+    });
+  }
   function uid(prefix) { return (prefix || 'k') + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function slug(s) {
     return String(s || '').toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-').slice(0, 40) || 'item';
@@ -94,15 +118,20 @@
     est = obj(est);
     var snap = obj(est.snapshot), scope = obj(est.scope), reg = obj(est.register);
     var rate = num(est.hourlyRate, snap.hourlyRate !== undefined ? snap.hourlyRate : 100);
+    var costRate = num(est.costRate, snap.costRate !== undefined ? snap.costRate : 0);
     var curr = txt(est.currency || snap.currency || 'USD');
+    var rawMs = arr(est.milestones).length ? arr(est.milestones) : arr(snap.milestones);
+    var ms = rawMs.length ? rawMs.map(function (m) { return { id: txt(m.id) || uid('m'), name: txt(m.name), percent: num(m.percent) }; }) : clone(DEFAULT_MILESTONES);
     var e = Object.assign({}, est, {
       name: txt(est.name), client: txt(est.client), serviceName: txt(est.serviceName),
-      hourlyRate: rate, currency: curr,
+      hourlyRate: rate, costRate: costRate, currency: curr, milestones: ms,
       snapshot: Object.assign({}, snap, {
         labels: obj(snap.labels),
         optionGroups: arr(snap.optionGroups).map(function (g) { return Object.assign({}, g, { name: txt(g.name), options: arr(g.options).map(function (o) { return Object.assign({}, o, { name: txt(o.name) }); }) }); }),
         complexity: arr(snap.complexity), phases: strs(snap.phases), gapRules: arr(snap.gapRules),
-        hourlyRate: num(snap.hourlyRate, rate), currency: txt(snap.currency || curr),
+        hourlyRate: num(snap.hourlyRate, rate), costRate: num(snap.costRate, costRate), currency: txt(snap.currency || curr),
+        roles: arr(snap.roles).length ? arr(snap.roles) : clone(DEFAULT_ROLES),
+        milestones: arr(snap.milestones).length ? arr(snap.milestones) : clone(DEFAULT_MILESTONES),
       }),
       scope: { values: obj(scope.values), choice: obj(scope.choice) },
       items: arr(est.items).map(normItem),
@@ -119,9 +148,13 @@
     st = obj(st);
     var cx = arr(st.complexity).filter(function (c) { return typeof c.id === 'string' && c.id; }).map(function (c) { return Object.assign({}, c, { name: txt(c.name) || c.id, multiplier: num(c.multiplier, 1) }); });
     var seenPh = {}, ph = strs(st.phases).map(function (p) { return p.trim(); }).filter(function (p) { var k = p.toLowerCase(); if (!p || seenPh[k]) return false; seenPh[k] = 1; return true; });
+    var rls = arr(st.roles).map(function (r) { return { id: txt(r.id) || uid('r'), name: txt(r.name), rate: num(r.rate, 100), costRate: num(r.costRate, 0) }; });
+    var ms = arr(st.milestones).map(function (m) { return { id: txt(m.id) || uid('m'), name: txt(m.name), percent: num(m.percent) }; });
     return Object.assign({}, st, {
       agencyName: txt(st.agencyName), bufferPercent: num(st.bufferPercent, 10),
-      hourlyRate: num(st.hourlyRate, 100), currency: txt(st.currency) || 'USD',
+      hourlyRate: num(st.hourlyRate, 100), costRate: num(st.costRate, 0), currency: txt(st.currency) || 'USD',
+      roles: rls.length ? rls : clone(DEFAULT_ROLES),
+      milestones: ms.length ? ms : clone(DEFAULT_MILESTONES),
       complexity: cx.length ? cx : clone(DEFAULT_COMPLEXITY),
       overhead: arr(st.overhead).map(function (o) { return Object.assign({}, o, { id: txt(o.id) || uid('oh'), name: txt(o.name), rule: o.rule === 'percent' ? 'percent' : 'fixed', value: num(o.value), enabled: o.enabled !== false, description: txt(o.description) }); }),
       phases: ph.length ? ph : ['Phase 1'],
@@ -248,7 +281,9 @@
     var groups = clone(service.optionGroups || []);
     var now = Date.now();
     var rate = num(settings.hourlyRate, 100);
+    var costRate = num(settings.costRate, 0);
     var curr = txt(settings.currency || 'USD');
+    var milestones = clone(settings.milestones && settings.milestones.length ? settings.milestones : DEFAULT_MILESTONES);
     return {
       name: (meta && meta.name) || 'Untitled estimate',
       client: (meta && meta.client) || '',
@@ -257,7 +292,9 @@
       totalHours: 0,
       totalCost: 0,
       hourlyRate: rate,
+      costRate: costRate,
       currency: curr,
+      milestones: milestones,
       createdBy: (meta && meta.userId) || null, updatedBy: (meta && meta.userId) || null,
       createdAt: now, updatedAt: now,
       snapshot: {
@@ -267,7 +304,10 @@
         phases: clone(settings.phases && settings.phases.length ? settings.phases : ['Phase 1']),
         gapRules: clone(service.gapRules || []),
         hourlyRate: rate,
+        costRate: costRate,
         currency: curr,
+        roles: clone(settings.roles && settings.roles.length ? settings.roles : DEFAULT_ROLES),
+        milestones: clone(milestones),
         takenAt: now,
       },
       scope: defaultScope(groups),
@@ -375,7 +415,18 @@
     var buffer = subtotal * bufferPercent / 100;
     var total = subtotal + buffer;
     var rate = num(est.hourlyRate, (est.snapshot && est.snapshot.hourlyRate) !== undefined ? est.snapshot.hourlyRate : 100);
+    var costRate = num(est.costRate, (est.snapshot && est.snapshot.costRate) !== undefined ? est.snapshot.costRate : 0);
     var curr = txt(est.currency || (est.snapshot && est.snapshot.currency) || 'USD');
+    var baseCost = Math.round(base * rate);
+    var designSubtotalCost = Math.round(designSubtotal * rate);
+    var overheadCost = Math.round(overhead * rate);
+    var subtotalCost = Math.round(subtotal * rate);
+    var bufferCost = Math.round(buffer * rate);
+    var totalCost = Math.round(total * rate);
+    var laborCost = Math.round(total * costRate);
+    var grossProfit = Math.max(0, totalCost - laborCost);
+    var marginPercent = totalCost > 0 && costRate > 0 ? Math.round(((totalCost - laborCost) / totalCost) * 100) : null;
+    var ms = computeMilestones(totalCost, est.milestones || (est.snapshot && est.snapshot.milestones));
     return {
       items: items, base: base, itemCount: itemCount,
       optionLines: optionLines, optionHours: optionHours,
@@ -383,13 +434,17 @@
       adaptations: optionHours + customHours,
       designSubtotal: designSubtotal, overheadLines: overheadLines, overhead: overhead,
       subtotal: subtotal, bufferPercent: bufferPercent, buffer: buffer, total: total,
-      hourlyRate: rate, currency: curr,
-      baseCost: Math.round(base * rate),
-      designSubtotalCost: Math.round(designSubtotal * rate),
-      overheadCost: Math.round(overhead * rate),
-      subtotalCost: Math.round(subtotal * rate),
-      bufferCost: Math.round(buffer * rate),
-      totalCost: Math.round(total * rate),
+      hourlyRate: rate, costRate: costRate, currency: curr,
+      baseCost: baseCost,
+      designSubtotalCost: designSubtotalCost,
+      overheadCost: overheadCost,
+      subtotalCost: subtotalCost,
+      bufferCost: bufferCost,
+      totalCost: totalCost,
+      laborCost: laborCost,
+      grossProfit: grossProfit,
+      marginPercent: marginPercent,
+      milestones: ms,
     };
   }
 
@@ -1046,6 +1101,7 @@
 
   return {
     PRIORITIES: PRIORITIES, STATUSES: STATUSES, REGISTER_KINDS: REGISTER_KINDS, DEFAULT_LABELS: DEFAULT_LABELS, DEFAULT_COMPLEXITY: DEFAULT_COMPLEXITY,
+    DEFAULT_ROLES: DEFAULT_ROLES, DEFAULT_MILESTONES: DEFAULT_MILESTONES, computeMilestones: computeMilestones,
     CURRENCIES: CURRENCIES, currencyInfo: currencyInfo, fmtMoney: fmtMoney,
     num: num, round: round, fmtNum: fmtNum, plainNum: plainNum, lcFirst: lcFirst, fmtHours: fmtHours, uid: uid, slug: slug, clone: clone, lines: lines, labelsOf: labelsOf,
     optionValue: optionValue, optionUnits: optionUnits, optionActive: optionActive, chosenOption: chosenOption, defaultScope: defaultScope, ruleHint: ruleHint, ruleLabel: ruleLabel,

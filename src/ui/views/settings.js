@@ -204,7 +204,7 @@
         </section>
 
         <section class="panel panel-pad">
-          <${CardHead} icon="coins" color="green" title="Financials & rate cards" desc="Defaults for new estimates. Estimators can change the rate and currency per estimate." />
+          <${CardHead} icon="coins" color="green" title="Financials & rate cards" desc="Defaults for new estimates. Estimators can change the rate, cost and currency per estimate." />
           <div class="grid-2">
             <label class="field"><span>Default currency</span>
               <select class="select" id="set-currency" aria-label="Default currency" value=${s.currency || 'USD'} onChange=${function (e) { var v = e.target.value; d.mut(function (n) { n.currency = v; }); }}>
@@ -214,6 +214,19 @@
             <label class="field"><span>Default billing rate</span>
               <${Stepper} id="set-rate" value=${E.num(s.hourlyRate, 100)} step=${5} min=${1} max=${10000} label="Default billing rate" unit=${E.currencyInfo(s.currency || 'USD').symbol + '/h'} onChange=${function (v) { d.mut(function (n) { n.hourlyRate = v; }); }} />
             </label>
+          </div>
+          <div class="grid-2" style="margin-top:12px">
+            <label class="field"><span>Default internal cost rate</span>
+              <${Stepper} id="set-cost-rate" value=${E.num(s.costRate, 0)} step=${5} min=${0} max=${10000} label="Default cost rate" unit=${E.currencyInfo(s.currency || 'USD').symbol + '/h'} onChange=${function (v) { d.mut(function (n) { n.costRate = v; }); }} />
+            </label>
+            <div class="field"><span>Target agency margin</span>
+              <div class="panel panel-pad" style="background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px">
+                ${s.costRate && Number(s.hourlyRate) > Number(s.costRate) ? html`<div class="row" style="justify-content:space-between;align-items:center">
+                  <span style="font-size:12px;color:var(--text-sub)">Target Margin</span>
+                  <span class="pill" style="font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${Math.round(((s.hourlyRate - s.costRate) / s.hourlyRate) * 100)}% gross margin</span>
+                </div>` : html`<div class="muted" style="font-size:12px">Set cost rate > 0 to display target margin %</div>`}
+              </div>
+            </div>
           </div>
         </section>
 

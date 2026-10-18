@@ -145,4 +145,28 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
   - `node test/canary.compat.js && node test/canary.screens.js && node test/canary.stress.js`: Passed across all engines and 12 device viewports (100%).
   - `npm run test:ui`: All 53 UI checks, 42 QA scenarios, 28 axe audits, and 143 responsive width sweeps passed (100%).
 
+### Session 9: Blended Roles, Agency Margin Modeling & Milestone Payment Schedules (Completed)
+- **Status**: Completed (100% pass).
+- **Scope**: Implemented Phase A of the strategic ROI matrix across mathematical engine, UI modules, and test contracts.
+- **Architectural Enhancements**:
+  - `src/engine.js`:
+    - Added `costRate` modeling alongside `hourlyRate` (billing rate).
+    - Added `laborCost` (`total * costRate`), `grossProfit` (`totalCost - laborCost`), and `marginPercent` (`Math.round(((totalCost - laborCost) / totalCost) * 100)`).
+    - Added `DEFAULT_ROLES` role presets (Design Lead $160/h, Senior Product Designer $125/h, UI/UX Designer $95/h, Motion/3D $140/h, Design QA $80/h).
+    - Added `DEFAULT_MILESTONES` and `computeMilestones(totalCost, milestones)` for exact payment installment calculations.
+  - `src/ui/views/settings.js`:
+    - Added Default Internal Cost Rate stepper (`#set-cost-rate`) under Financials & rate cards.
+    - Added live Target Agency Margin preview badge.
+  - `src/ui/views/editor.js`:
+    - Added estimate-level `#est-cost-rate` input in Commercials & rate card.
+    - Added live gross margin pill in `total-cost-badge` and `Inspector` (`Margin: X% · $Y profit`).
+    - Added **Payment milestone schedule** card in the Review step with installment breakdown and percentages.
+  - `test/engine.test.js`:
+    - Added unit test contract assertions for blended cost rate, margin calculations, and milestone schedules.
+- **Verification Results**:
+  - `npm run test:engine`: 5,754 checks passed (100%).
+  - `npm run test:canary`: Passed across Chromium, WebKit, 12 screen profiles, telemetry, and 1,000-estimate stress benchmarks (100%).
+  - `npm run test:ui`: All 53 UI checks, 42 QA scenarios, 28 axe audits, and 143 responsive width sweeps passed (100%).
+
+
 

@@ -42,13 +42,20 @@ assert.strictEqual(E.fmtMoney(-500, 'USD'), '−$500');
 assert.strictEqual(r.hourlyRate, 100, 'default hourly rate');
 assert.strictEqual(r.currency, 'USD', 'default currency');
 assert.strictEqual(r.totalCost, Math.round(r.total * 100), 'total fee at default rate');
-const estEUR = E.clone(est); estEUR.hourlyRate = 125; estEUR.currency = 'EUR';
+const estEUR = E.clone(est); estEUR.hourlyRate = 125; estEUR.costRate = 60; estEUR.currency = 'EUR';
 const rEUR = E.compute(estEUR);
 assert.strictEqual(rEUR.hourlyRate, 125);
+assert.strictEqual(rEUR.costRate, 60);
 assert.strictEqual(rEUR.currency, 'EUR');
 assert.strictEqual(rEUR.totalCost, Math.round(rEUR.total * 125));
+assert.strictEqual(rEUR.laborCost, Math.round(rEUR.total * 60));
+assert.strictEqual(rEUR.grossProfit, rEUR.totalCost - rEUR.laborCost);
+assert.strictEqual(rEUR.marginPercent, Math.round(((rEUR.totalCost - rEUR.laborCost) / rEUR.totalCost) * 100));
+assert.strictEqual(rEUR.marginPercent, 52); // (125 - 60) / 125 = 52%
+assert.strictEqual(rEUR.milestones.length, 3);
+assert.strictEqual(rEUR.milestones.reduce((s, m) => s + m.amount, 0), rEUR.totalCost, 'milestones sum to total cost');
 assert.strictEqual(E.fmtMoney(rEUR.totalCost, rEUR.currency), '€' + E.fmtNum(Math.round(rEUR.total * 125)));
-console.log('financials OK rate', rEUR.hourlyRate, '| total fee', E.fmtMoney(rEUR.totalCost, rEUR.currency));
+console.log('financials OK rate', rEUR.hourlyRate, '| total fee', E.fmtMoney(rEUR.totalCost, rEUR.currency), '| margin', rEUR.marginPercent + '%', '| profit', E.fmtMoney(rEUR.grossProfit, rEUR.currency));
 
 // option edge cases
 const langGroup = est.snapshot.optionGroups.find((g) => g.id === 'localization');

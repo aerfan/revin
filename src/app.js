@@ -848,6 +848,7 @@ var STEPS = [
           <div class="eyebrow insp-label">Total estimate</div>
           <div class="insp-total"><span class="num">${E.fmtNum(E.round(res.total, 1))}</span><span class="u">h</span></div>
           <div class="insp-cost-badge">${E.fmtMoney(res.totalCost, res.currency)} <span class="rate-sub">· ${E.fmtMoney(res.hourlyRate, res.currency)}/h</span></div>
+          ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<div class="insp-margin-badge" style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;background:var(--green-sub, rgba(46,125,50,0.12));color:var(--green, #2e7d32)">Margin: ${res.marginPercent}% (${E.fmtMoney(res.grossProfit, res.currency)})</div>` : null}
           <div class="insp-sub">About ${E.fmtNum(E.round(res.total / 40, 1))} designer-weeks at 40h a week</div>
         </div>
         <button class="btn sm ghost insp-toggle" aria-expanded=${open ? 'true' : 'false'} onClick=${function () { setOpen(!open); }}>${open ? 'Hide' : 'Details'}</button>
@@ -1301,6 +1302,7 @@ var STEPS = [
           <div class="total-cost-badge">
             <span class="cost-val">${E.fmtMoney(res.totalCost, res.currency)}</span>
             <span class="cost-rate">at ${E.fmtMoney(res.hourlyRate, res.currency)}/h</span>
+            ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<span class="cost-margin" style="margin-left:8px;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${res.marginPercent}% margin</span>` : null}
           </div>
           <div class="total-meta">${dl[0] ? dl[0].text : ''} <span class="paren">(about ${E.fmtNum(E.round(res.total / 40, 1))} designer-weeks)</span></div>
           <dl class="summary-lines">
@@ -1396,7 +1398,7 @@ var STEPS = [
       </section>
 
       <section class="panel panel-pad">
-        <${CardHead} icon="coins" color="green" title="Commercials & rate card" desc="Billing rate and currency for this estimate. Defaults come from Settings." />
+        <${CardHead} icon="coins" color="green" title="Commercials & rate card" desc="Billing rate, internal cost rate and currency for this estimate. Defaults come from Settings." />
         <div class="grid-2">
           <label class="field"><span>Project currency</span>
             <select class="select" id="est-currency" aria-label="Project currency" value=${draft.currency || 'USD'} onChange=${function (e) { var c = e.target.value; p.change(function (n) { n.currency = c; }); }}>
@@ -1406,6 +1408,34 @@ var STEPS = [
           <label class="field"><span>Billing rate</span>
             <${Stepper} id="est-rate" value=${E.num(draft.hourlyRate, (draft.snapshot && draft.snapshot.hourlyRate) || (ctx.settings && ctx.settings.hourlyRate) || 100)} step=${5} min=${1} max=${10000} label="Billing rate" unit=${E.currencyInfo(draft.currency || 'USD').symbol + '/h'} onChange=${function (v) { p.change(function (n) { n.hourlyRate = v; }); }} />
           </label>
+        </div>
+        <div class="grid-2" style="margin-top:12px">
+          <label class="field"><span>Internal cost rate (optional)</span>
+            <${Stepper} id="est-cost-rate" value=${E.num(draft.costRate, (draft.snapshot && draft.snapshot.costRate) || (ctx.settings && ctx.settings.costRate) || 0)} step=${5} min=${0} max=${10000} label="Internal cost rate" unit=${E.currencyInfo(draft.currency || 'USD').symbol + '/h'} onChange=${function (v) { p.change(function (n) { n.costRate = v; }); }} />
+          </label>
+          <div class="field"><span>Agency profitability preview</span>
+            <div class="panel panel-pad" style="background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px">
+              ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<div class="row" style="justify-content:space-between;align-items:center">
+                <span style="font-size:12px;color:var(--text-sub)">Labor: ${E.fmtMoney(res.laborCost, res.currency)}</span>
+                <span class="pill" style="font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${res.marginPercent}% gross margin (${E.fmtMoney(res.grossProfit, res.currency)} profit)</span>
+              </div>` : html`<div class="muted" style="font-size:12px">Set cost rate > 0 to track profitability margin</div>`}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-pad">
+        <${CardHead} icon="chart" color="purple" title="Payment milestone schedule" desc="Recommended payment installments for proposal agreement and billing." />
+        <div class="grid-3" style="gap:10px">
+          ${(res.milestones || []).map(function (m) {
+            return html`<div class="panel panel-pad" key=${m.id} style="background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--radius)">
+              <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span class="pill s-review">${m.percent}%</span>
+                <span style="font-weight:700;font-size:15px">${E.fmtMoney(m.amount, res.currency)}</span>
+              </div>
+              <div style="font-size:13px;font-weight:600">${m.name}</div>
+            </div>`;
+          })}
         </div>
       </section>
 
@@ -2532,7 +2562,7 @@ var STEPS = [
         </section>
 
         <section class="panel panel-pad">
-          <${CardHead} icon="coins" color="green" title="Financials & rate cards" desc="Defaults for new estimates. Estimators can change the rate and currency per estimate." />
+          <${CardHead} icon="coins" color="green" title="Financials & rate cards" desc="Defaults for new estimates. Estimators can change the rate, cost and currency per estimate." />
           <div class="grid-2">
             <label class="field"><span>Default currency</span>
               <select class="select" id="set-currency" aria-label="Default currency" value=${s.currency || 'USD'} onChange=${function (e) { var v = e.target.value; d.mut(function (n) { n.currency = v; }); }}>
@@ -2542,6 +2572,19 @@ var STEPS = [
             <label class="field"><span>Default billing rate</span>
               <${Stepper} id="set-rate" value=${E.num(s.hourlyRate, 100)} step=${5} min=${1} max=${10000} label="Default billing rate" unit=${E.currencyInfo(s.currency || 'USD').symbol + '/h'} onChange=${function (v) { d.mut(function (n) { n.hourlyRate = v; }); }} />
             </label>
+          </div>
+          <div class="grid-2" style="margin-top:12px">
+            <label class="field"><span>Default internal cost rate</span>
+              <${Stepper} id="set-cost-rate" value=${E.num(s.costRate, 0)} step=${5} min=${0} max=${10000} label="Default cost rate" unit=${E.currencyInfo(s.currency || 'USD').symbol + '/h'} onChange=${function (v) { d.mut(function (n) { n.costRate = v; }); }} />
+            </label>
+            <div class="field"><span>Target agency margin</span>
+              <div class="panel panel-pad" style="background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px">
+                ${s.costRate && Number(s.hourlyRate) > Number(s.costRate) ? html`<div class="row" style="justify-content:space-between;align-items:center">
+                  <span style="font-size:12px;color:var(--text-sub)">Target Margin</span>
+                  <span class="pill" style="font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${Math.round(((s.hourlyRate - s.costRate) / s.hourlyRate) * 100)}% gross margin</span>
+                </div>` : html`<div class="muted" style="font-size:12px">Set cost rate > 0 to display target margin %</div>`}
+              </div>
+            </div>
           </div>
         </section>
 
