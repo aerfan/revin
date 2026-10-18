@@ -88,47 +88,6 @@ ${page}
     }
   };
   bar.appendChild(rst);
-  var themeDiv = document.createElement('div');
-  themeDiv.className = 'theme-switcher';
-  themeDiv.setAttribute('role', 'radiogroup');
-  themeDiv.setAttribute('aria-label', 'Color theme');
-  var thOpts = [
-    { id: 'system', icon: 'monitor', label: 'Match system', svg: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>' },
-    { id: 'light', icon: 'sun', label: 'Light mode', svg: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>' },
-    { id: 'dark', icon: 'moon', label: 'Dark mode', svg: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>' }
-  ];
-  function syncDevTheme() {
-    var cur = localStorage.getItem('dhe_theme') || 'system';
-    thBtns.forEach(function (btn, i) {
-      var opt = thOpts[i];
-      btn.setAttribute('aria-checked', cur === opt.id ? 'true' : 'false');
-    });
-  }
-  var thBtns = thOpts.map(function (opt) {
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.setAttribute('role', 'radio');
-    b.setAttribute('aria-label', opt.label);
-    b.setAttribute('data-tooltip', opt.label);
-    b.setAttribute('title', opt.label);
-    b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + opt.svg + '</svg>';
-    b.onclick = function () {
-      if (opt.id === 'system') {
-        document.documentElement.removeAttribute('data-theme');
-        try { localStorage.setItem('dhe_theme', 'system'); } catch (e) {}
-      } else {
-        document.documentElement.setAttribute('data-theme', opt.id);
-        try { localStorage.setItem('dhe_theme', opt.id); } catch (e) {}
-      }
-      syncDevTheme();
-      window.dispatchEvent(new Event('themechange'));
-    };
-    themeDiv.appendChild(b);
-    return b;
-  });
-  syncDevTheme();
-  window.addEventListener('themechange', syncDevTheme);
-  bar.appendChild(themeDiv);
   var min = document.createElement('button'); min.type = 'button'; min.className = 'dev-min'; min.textContent = '–'; min.title = 'Minimise';
   min.onclick = function () { bar.classList.toggle('min'); min.textContent = bar.classList.contains('min') ? cfg.labels[cfg.sel] + ' ▴' : '–'; };
   bar.appendChild(min);
