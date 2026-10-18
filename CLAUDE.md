@@ -39,7 +39,7 @@ Welcome to the **Revin** codebase.
 2. **Design System & Icons**:
    - Always use **Phosphor Icons** (`@phosphor-icons/core`) for all icons across the application (regular outline for standard UI actions/controls, duotone for service categories and tiles, using the 256×256 viewBox system).
 3. **Testing Gatekeeper**:
-   - Run `npm run test:engine`, `npm run test:canary`, and `npm run test:ui` before finalizing any changes. All tests must pass (100%).
+   - Run `npm run test:engine`, `npm run test:security`, `npm run test:canary`, and `npm run test:ui` before finalizing any changes. All tests must pass (100%).
 4. **Human-Readable Commits & Remote Sync**:
    - Follow conventional commits with human-readable descriptions (e.g. `feat(observability): ...`, `fix(stepper): ...`, `refactor(ui): ...`, `feat(proposal): ...`).
    - Push every commit to GitHub (`git push origin <branch>`) so the remote repository is always in sync.
@@ -50,10 +50,14 @@ Welcome to the **Revin** codebase.
 6. **Observability & Health Diagnostics**:
    - Telemetry tracks user action breadcrumbs and fingerprints errors to `dhe:error_logs` and `public.error_logs`.
    - Use the **Copy for AI** button in Settings -> Health & Diagnostics for 1-click Markdown error payloads during triage.
-7. **Vercel & Supabase Production Resilience**:
+7. **Security & Penetration Hardening**:
+   - Always sanitize user inputs and CSV formulas (`=`, `+`, `-`, `@`, `|` prefixed with `'`).
+   - Guard object merging against Prototype Pollution (`__proto__`, `constructor`, `prototype`).
+   - Never leak sensitive internal margins, cost rates, or private notes in client presentation mode or exports.
+8. **Vercel & Supabase Production Resilience**:
    - Do not place `frame-ancestors` in `<meta>` tags (CSP HTTP headers only).
    - Maintain `Cross-Origin-Opener-Policy: same-origin-allow-popups` for Google OAuth.
    - Service worker `sw.js` must be served with `no-cache, no-store, must-revalidate` and excluded from SPA rewrites in `vercel.json`.
-8. **Parallel Agent Worktrees**:
+9. **Parallel Agent Worktrees**:
    - When running parallel agent tasks, create an isolated worktree:
      `git worktree add ../revin-<task> canary`

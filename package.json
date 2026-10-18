@@ -26,7 +26,8 @@
     "test:db": "node test/db.test.js",
     "test:web": "node test/web/web.e2e.js",
     "test:ui": "node build.js && node test/css.check.js && node test/ui.test.js && node test/ui.qa.js && node test/ui.v2.js && node test/ui.f1.js && node test/ui.a11y.js",
-    "test:canary": "node test/canary.compat.js && node test/canary.screens.js && node test/canary.stress.js && node test/canary.telemetry.js && node test/canary.extreme-stress.js && node test/canary.proposal.js"
+    "test:security": "node test/canary.security.js",
+    "test:canary": "node test/canary.compat.js && node test/canary.screens.js && node test/canary.stress.js && node test/canary.telemetry.js && node test/canary.extreme-stress.js && node test/canary.proposal.js && node test/canary.security.js"
   },
   "engines": {
     "node": ">=18"

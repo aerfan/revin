@@ -24,8 +24,8 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Strictly skip non-GET requests and external Supabase API / WebSocket traffic
-  if (req.method !== 'GET' || url.protocol.startsWith('ws') || url.hostname.includes('supabase.co')) {
+  // Strictly skip non-HTTP requests, non-GET methods, and external Supabase API / WebSocket traffic
+  if (!url.protocol.startsWith('http') || req.method !== 'GET' || url.protocol.startsWith('ws') || url.hostname.includes('supabase.co')) {
     return;
   }
 

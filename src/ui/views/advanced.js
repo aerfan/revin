@@ -349,13 +349,20 @@
     var wk = function (v) { var r = E.round(v, 1); return E.fmtNum(r) + (r === 1 ? ' week' : ' weeks'); };
 
     function signProposal() {
-      if (!signName.trim() || !agreed) return;
+      var name = signName.trim().slice(0, 100);
+      var email = signEmail.trim().slice(0, 120);
+      var org = signOrg.trim().slice(0, 100);
+      if (!name || !agreed) return;
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        ctx.toast('Please enter a valid work email address', 'bad');
+        return;
+      }
       var tierLabel = selectedTier !== null && m.packageNames ? m.packageNames[selectedTier] : 'Full Scope';
       p.change(function (n) {
         n.acceptance = {
-          name: signName.trim(),
-          email: signEmail.trim(),
-          org: signOrg.trim(),
+          name: name,
+          email: email,
+          org: org,
           timestamp: Date.now(),
           package: tierLabel,
           totalHours: E.round(m.total, 1),
@@ -390,7 +397,7 @@
         <div class="crumbs" style="margin-bottom:6px"><button onClick=${function () { p.goStep('review'); }}><${Icon} name="arrowL" size=${12} /> Back to review</button></div>
         <h2 style="font-size:17px">Client proposal</h2>
         <p class="muted" style="font-size:13px;margin:2px 0 14px">What the client sees. Internal rates and margins are hidden in this view.</p>
-        <button class="btn light" style="width:100%;margin-bottom:14px" onClick=${function () { setCleanMode(true); }}><${Icon} name="presentation" /> Presentation mode</button>
+        <button class="btn light" id="btn-prop-clean-mode" style="width:100%;margin-bottom:14px" onClick=${function () { setCleanMode(true); }}><${Icon} name="presentation" /> Presentation mode</button>
         <label class="field"><span>Introduction</span><textarea class="textarea" id="prop-intro" maxlength="2000" rows="5" placeholder=${m.intro} value=${pr.intro || ''} onInput=${function (e) { set('intro', e.target.value); }}></textarea></label>
         <label class="check-line" style="margin-top:12px"><${Switch} id="prop-hours" label="Show hours per line" checked=${pr.showLineHours !== false} onChange=${function (v) { set('showLineHours', v); }} /> Show hours per line</label>
         <label class="field" style="margin-top:12px"><span>Design hours per week (for durations)</span><${Stepper} id="prop-cap" value=${E.num(pr.capacity, 40)} step=${1} min=${1} max=${400} unit="h" label="Hours per week" onChange=${function (v) { set('capacity', v); }} /></label>
@@ -456,13 +463,13 @@
           <h2>Validity and acceptance</h2>
           <p>This estimate is valid for ${m.validDays} days from ${m.date}. Hours and figures are based on the agreed scope above; changes to scope are estimated separately.</p>
 
-          ${isAccepted ? html`<div class="paper-signed-cert">
+          ${isAccepted && d.acceptance && typeof d.acceptance === 'object' ? html`<div class="paper-signed-cert">
             <div class="signed-cert-head"><${Icon} name="sealCheck" size=${22} /> <span>Digitally Accepted & Signed</span></div>
             <dl class="signed-cert-grid">
-              <div><dt>Accepted by</dt><dd>${d.acceptance.name}</dd></div>
+              <div><dt>Accepted by</dt><dd>${d.acceptance.name || '—'}</dd></div>
               <div><dt>Email</dt><dd>${d.acceptance.email || '—'}</dd></div>
               <div><dt>Organization</dt><dd>${d.acceptance.org || d.client || '—'}</dd></div>
-              <div><dt>Signed timestamp</dt><dd>${new Date(d.acceptance.timestamp).toLocaleString()}</dd></div>
+              <div><dt>Signed timestamp</dt><dd>${d.acceptance.timestamp && !isNaN(new Date(d.acceptance.timestamp).getTime()) ? new Date(d.acceptance.timestamp).toLocaleString() : '—'}</dd></div>
               <div><dt>Agreed package</dt><dd>${d.acceptance.package || 'Standard'}</dd></div>
               <div><dt>Contract value</dt><dd>${E.fmtMoney(d.acceptance.totalCost, m.currency)} (${hrs(d.acceptance.totalHours)})</dd></div>
             </dl>
@@ -471,9 +478,9 @@
             <h3>Digital Proposal Acceptance</h3>
             <p>Review the scope above and sign below to accept this proposal and initiate project scheduling.</p>
             <div class="paper-sign-fields">
-              <label class="field"><span>Full Name</span><input class="input" id="prop-sign-name" placeholder="Client Stakeholder Name" value=${signName} onInput=${function (e) { setSignName(e.target.value); }} /></label>
-              <label class="field"><span>Work Email</span><input class="input" type="email" id="prop-sign-email" placeholder="client@company.com" value=${signEmail} onInput=${function (e) { setSignEmail(e.target.value); }} /></label>
-              <label class="field"><span>Organization</span><input class="input" id="prop-sign-org" placeholder="Client Organization" value=${signOrg} onInput=${function (e) { setSignOrg(e.target.value); }} /></label>
+              <label class="field"><span>Full Name</span><input class="input" id="prop-sign-name" maxlength="100" placeholder="Client Stakeholder Name" value=${signName} onInput=${function (e) { setSignName(e.target.value); }} /></label>
+              <label class="field"><span>Work Email</span><input class="input" type="email" id="prop-sign-email" maxlength="120" placeholder="client@company.com" value=${signEmail} onInput=${function (e) { setSignEmail(e.target.value); }} /></label>
+              <label class="field"><span>Organization</span><input class="input" id="prop-sign-org" maxlength="100" placeholder="Client Organization" value=${signOrg} onInput=${function (e) { setSignOrg(e.target.value); }} /></label>
             </div>
             <label class="check-line" style="margin-bottom:16px;cursor:pointer">
               <input type="checkbox" id="prop-sign-agree" checked=${agreed} onChange=${function (e) { setAgreed(e.target.checked); }} />

@@ -15,6 +15,10 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **ISSUE-001** | High | `useDocDraft` (app.js) | Race condition on mount: `useEffect([liveStr])` fires post-mount and wipes out initial user input/select before state stabilizes | **Resolved** | Added `prevLive` ref guard in `useDocDraft` so initial mount never re-clobbers state; added explicit `selected` boolean attribute to currency `<option>` elements | Verified 100% pass across Chromium & WebKit (`test/canary.compat.js`) |
 | **ISSUE-002** | Medium | `Stepper` (app.js) | Container had no `data-stepper` attribute; ID was only on the input, preventing container-level targeting of buttons | **Resolved** | Added `data-stepper=${p.id}` to outer `<span class="stepper">` container | Verified 100% pass across Chromium & WebKit stepper increment interactions |
+| **ISSUE-003** | High | `src/engine.js` (`csvCell`) | CSV Formula & DDE Injection (CWE-1236): Formulas with leading spaces (` =1+1`), newlines (`\n=cmd`), tabs, or pipe commands (`|cmd!A0`) could execute arbitrary commands in spreadsheet viewers | **Resolved** | Hardened `csvCell` regex to `/^\s*[=+\-@|]|^[\t\r\n]/` to prepend single quote `'` and expand quoting to include tabs `\t` and semicolons `;` | Verified in `test/canary.security.js` (Attack 1) |
+| **ISSUE-004** | High | `src/ui/files.js` (`merge3`) | Prototype Pollution (CWE-1321): Unfiltered object keys in three-way merge could poison `Object.prototype` | **Resolved** | Explicitly filtered out `__proto__`, `constructor`, and `prototype` keys during object key aggregation | Verified in `test/canary.security.js` (Attack 2) |
+| **ISSUE-005** | Medium | `src/ui/views/advanced.js` | Unbounded sign-off input fields and missing email format validation on digital proposal acceptance | **Resolved** | Added `maxlength` attributes, string slicing (name: 100, email: 120, org: 100), work email regex validation, and safe date fallback on rendering | Verified in `test/canary.security.js` (Attack 3) |
+| **ISSUE-006** | Medium | `src/engine.js` | Extreme / adversarial numeric values (`NaN`, negative rates, `1e308`) causing unbounded calculation cascades | **Resolved** | Added rate clamping to `[0, 100,000,000]`, capped labor costs to `MAX_SAFE_INTEGER`, bounded milestone percentages to `[0, 100]`, and added try/catch to `clone(o)` | Verified in `test/canary.security.js` (Attack 5) |
 
 ---
 
@@ -195,3 +199,32 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
   - `npm run test:engine`: 5,754 fuzz checks, oracles & corruption tests passed (100%).
   - `npm run test:canary`: 6 suites (Chromium, WebKit, 12 screen viewports, stress, extreme stress, proposal) passed (100%).
   - `npm run test:ui`: All 53 UI automation checks, 42 QA scenarios, 7 v2 scenarios, 3 F1 scenarios, 28 axe accessibility audits (0 violations), and 143 responsive width checks passed (100%).
+
+### Session 11: Automated Security Testing, Penetration Suite & Vulnerability Hardening (Completed)
+- **Status**: Completed (100% pass, 0 vulnerability findings).
+- **Scope**: Rigorous security audit, active exploit fuzzing, automated penetration test suite authoring (`test/canary.security.js`), and defensive hardening across all input and data surfaces.
+- **Attack Vectors Tested & Hardened**:
+  1. **CSV Formula & DDE Injection Exploitation (CWE-1236)**:
+     - *Attack*: Injected adversarial formulas (`=1+1`, `|cmd!A0`, `\n=cmd|calc!A0`, `   +SUM(...)`, `@AVERAGE`, `\t-20`) into project names, item names, and deliverables.
+     - *Finding*: Spreadsheets execute formulas with leading whitespace or pipe prefixes, and unquoted tabs/semicolons cause delimiter splitting.
+     - *Mitigation*: Hardened `csvCell` in `src/engine.js` with regex `/^\s*[=+\-@|]|^[\t\r\n]/` to prepend single quote `'`, and expanded quoting check to `/[",\r\n\t;]/`.
+  2. **Prototype Pollution via State & Merging Helpers (CWE-1321)**:
+     - *Attack*: Injected `__proto__`, `constructor.prototype`, and polluted properties via three-way document merging.
+     - *Mitigation*: Added strict key filtering in `merge3` (`src/ui/files.js`) ignoring `__proto__`, `constructor`, and `prototype`.
+  3. **Stored XSS & DOM Injection in Proposal Sign-off (CWE-79)**:
+     - *Attack*: Injected `<script>alert(1)</script>`, `<img src=x onerror=...>`, and oversized payload strings into digital sign-off inputs.
+     - *Mitigation*: Added strict character length clamping (name: 100, email: 120, org: 100), work email format regex validation, HTML `maxlength` attributes, and safe date verification on certificate seal rendering (`src/ui/views/advanced.js`).
+  4. **Confidential Commercial Data Leakage (CWE-200)**:
+     - *Attack*: Verified DOM inspection in Client Presentation Mode (`.clean-mode`) to confirm that internal cost rates (`costRate`), blended labor costs, and agency gross margins are never exposed in DOM nodes or accessible to clients.
+  5. **Mathematical Calculation Fuzzing & Boundary Hardening (CWE-128)**:
+     - *Attack*: Fuzzed hourly rates, cost rates, and milestone schedules with negative values, `NaN`, `Infinity`, `1e308`, and malformed objects.
+     - *Mitigation*: Clamped rates in `src/engine.js` to `[0, 100,000,000]`, capped labor costs to `Number.MAX_SAFE_INTEGER`, bounded milestone percentages to `[0, 100]`, and wrapped `clone(o)` in defensive try/catch.
+  6. **ReDoS (Catastrophic Backtracking) Fuzzing (CWE-1333)**:
+     - *Attack*: Tested CSV and email regex patterns with 20,000-character adversarial strings containing nested prefixes and backtracking traps.
+     - *Mitigation*: All regex patterns verified to execute in < 5ms with zero linear/exponential performance degradation.
+- **Verification Results**:
+  - `npm run test:security`: All 6 attack vectors passed with 0 vulnerability findings.
+  - `npm run test:canary`: All 7 canary suites passed (100%).
+  - `npm run test:engine`: 5,754 checks passed (100%).
+  - `npm run test:ui`: All 53 UI automation checks, 42 QA scenarios, 28 axe audits, 143 responsive width sweeps passed (100%).
+

@@ -35,7 +35,9 @@
     if (sameJ(r, b) || sameJ(r, l)) return l;
     if (isPlain(b) && isPlain(l) && isPlain(r)) {
       var out = {}, ks = Object.create(null);
-      Object.keys(l).concat(Object.keys(r)).forEach(function (k) { ks[k] = 1; });
+      Object.keys(l).concat(Object.keys(r)).forEach(function (k) {
+        if (k !== '__proto__' && k !== 'constructor' && k !== 'prototype') ks[k] = 1;
+      });
       Object.keys(ks).forEach(function (k) { var v = merge3(b[k], l[k], r[k]); if (v !== undefined) out[k] = v; });
       return out;
     }

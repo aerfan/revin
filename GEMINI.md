@@ -35,15 +35,21 @@ Welcome to the **Revin** workspace in Google Antigravity.
   - Never merge to `main` or deploy to production without explicit user confirmation.
 - **Testing & Local Verification**:
   - Always run contract tests locally before finalizing any commit:
-    - `npm run test:canary`: Runs all 6 Canary test suites in sequence.
+    - `npm run test:canary`: Runs all 7 Canary test suites in sequence.
+    - `npm run test:security`: Automated penetration suite (CSV injection, prototype pollution, XSS, commercial leakage, boundary overflows, ReDoS).
     - `npm run test:engine`: 5,754 unit & fuzz checks, calculations, margin models, milestone schedules.
     - `node test/canary.compat.js`: Chromium & WebKit compatibility.
     - `node test/canary.screens.js`: 12 viewport sweeps (320px to 2560px).
     - `node test/canary.stress.js`: 500-estimate load, rapid concurrency, and 1,000-estimate extreme benchmarks.
     - `node test/canary.telemetry.js`: Telemetry & health diagnostics verification.
     - `node test/canary.proposal.js`: Interactive proposal portal, presentation mode, tier switching, digital sign-off, certificate seal, and revocation.
+    - `node test/canary.security.js`: Penetration checks across all 6 core vulnerability surfaces.
     - `npm run test:ui`: 53 UI automation checks, 42 QA scenarios, 28 axe audits, 143 responsive width checks.
   - All checks must pass (100%) with zero errors before finalizing any commit.
+- **Security & Penetration Hardening**:
+  - Always guard against CSV Formula & DDE injection in export routines (OWASP CWE-1236). Neutralize formula triggers (`=`, `+`, `-`, `@`, `|`) with single quote prefixing and quote cells containing tabs or semicolons.
+  - Guard recursive object merges against Prototype Pollution (`__proto__`, `constructor`, `prototype`) (OWASP CWE-1321).
+  - Enforce strict input bounds, regex verification, and text escaping across all user inputs and digital sign-off flows.
 - **Human-Readable Git Discipline & Remote Sync**:
   - Write clear, descriptive conventional commits (e.g. `feat(observability): ...`, `fix(stepper): ...`, `refactor(ui): ...`, `feat(proposal): ...`).
   - Always explain the rationale and component scope in the commit message.
