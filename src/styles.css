@@ -791,3 +791,57 @@ table.bd.act td { vertical-align: middle; }
 .team-domain .input { flex: 1 1 160px; min-width: 0; } .team-at { color: var(--muted); font-weight: 500; }
 .team-removed { margin-top: 10px; font-size: 13px; } .team-removed summary { cursor: pointer; color: var(--muted); padding: 4px 0; }
 .btn.disabled { opacity: .5; pointer-events: none; }
+
+:root[data-theme="light"] { color-scheme: light; }
+
+/* Theme switcher with 3 icon-only options */
+.theme-switcher { display: inline-flex; align-items: center; padding: 2px; gap: 2px; border-radius: 8px; background: var(--surface-3); border: 1px solid var(--line); flex: none; }
+.theme-switcher button { position: relative; display: inline-grid; place-items: center; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--faint); cursor: pointer; transition: all 140ms var(--ease-out); }
+.theme-switcher button:hover { color: var(--ink); background: var(--surface-2); }
+.theme-switcher button[aria-checked="true"], .theme-switcher button[aria-pressed="true"] { background: var(--surface); color: var(--brand-text); box-shadow: var(--shadow-raise); }
+
+/* Micro tooltip on hover */
+.theme-switcher button[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 3px 7px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 140ms ease, transform 140ms ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  z-index: 1000;
+}
+.theme-switcher button[data-tooltip]::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px 4px 0 4px;
+  border-style: solid;
+  border-color: var(--ink) transparent transparent transparent;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 140ms ease;
+  z-index: 1000;
+}
+.theme-switcher button[data-tooltip]:hover::after,
+.theme-switcher button[data-tooltip]:focus-visible::after,
+.theme-switcher button[data-tooltip]:hover::before,
+.theme-switcher button[data-tooltip]:focus-visible::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+

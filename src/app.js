@@ -13,6 +13,9 @@
 
   // ------------------------------------------------------------------ icons
   var ICONS = {
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+    moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',
+    monitor: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/>',
     smartphone: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
     layout: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M9 9.5h12"/>',
@@ -389,11 +392,17 @@
       else document.documentElement.removeAttribute('data-theme');
       try { localStorage.setItem('dhe_theme', theme); } catch (e) {}
     }, [theme]);
-    var toggleTheme = useCallback(function () {
-      setTheme(function (cur) {
-        var isDark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        return isDark ? 'light' : 'dark';
-      });
+    useEffect(function () {
+      function onExtChange() {
+        var t = localStorage.getItem('dhe_theme') || 'system';
+        setTheme(function (cur) { return cur === t ? cur : t; });
+      }
+      window.addEventListener('themechange', onExtChange);
+      window.addEventListener('storage', onExtChange);
+      return function () {
+        window.removeEventListener('themechange', onExtChange);
+        window.removeEventListener('storage', onExtChange);
+      };
     }, []);
 
     var toast = useCallback(function (text, kind, action) {
@@ -547,7 +556,7 @@
     var ctx = {
       caps: caps, api: api, me: me, role: role, readOnly: readOnly, services: services, serviceList: serviceList,
       settings: settings, settingsDoc: settingsDoc, estimates: estimates, toast: toast, confirm: confirm,
-      theme: theme, toggleTheme: toggleTheme,
+      theme: theme, setTheme: setTheme, toggleTheme: toggleTheme,
       route: route, setRoute: setRoute, hasMore: hasMore, sample: sampleFn, moreEstimates: function () { setEstLimit(function (n) { return n + EST_PAGE; }); }, startEstimate: startEstimate, duplicateEstimate: duplicateEstimate, deleteEstimate: deleteEstimate,
     };
 
@@ -604,6 +613,32 @@
     </div>`;
   }
 
+  // ------------------------------------------------------------------ theme switcher
+  function ThemeSwitcher(p) {
+    var ctx = p.ctx, current = ctx.theme || 'system';
+    var options = [
+      { id: 'system', icon: 'monitor', label: 'Match system' },
+      { id: 'light', icon: 'sun', label: 'Light mode' },
+      { id: 'dark', icon: 'moon', label: 'Dark mode' },
+    ];
+    return html`<div class="theme-switcher" role="radiogroup" aria-label="Color theme">
+      ${options.map(function (opt) {
+        var active = current === opt.id;
+        return html`<button
+          key=${opt.id}
+          type="button"
+          role="radio"
+          aria-checked=${active ? 'true' : 'false'}
+          aria-label=${opt.label}
+          data-tooltip=${opt.label}
+          title=${opt.label}
+          onClick=${function () { ctx.setTheme(opt.id); }}>
+          <${Icon} name=${opt.icon} size=${14} />
+        </button>`;
+      })}
+    </div>`;
+  }
+
   // ------------------------------------------------------------------ sidebar
   function Sidebar(p) {
     var ctx = p.ctx, route = ctx.route, me = ctx.me || {};
@@ -640,8 +675,7 @@
       <div class="side-foot">
         <${Avatar} key=${me.avatarUrl || 'none'} url=${me.avatarUrl} name=${me.name || 'You'} />
         <div class="who-text"><div class="who-name" title=${nm(me.name, 'You')}><bdi>${nm(me.name, 'You')}</bdi></div></div>
-        <span class=${'role ' + (ctx.role === 'admin' ? 'admin' : '')}>${ctx.role === 'admin' ? 'Admin' : 'Estimator'}</span>
-        <button class="icon-btn theme-toggle-btn" aria-label="Toggle light or dark theme" title="Toggle Light / Dark mode" onClick=${ctx.toggleTheme}><${Icon} name="theme" /></button>
+        <${ThemeSwitcher} ctx=${ctx} />
         ${ctx.caps && ctx.caps.team ? html`<button class="icon-btn signout" aria-label="Sign out" title="Sign out" onClick=${function () { ctx.caps.team.signOut(); }}><${Icon} name="logout" /></button>` : null}
       </div>
     </aside>`;
