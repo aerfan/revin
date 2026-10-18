@@ -3,14 +3,24 @@
 You are an expert engineer working on Revin. Follow these non-negotiable guidelines:
 
 ## Core Principles
-1. **Branching**: Develop all features on `canary` branch. Never commit experimental code directly to `main`.
+1. **Branching (Canary First)**: Develop all features and refactors on `canary` branch. Never commit directly to `main`. Deploy preview to `revin-canary.vercel.app`.
 2. **Icons**: ALWAYS use Phosphor Icons (`@phosphor-icons/core`) for all UI controls and service tiles (viewBox 0 0 256 256).
 3. **Architecture**:
    - `src/engine.js`: Pure mathematical calculations and data transforms. Zero DOM code.
    - `src/app.js`: Interactive Preact + htm UI components.
-   - `src/styles.css`: CSS design system.
+   - `src/styles.css`: CSS design system with light/dark themes and responsive typography.
    - `web/runtime.js`: Supabase Realtime, Auth, and Storage.
-4. **Testing**: Always test changes locally before completing a task:
-   - `npm run test:engine`
-   - `npm run test:ui`
-5. **Git Sync**: Use conventional commits (`feat:`, `fix:`, etc.) and ensure changes are pushed to remote.
+   - `supabase/migrations/`: PostgreSQL schemas, security hardening, and error logging.
+4. **Testing Contracts (100% Pass Required)**:
+   - `npm run test:engine` (5,754 fuzz checks)
+   - `node test/canary.compat.js` (Chromium + WebKit)
+   - `node test/canary.screens.js` (12 screen viewports)
+   - `node test/canary.stress.js` (500 estimates, heavy benchmarks)
+   - `node test/canary.telemetry.js` (Telemetry & error logging)
+   - `npm run test:ui` (Full Playwright E2E suite)
+5. **Observability & Diagnostics**:
+   - Telemetry automatically maintains a 15-event circular breadcrumbs buffer.
+   - Settings includes a **Health & Diagnostics** card with 1-click **Copy for AI** debugging reports.
+6. **Git Sync & Readable Commits**:
+   - Use descriptive conventional commits with explanatory details.
+   - Push all commits to `origin <branch>`.

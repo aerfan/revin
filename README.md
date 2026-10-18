@@ -79,10 +79,18 @@ The database enforces these rules (Postgres row-level security), not only the in
 - `src/`: the app (Preact + htm, no build framework). `engine.js` holds the calculations and exports, `app.js` the screens, `styles.css` the design.
 - `web/runtime.js`: the standalone layer. It provides the sign-in screens, keeps documents in Supabase through four database functions (`get_doc`, `query_docs`, `set_doc`, `delete_doc`), handles live updates over Supabase Realtime, and supplies user profiles, team management and backups.
 - `web/build.js`: produces `dist-web/` (one `index.html` plus the vendored libraries in `/vendor`). It runs on every Vercel deploy and writes a Content Security Policy that only allows your Supabase project.
-- `supabase/migrations/0001_init.sql`: the tables (`docs`, `members`, `invites`, `team_settings`), access rules, the sign-up trigger and the team functions.
+- `supabase/migrations/`:
+  - `0001_init.sql`: the base tables (`docs`, `members`, `invites`, `team_settings`), access rules, sign-up trigger and team functions.
+  - `0002_security_hardening.sql`: PostgreSQL check constraints (256 KiB limit, valid paths), `trg_docs_integrity` trigger, search_path isolation, admin lockout prevention.
+  - `0003_observability.sql`: `public.error_logs` table, deduplication RPC (`log_client_error`), admin-only RLS policies.
 - `build.js`: builds the claude.ai version of the same app (`dist/`), which is still supported.
 
 Data is stored as JSON documents addressed by path (`services/website`, `config/settings`, `estimates/{id}`, `estimates/{id}/versions/{id}`), which keeps backups and the claude.ai version compatible.
+
+## Deployment & Staging Environments
+
+- **Production URL**: [https://revin-alpha.vercel.app](https://revin-alpha.vercel.app) (Deploys strictly from `main`)
+- **Canary / Staging URL**: [https://revin-canary.vercel.app](https://revin-canary.vercel.app) (Deploys from `canary` for rapid testing & validation)
 
 ## Local development
 
@@ -102,14 +110,18 @@ npx serve dist-web -s         # or any static server with fallback to index.html
 
 Add `http://localhost:3000/**` to the Supabase redirect URLs while developing.
 
-## Tests
+## Tests & Continuous Verification
 
 | Command | What it covers |
 |---|---|
-| `npm run test:engine` | calculations, exports, actual hours, and 600 randomised estimates |
+| `npm run test:engine` | calculations, exports, actual hours, and 5,754 randomised fuzz checks |
+| `node test/canary.compat.js` | cross-browser rendering & interaction contracts on Chromium & WebKit (Safari engine) |
+| `node test/canary.screens.js` | 12 responsive viewport sweeps (320px ultra-compact to 2560px QHD Ultrawide) |
+| `node test/canary.stress.js` | 500-estimate load benchmarks, rapid stepper click storms, memory stability churn |
+| `node test/canary.telemetry.js` | circular telemetry breadcrumbs, local error persistence, and Settings health diagnostics |
+| `npm run test:ui` | full interface: journeys, QA scenarios, accessibility (axe) and responsive checks |
 | `npm run test:db` | the migration on a real Postgres: sign-up roles, access rules, path and size limits, ordering, team rules, a first-admin race (needs Postgres; set `PGHOST`/`PGPASSWORD`) |
-| `npm run test:web` | the built standalone app in Chromium, against real Postgres and PostgREST with local stand-ins for Supabase Auth and Realtime: sign-up, invites, approval, Google PKCE, role changes, live sync, reconnects, exports and backups (run `test/web/get-postgrest.sh` first) |
-| `npm run test:ui` | the full interface: journeys, QA scenarios, accessibility (axe) and responsive checks |
+| `npm run test:web` | the built standalone app in Chromium, against real Postgres and PostgREST with local stand-ins for Supabase Auth and Realtime |
 
 The browser tests need Playwright (`npm i -D playwright && npx playwright install chromium`).
 

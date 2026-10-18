@@ -36,6 +36,8 @@ const csp = [
   "object-src 'none'",
 ].join('; ');
 
+const { assembleApp } = require('../dev/bundle-ui.js');
+assembleApp(ROOT);
 const parts = { CSS: read('src', 'styles.css'), ENGINE: read('src', 'engine.js'), RUNTIME: read('web', 'runtime.js'), APP: read('src', 'app.js') };
 for (const [k, v] of Object.entries(parts)) if (/<\/script/i.test(v) || /<\/style/i.test(v)) throw new Error(`${k} contains a closing tag that would break inlining`);
 let html = read('web', 'template.html');

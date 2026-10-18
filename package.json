@@ -18,6 +18,7 @@
     "start": "node server.js",
     "dev": "node server.js",
     "build": "node web/build.js",
+    "bundle:ui": "node dev/bundle-ui.js",
     "build:claude": "node build.js",
     "build:harness": "node build.js && node dev/break-ui/build-harness.js",
     "test": "npm run test:engine && npm run test:db",

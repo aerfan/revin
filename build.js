@@ -1,6 +1,9 @@
 // Inlines styles, engine and app into a single publishable page.
 const fs = require('fs');
 const path = require('path');
+const { assembleApp } = require('./dev/bundle-ui.js');
+
+assembleApp(__dirname);
 const src = (f) => fs.readFileSync(path.join(__dirname, 'src', f), 'utf8');
 const parts = { CSS: src('styles.css'), ENGINE: src('engine.js'), APP: src('app.js') };
 for (const [k, v] of Object.entries(parts)) {
