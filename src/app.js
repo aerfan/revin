@@ -122,11 +122,11 @@
   function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function plural(n, one, many) { return (n === 1 ? one : many); }
   function lower(s) { return String(s || '').toLowerCase(); }
-  function loadScript(urls) {
+  function loadScript(urls, libName) {
     return new Promise(function (resolve, reject) {
       var i = 0;
       (function next() {
-        if (i >= urls.length) { reject(new Error('The spreadsheet library did not load. Check your connection and try again.')); return; }
+        if (i >= urls.length) { reject(new Error('The ' + (libName || 'library') + ' did not load. Check your connection and try again.')); return; }
         var s = document.createElement('script');
         s.src = urls[i++]; s.async = true;
         s.onload = function () { resolve(); };
@@ -136,8 +136,8 @@
     });
   }
   var DOCX_URLS = VENDOR ? [VENDOR.docx] : ['https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js', 'https://unpkg.com/docx@8.5.0/build/index.umd.js'];
-  function loadDocx() { return window.docx ? Promise.resolve(window.docx) : loadScript(DOCX_URLS).then(function () { if (!window.docx) throw new Error('The document library did not load. Check your connection and try again.'); return window.docx; }); }
-  function loadExcel() { return window.ExcelJS ? Promise.resolve(window.ExcelJS) : loadScript(EXCEL_URLS).then(function () { return window.ExcelJS; }); }
+  function loadDocx() { return window.docx ? Promise.resolve(window.docx) : loadScript(DOCX_URLS, 'document (Word)').then(function () { if (!window.docx) throw new Error('The document library did not load. Check your connection and try again.'); return window.docx; }); }
+  function loadExcel() { return window.ExcelJS ? Promise.resolve(window.ExcelJS) : loadScript(EXCEL_URLS, 'spreadsheet (Excel)').then(function () { return window.ExcelJS; }); }
   function useProfiles(user, ids) {
     var key = ids.slice().sort().join(',');
     var st = useState({}), map = st[0], setMap = st[1];

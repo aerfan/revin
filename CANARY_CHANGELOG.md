@@ -74,3 +74,16 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
   - **Heavy Estimate Benchmark (250 items)**: Full breakdown, complexity multipliers, phase splits, overheads, and currency calculations executed in **<1ms** (`3,382.6h · $338,259`).
   - **Rapid Navigation Churn & Memory Stability**: 30 rapid view switches (Build → Scope → Review) executed in **1,010ms**. Final heap memory remained stable at 65 MB, verifying zero DOM listener leaks or runaway memory retention.
 - **Defects Discovered**: 0 crashes, 0 memory leaks, 0 calculation desyncs.
+
+### Session 5: Platform Optimization & Security Hardening (Completed)
+- **Status**: Completed (100% pass).
+- **Scope**:
+  - **Runtime Delivery Consolidation**: Preact runtime (`preact.umd.min.js`, `hooks.umd.min.js`, `htm.umd.min.js`) bundled into single `/vendor/preact-core.min.js` (16 KB) by `web/build.js`, saving 2 network requests on boot.
+  - **Dynamic Lazy Loading & Resilience**: Enhanced `loadScript` error handling with explicit library labels (Word / Excel), preventing misleading error toasts.
+  - **Font Pre-fetching**: Added `dns-prefetch` alongside `preconnect` for Google Fonts and GStatic.
+  - **Security & CSP Hardening (`vercel.json` & `web/build.js`)**:
+    - Added HTTP `Content-Security-Policy` header allowing Google Fonts, Supabase endpoints, and Google OAuth without broad wildcards.
+    - Added `Cross-Origin-Opener-Policy: same-origin-allow-popups` ensuring Google OAuth popups retain communication with parent window without cross-origin blockage.
+    - Added `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()`.
+    - Added `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`.
+- **Verification**: 100% pass across all engine tests, 53 UI automation checks, 42 QA scenarios, 28 axe audits, 143 responsive width checks, and Canary compatibility suites.

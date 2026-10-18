@@ -25,13 +25,16 @@ const origin = url ? new URL(url).origin : '';
 const ws = origin.replace(/^http/, 'ws');
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src https://fonts.gstatic.com",
+  "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: blob: https:",
-  `connect-src 'self' ${origin} ${ws}`.trim(),
+  `connect-src 'self' ${origin} ${ws} https://*.supabase.co wss://*.supabase.co https://accounts.google.com https://*.googleapis.com`.trim(),
   "worker-src 'self' blob:",
-  "base-uri 'none'", "form-action 'self'", "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'self' https://accounts.google.com https://*.supabase.co",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
 ].join('; ');
 
 const parts = { CSS: read('src', 'styles.css'), ENGINE: read('src', 'engine.js'), RUNTIME: read('web', 'runtime.js'), APP: read('src', 'app.js') };
@@ -44,4 +47,5 @@ fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(path.join(OUT, 'vendor'), { recursive: true });
 fs.writeFileSync(path.join(OUT, 'index.html'), html);
 for (const f of ['preact.umd.min.js', 'hooks.umd.min.js', 'htm.umd.min.js', 'supabase.js', 'exceljs.min.js', 'docx.umd.js']) fs.copyFileSync(path.join(ROOT, 'libs', f), path.join(OUT, 'vendor', f));
+fs.writeFileSync(path.join(OUT, 'vendor', 'preact-core.min.js'), read('libs', 'preact.umd.min.js') + '\n;' + read('libs', 'hooks.umd.min.js') + '\n;' + read('libs', 'htm.umd.min.js'));
 console.log(`built dist-web/index.html ${(html.length / 1024).toFixed(1)} KB · supabase ${url ? origin : '(not configured)'}`);
