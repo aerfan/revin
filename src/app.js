@@ -404,6 +404,12 @@
         window.removeEventListener('storage', onExtChange);
       };
     }, []);
+    var toggleTheme = useCallback(function () {
+      setTheme(function (cur) {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        return isDark ? 'light' : 'dark';
+      });
+    }, []);
 
     var toast = useCallback(function (text, kind, action) {
       var id = Math.random();
