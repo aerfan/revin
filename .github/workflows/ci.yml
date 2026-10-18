@@ -45,6 +45,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Assemble & Build Local Standalone HTML
+        run: npm run bundle:ui && node build.js
+
       - name: Run Engine Tests (5,754 fuzz & math checks)
         run: npm run test:engine
 
@@ -56,9 +59,6 @@ jobs:
         env:
           PGHOST: 127.0.0.1
           PGPASSWORD: pg
-
-      - name: Assemble & Build Local Standalone HTML
-        run: npm run bundle:ui && node build.js
 
       - name: Build Web Application Bundle (with strict gate)
         run: node web/build.js --strict
