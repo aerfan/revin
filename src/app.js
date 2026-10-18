@@ -71,6 +71,7 @@
     presentation: '<path d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,136H40V56H216V176Z"/>',
     sealCheck: '<path d="M225.86,102.82c-3.77-3.94-7.67-8-9.14-11.57-1.36-3.27-1.44-8.69-1.52-13.94-.15-9.76-.31-20.82-8-28.51s-18.75-7.85-28.51-8c-5.25-.08-10.67-.16-13.94-1.52-3.56-1.47-7.63-5.37-11.57-9.14C146.28,23.51,138.44,16,128,16s-18.27,7.51-25.18,14.14c-3.94,3.77-8,7.67-11.57,9.14C88,40.64,82.56,40.72,77.31,40.8c-9.76.15-20.82.31-28.51,8S41,67.55,40.8,77.31c-.08,5.25-.16,10.67-1.52,13.94-1.47,3.56-5.37,7.63-9.14,11.57C23.51,109.72,16,117.56,16,128s7.51,18.27,14.14,25.18c3.77,3.94,7.67,8,9.14,11.57,1.36,3.27,1.44,8.69,1.52,13.94.15,9.76.31,20.82,8,28.51s18.75,7.85,28.51,8c5.25.08,10.67.16,13.94,1.52,3.56,1.47,7.63,5.37,11.57,9.14C109.72,232.49,117.56,240,128,240s18.27-7.51,25.18-14.14c3.94-3.77,8-7.67,11.57-9.14,3.27-1.36,8.69-1.44,13.94-1.52,9.76-.15,20.82-.31,28.51-8s7.85-18.75,8-28.51c.08-5.25.16-10.67,1.52-13.94,1.47-3.56,5.37-7.63,9.14-11.57C232.49,146.28,240,138.44,240,128S232.49,109.73,225.86,102.82Zm-11.55,39.29c-4.79,5-9.75,10.17-12.38,16.52-2.52,6.1-2.63,13.07-2.73,19.82-.1,7-.21,14.33-3.32,17.43s-10.39,3.22-17.43,3.32c-6.75.1-13.72.21-19.82,2.73-6.35,2.63-11.52,7.59-16.52,12.38S132,224,128,224s-9.15-4.92-14.11-9.69-10.17-9.75-16.52-12.38c-6.1-2.52-13.07-2.63-19.82-2.73-7-.1-14.33-.21-17.43-3.32s-3.22-10.39-3.32-17.43c-.1-6.75-.21-13.72-2.73-19.82-2.63-6.35-7.59-11.52-12.38-16.52S32,132,32,128s4.92-9.15,9.69-14.11,9.75-10.17,12.38-16.52c2.52-6.1,2.63-13.07,2.73-19.82.1-7,.21-14.33,3.32-17.43S70.51,56.9,77.55,56.8c6.75-.1,13.72-.21,19.82-2.73,6.35-2.63,11.52-7.59,16.52-12.38S124,32,128,32s9.15,4.92,14.11,9.69,10.17,9.75,16.52,12.38c6.1,2.52,13.07,2.63,19.82,2.73,7,.1,14.33.21,17.43,3.32s3.22,10.39,3.32,17.43c.1,6.75.21,13.72,2.73,19.82,2.63,6.35,7.59,11.52,12.38,16.52S224,124,224,128,219.08,137.15,214.31,142.11ZM173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"/>',
     pencilLine: '<path d="M227.32,73.37,182.63,28.69a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H216a8,8,0,0,0,0-16H115.32l112-112A16,16,0,0,0,227.32,73.37ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.69,147.32,64l24-24L216,84.69Z"/>',
+    plug: '<path d="M237.66,66.34a8,8,0,0,0-11.32,0L192,100.69,155.31,64l34.35-34.34a8,8,0,1,0-11.32-11.32L144,52.69,117.66,26.34a8,8,0,0,0-11.32,11.32L112.69,44l-53,53a40,40,0,0,0,0,56.57l15.71,15.71L26.34,218.34a8,8,0,0,0,11.32,11.32l49.09-49.09,15.71,15.71a40,40,0,0,0,56.57,0l53-53,6.34,6.35a8,8,0,0,0,11.32-11.32L203.31,112l34.35-34.34A8,8,0,0,0,237.66,66.34ZM147.72,185a24,24,0,0,1-33.95,0L71,142.23a24,24,0,0,1,0-33.95l53-53L200.69,132Z"/>',
   };
   // Duotone filled icons for services (reference: category table with two-tone icons).
   var DUO = {
@@ -1834,19 +1835,47 @@ var STEPS = [
         return;
       }
       var tierLabel = selectedTier !== null && m.packageNames ? m.packageNames[selectedTier] : 'Full Scope';
+      var acceptance = {
+        name: name,
+        email: email,
+        org: org,
+        timestamp: Date.now(),
+        package: tierLabel,
+        totalHours: E.round(m.total, 1),
+        totalCost: m.totalCost,
+      };
       p.change(function (n) {
-        n.acceptance = {
-          name: name,
-          email: email,
-          org: org,
-          timestamp: Date.now(),
-          package: tierLabel,
-          totalHours: E.round(m.total, 1),
-          totalCost: m.totalCost,
-        };
+        n.acceptance = acceptance;
         n.status = 'approved';
       });
       ctx.toast('Proposal accepted and digitally signed!', 'good');
+
+      // Dispatch outbound automation webhook if configured
+      var wh = ctx.settings && ctx.settings.webhooks;
+      if (wh && wh.enabled && wh.url) {
+        try {
+          var payload = E.formatWebhookPayload(Object.assign({}, d, {
+            acceptance: acceptance,
+            status: 'approved',
+            total: m.total,
+            totalCost: m.totalCost,
+            currency: m.currency,
+            milestones: m.milestones,
+          }), 'proposal.accepted', { url: wh.url });
+
+          E.dispatchWebhook(wh.url, payload, wh.secret).then(function (res) {
+            if (res.ok) {
+              Telemetry.crumb('webhook', 'Delivered to ' + wh.url.slice(0, 40));
+            } else {
+              Telemetry.record(new Error('Webhook returned HTTP ' + res.status), { route: 'proposal', severity: 'warn' });
+            }
+          }).catch(function (err) {
+            Telemetry.record(err, { route: 'proposal', severity: 'warn' });
+          });
+        } catch (e) {
+          Telemetry.record(e, { route: 'proposal', severity: 'warn' });
+        }
+      }
     }
 
     function revokeSignature() {
@@ -2668,6 +2697,86 @@ var STEPS = [
     </section>`;
   }
 
+  function WebhooksPanel(p) {
+    var ctx = p.ctx, d = p.d;
+    var s = d.draft;
+    var wh = s.webhooks || {};
+    var st = useState(false), testing = st[0], setTesting = st[1];
+
+    function mutWh(fn) {
+      d.mut(function (n) {
+        n.webhooks = Object.assign({}, n.webhooks || {});
+        fn(n.webhooks);
+      });
+    }
+
+    async function sendTest() {
+      var url = (wh.url || '').trim();
+      if (!url) { ctx.toast('Please enter a webhook endpoint URL first', 'bad'); return; }
+      if (!/^https:\/\/[^\s/$.?#].[^\s]*$/i.test(url)) {
+        ctx.toast('Webhook URL must be a valid secure HTTPS endpoint', 'bad');
+        return;
+      }
+      setTesting(true);
+      try {
+        var payload = E.formatWebhookPayload({
+          id: 'test-estimate-id',
+          name: 'Acme Digital Platform (Sample)',
+          client: 'Acme International',
+          currency: s.currency || 'USD',
+          hourlyRate: s.hourlyRate || 100,
+          costRate: s.costRate || 50,
+          total: 120,
+          totalCost: (s.hourlyRate || 100) * 120,
+          acceptance: {
+            name: 'Jane Doe',
+            email: 'jane@acme.com',
+            org: 'Acme International',
+            package: 'Standard Scope',
+            timestamp: Date.now(),
+          },
+        }, 'test.ping', { url: url });
+
+        var res = await E.dispatchWebhook(url, payload, wh.secret);
+        if (res.ok) {
+          ctx.toast('Test webhook delivered successfully (' + res.status + ')', 'good');
+        } else {
+          ctx.toast('Endpoint responded with status ' + res.status + ': ' + (res.statusText || 'Error'), 'bad');
+        }
+      } catch (err) {
+        ctx.toast('Webhook test failed: ' + (err.message || 'Network error'), 'bad');
+      }
+      setTesting(false);
+    }
+
+    return html`<section class="panel panel-pad" id="panel-webhooks">
+      <${CardHead} icon="plug" color="blue" title="Outbound webhooks & post-acceptance automation" desc="Trigger external workflows (Stripe deposit invoice, Slack team notification, Zapier, Make.com) when proposals are digitally accepted." />
+      <div class="stack" style="gap:14px">
+        <label class="check-line">
+          <${Switch} id="wh-enabled" label="Enable outbound webhooks" checked=${wh.enabled !== false && !!wh.url} onChange=${function (v) { mutWh(function (w) { w.enabled = v; }); }} />
+          <span>Enable outbound webhooks</span>
+        </label>
+        <div class="grid-2">
+          <label class="field"><span>Endpoint URL (HTTPS only)</span>
+            <input class="input" id="wh-url" type="url" placeholder="https://hooks.slack.com/... or https://hooks.zapier.com/..." value=${wh.url || ''} onInput=${function (e) { mutWh(function (w) { w.url = e.target.value.trim(); }); }} />
+          </label>
+          <label class="field"><span>Signing secret or token (optional)</span>
+            <input class="input" id="wh-secret" type="password" placeholder="Passed as X-Revin-Secret header" value=${wh.secret || ''} onInput=${function (e) { mutWh(function (w) { w.secret = e.target.value.trim(); }); }} />
+          </label>
+        </div>
+        <div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding-top:4px">
+          <div class="muted" style="font-size:12px">
+            <b>Supported events:</b> <span class="pill" style="font-size:11px">proposal.accepted</span>
+            <span style="margin-left:8px">Slack & Discord webhooks auto-format with rich message blocks.</span>
+          </div>
+          <button class="btn sm" id="btn-test-webhook" disabled=${testing || !wh.url} onClick=${sendTest}>
+            <${Icon} name="refresh" size=${13} /> ${testing ? 'Sending test…' : 'Send test webhook'}
+          </button>
+        </div>
+      </div>
+    </section>`;
+  }
+
   function SettingsView(p) {
     var ctx = p.ctx;
     var d = useDocDraft(ctx.settings);
@@ -2722,6 +2831,8 @@ var STEPS = [
             </div>
           </div>
         </section>
+
+        <${WebhooksPanel} ctx=${ctx} d=${d} />
 
         <section class="panel panel-pad">
           <${CardHead} icon="gauge" color="purple" title="Complexity levels" desc="Multipliers estimators apply per item. Standard is the default." />

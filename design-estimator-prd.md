@@ -8,7 +8,7 @@
 | **Owner** | Arfan / Product & Engineering Team |
 
 ### Changelog
-- **v1.3**: Modularized UI architecture into 14 domain modules under `src/ui/` with zero-dependency assembler (`dev/bundle-ui.js`). Implemented Phase A Agency Financials (internal cost rates, labor cost, gross profit, margin percentages, role rate cards, payment milestones schedule). Implemented Phase B Interactive Client Proposal Portal (client presentation mode, package tier comparisons, digital acceptance flow with cryptographic verification seal, and revocation management). Implemented PWA Service Worker (`web/sw.js` -> `dist-web/sw.js`) with Cache-First static asset caching (<30ms repeat loads) and deferred rendering (`content-visibility: auto`) for large estimate lists. Extreme stress benchmarking verified up to 1,000 estimates (260ms) and 500-item calculations (1ms). Implemented automated Canary Security & Penetration Suite (`test/canary.security.js`) protecting against CSV Formula/DDE injection (CWE-1236), prototype pollution (CWE-1321), stored XSS (CWE-79), client mode commercial leakage (CWE-200), boundary overflows (CWE-128), and ReDoS (CWE-1333).
+- **v1.3**: Modularized UI architecture into 14 domain modules under `src/ui/` with zero-dependency assembler (`dev/bundle-ui.js`). Implemented Phase A Agency Financials (internal cost rates, labor cost, gross profit, margin percentages, role rate cards, payment milestones schedule). Implemented Phase B Interactive Client Proposal Portal (client presentation mode, package tier comparisons, digital acceptance flow with cryptographic verification seal, and revocation management). Implemented Phase 1 Post-Acceptance Webhooks & Automation (instant outbound webhook dispatch for Stripe deposit invoicing, Slack notifications with BlockKit cards, and Zapier/Make CRM sync). Implemented PWA Service Worker (`web/sw.js` -> `dist-web/sw.js`) with Cache-First static asset caching (<30ms repeat loads) and deferred rendering (`content-visibility: auto`) for large estimate lists. Extreme stress benchmarking verified up to 1,000 estimates (260ms) and 500-item calculations (1ms). Implemented automated Canary Security & Penetration Suite (`test/canary.security.js`) protecting against CSV Formula/DDE injection (CWE-1236), prototype pollution (CWE-1321), stored XSS (CWE-79), client mode commercial leakage (CWE-200), boundary overflows (CWE-128), and ReDoS (CWE-1333).
 - **v1.2**: Standalone app (§20) on Supabase + Vercel, with Google or email sign-in, team management (invites, approval, company domain), backups and import from the claude.ai version. The brief analyzer is hidden in the standalone build for now.
 - **v1.1**: Built F1 actuals tracking (§19): actual hours per item and for project time, variance per line and overall, timesheet import, an Actuals sheet in the Excel export, and Library → Calibrate hours now reads tracked estimates automatically. Fixed a stylesheet regression from v1.0 that had switched off the §16 motion and polish styles; added a CSS parse check to the test suite.
 - **v1.0**: Built the v2 next steps (§18): C2 packages, E1 versions with diff, D2 requirements and traceability, A1 brief analyzer (Claude in the page), G3 client proposal (Word) and library calibration from past projects. Computed totals display to one decimal; entered values show exactly.
@@ -572,6 +572,19 @@ Motion follows Emil Kowalski's rules: animate only when it gives feedback, shows
 - **Incident Protocol:**
   - Any security regression immediately halts deployment on `canary`.
   - Production deployments on `main` require a clean security audit report (`npm run test:security` -> 0 findings).
+
+### 21.6 Outbound Webhooks & Post-Acceptance Automation (Phase 1)
+- **Problem:** When an agency client accepts and signs an estimate proposal digitally, manual handoff to finance (Stripe deposit invoice creation) and account managers (Slack notification, CRM deal update) causes operational latency and slows time-to-cash.
+- **Solution:** Integrated an outbound webhook automation subsystem in Revin that dispatches structured event payloads upon proposal acceptance:
+  - **Settings Configuration (`WebhooksPanel`):** Admin-configurable HTTPS endpoint URL, optional signing secret (`X-Revin-Secret`), and event filter (`proposal.accepted`). Includes a **Send test webhook** action with live HTTP delivery verification.
+  - **Smart Formatting (`formatWebhookPayload`):**
+    - **Enterprise Automation:** Generates clean JSON payload with estimate details, complete financial calculations (`totalCost`, `laborCost`, `grossProfit`, `marginPercent`), milestone payment schedules (e.g. Deposit 40%, Handover 30%), and client digital acceptance metadata.
+    - **Native Slack & Discord Compatibility:** Automatically detects `hooks.slack.com` or `discord.com` URLs and formats BlockKit cards with project name, client, contract value, package tier, and signee organization.
+  - **Security & Reliability:**
+    - Strict HTTPS validation prevents protocol abuse (rejects `http://`, `file:`, `javascript:`).
+    - Non-blocking asynchronous dispatch with 8000ms `AbortController` timeout; errors are captured in Telemetry without interrupting the client sign-off flow.
+  - **Verification:** Verified by `test/canary.webhook.js` across unit payload contracts, protocol security enforcement, Settings test ping, and end-to-end browser proposal sign-off interception.
+
 
 
 

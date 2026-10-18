@@ -358,19 +358,47 @@
         return;
       }
       var tierLabel = selectedTier !== null && m.packageNames ? m.packageNames[selectedTier] : 'Full Scope';
+      var acceptance = {
+        name: name,
+        email: email,
+        org: org,
+        timestamp: Date.now(),
+        package: tierLabel,
+        totalHours: E.round(m.total, 1),
+        totalCost: m.totalCost,
+      };
       p.change(function (n) {
-        n.acceptance = {
-          name: name,
-          email: email,
-          org: org,
-          timestamp: Date.now(),
-          package: tierLabel,
-          totalHours: E.round(m.total, 1),
-          totalCost: m.totalCost,
-        };
+        n.acceptance = acceptance;
         n.status = 'approved';
       });
       ctx.toast('Proposal accepted and digitally signed!', 'good');
+
+      // Dispatch outbound automation webhook if configured
+      var wh = ctx.settings && ctx.settings.webhooks;
+      if (wh && wh.enabled && wh.url) {
+        try {
+          var payload = E.formatWebhookPayload(Object.assign({}, d, {
+            acceptance: acceptance,
+            status: 'approved',
+            total: m.total,
+            totalCost: m.totalCost,
+            currency: m.currency,
+            milestones: m.milestones,
+          }), 'proposal.accepted', { url: wh.url });
+
+          E.dispatchWebhook(wh.url, payload, wh.secret).then(function (res) {
+            if (res.ok) {
+              Telemetry.crumb('webhook', 'Delivered to ' + wh.url.slice(0, 40));
+            } else {
+              Telemetry.record(new Error('Webhook returned HTTP ' + res.status), { route: 'proposal', severity: 'warn' });
+            }
+          }).catch(function (err) {
+            Telemetry.record(err, { route: 'proposal', severity: 'warn' });
+          });
+        } catch (e) {
+          Telemetry.record(e, { route: 'proposal', severity: 'warn' });
+        }
+      }
     }
 
     function revokeSignature() {

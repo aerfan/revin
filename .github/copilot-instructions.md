@@ -13,6 +13,6 @@ Revin is an enterprise design-hours estimation and commercial proposal platform 
 - **Icons**: Always use Phosphor Icons (`@phosphor-icons/core`) with a 256×256 viewBox (regular outline for standard controls, duotone for service categories).
 - **Commercials & Proposals**: Strict separation between billable rates and internal cost rates. In `.clean-mode` / Presentation Mode, internal margins and cost rates must never appear in the DOM. Digital proposal acceptances are immutable once signed.
 - **Observability**: Use `Telemetry.record(err, context)` and breadcrumb tracking. Errors are reported in Settings with 1-click "Copy for AI" markdown.
-- **Security & Privacy**: Always sanitize CSV formula triggers (`=`, `+`, `-`, `@`, `|` prefixed with `'`), guard object merging against prototype pollution, bound user input strings, and suppress internal margins in client mode.
+- **Security, Privacy & Webhooks**: Always sanitize CSV formula triggers (`=`, `+`, `-`, `@`, `|` prefixed with `'`), guard object merging against prototype pollution, bound user input strings, suppress internal margins in client mode, and enforce strict HTTPS protocols on outbound webhook automation.
 - **Verification**: Always execute `npm run test:engine`, `npm run test:security`, `npm run test:canary`, and `npm run test:ui` before committing (100% pass required).
 - **Commits**: Use human-readable conventional commits (`feat:`, `fix:`, `refactor:`, `docs:`) and push to remote immediately.

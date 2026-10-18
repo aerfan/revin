@@ -54,10 +54,14 @@ Welcome to the **Revin** codebase.
    - Always sanitize user inputs and CSV formulas (`=`, `+`, `-`, `@`, `|` prefixed with `'`).
    - Guard object merging against Prototype Pollution (`__proto__`, `constructor`, `prototype`).
    - Never leak sensitive internal margins, cost rates, or private notes in client presentation mode or exports.
-8. **Vercel & Supabase Production Resilience**:
+8. **Outbound Webhooks & Post-Acceptance Automation**:
+   - Digital proposal acceptance triggers outbound webhook payloads (`proposal.accepted`).
+   - Enforce HTTPS protocol and non-blocking timeout handling (8000ms).
+   - Slack/Discord endpoints receive formatted BlockKit cards.
+9. **Vercel & Supabase Production Resilience**:
    - Do not place `frame-ancestors` in `<meta>` tags (CSP HTTP headers only).
    - Maintain `Cross-Origin-Opener-Policy: same-origin-allow-popups` for Google OAuth.
    - Service worker `sw.js` must be served with `no-cache, no-store, must-revalidate` and excluded from SPA rewrites in `vercel.json`.
-9. **Parallel Agent Worktrees**:
+10. **Parallel Agent Worktrees**:
    - When running parallel agent tasks, create an isolated worktree:
      `git worktree add ../revin-<task> canary`

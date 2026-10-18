@@ -228,3 +228,33 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
   - `npm run test:engine`: 5,754 checks passed (100%).
   - `npm run test:ui`: All 53 UI automation checks, 42 QA scenarios, 28 axe audits, 143 responsive width sweeps passed (100%).
 
+### Session 12: Post-Acceptance Webhooks & Outbound Automation (Phase 1) (Completed)
+- **Status**: Completed (100% pass).
+- **Scope**: Executed Phase 1 of the CTO strategic roadmap: automated outbound webhook dispatch upon proposal digital sign-off (enabling automated Stripe deposit invoicing, Slack team notifications, and Zapier/Make CRM sync).
+- **Architectural Enhancements**:
+  - `src/engine.js`:
+    - Updated `normalizeSettings` to support and validate `st.webhooks` (`enabled`, `url`, `secret`, `events`).
+    - Added `formatWebhookPayload(estimate, event, opts)`:
+      - Sanitizes and extracts full commercial metrics (`totalCost`, `totalHours`, `laborCost`, `grossProfit`, `marginPercent`), milestone payment schedules, and digital acceptance credentials.
+      - Automatically detects Slack or Discord incoming webhook endpoints and serializes into Slack BlockKit cards with header, formatted fields, and context timestamps.
+    - Added `dispatchWebhook(url, payload, secret, timeoutMs)`:
+      - Strictly validates HTTPS endpoint protocol (protecting against SSRF and non-secure schemes).
+      - Attaches `Content-Type: application/json`, `X-Revin-Event`, `X-Revin-Delivery`, and optional `X-Revin-Secret` headers.
+      - Uses `AbortController` with an 8000ms timeout to prevent hanging requests.
+  - `src/ui/views/settings.js`:
+    - Added dedicated `WebhooksPanel` directly below Financials & rate cards.
+    - Includes `#wh-enabled` toggle, `#wh-url` HTTPS input, `#wh-secret` signing key input, and supported events badges.
+    - Added `#btn-test-webhook` ("Send test webhook") with live toast notification on delivery.
+  - `src/ui/views/advanced.js`:
+    - Wired `signProposal` to trigger non-blocking outbound webhook delivery upon successful proposal acceptance.
+    - Added error interception and telemetry breadcrumbs (`Telemetry.crumb` and `Telemetry.record`) ensuring that network or CORS errors never block client sign-off.
+  - `src/ui/icons.js`:
+    - Added Phosphor `plug` icon to `ICONS`.
+  - `test/canary.webhook.js`:
+    - Authored comprehensive test suite verifying payload serialization, Slack formatting, protocol validation, Settings test ping, and E2E proposal acceptance webhook interception.
+- **Verification Results**:
+  - `node test/canary.webhook.js`: Passed (100%).
+  - `npm run test:canary`: All 8 canary suites passed (100%).
+  - `npm run test:engine`: 5,754 checks passed (100%).
+
+

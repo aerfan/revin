@@ -127,6 +127,7 @@ Add `http://localhost:3000/**` to the Supabase redirect URLs while developing.
 | `node test/canary.telemetry.js` | Circular telemetry breadcrumbs, local error persistence, and Settings health diagnostics |
 | `node test/canary.proposal.js` | Interactive proposal portal, presentation mode, tier switching, digital sign-off, certificate seal, and revocation |
 | `node test/canary.security.js` | Fuzz testing and exploit verification against 6 core web attack vectors |
+| `node test/canary.webhook.js` | Post-acceptance webhooks, Slack BlockKit formatting, and outbound automation contracts |
 | `npm run test:ui` | Full interface: 53 UI automation checks, 42 QA scenarios, 7 v2 scenarios, 3 F1 scenarios, 28 axe accessibility audits, 143 responsive sweeps |
 | `npm run test:db` | The migration on real Postgres: sign-up roles, access rules, path and size limits, ordering, team rules, first-admin race |
 | `npm run test:web` | The built standalone app in Chromium against real Postgres and PostgREST with local Auth/Realtime mocks |

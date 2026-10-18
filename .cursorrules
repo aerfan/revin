@@ -14,7 +14,7 @@ You are an expert engineer working on Revin. Follow these non-negotiable guideli
    - `web/sw.js`: PWA Service Worker for Cache-First static asset caching.
    - `supabase/migrations/`: PostgreSQL schemas, security hardening, and error logging.
 4. **Testing Contracts (100% Pass Required)**:
-   - `npm run test:canary` (Runs all 7 Canary test suites)
+   - `npm run test:canary` (Runs all 8 Canary test suites)
    - `npm run test:security` (Automated penetration and exploit suite)
    - `npm run test:engine` (5,754 fuzz checks & margin contracts)
    - `node test/canary.compat.js` (Chromium + WebKit)
@@ -23,6 +23,7 @@ You are an expert engineer working on Revin. Follow these non-negotiable guideli
    - `node test/canary.telemetry.js` (Telemetry & error logging)
    - `node test/canary.proposal.js` (Interactive proposal portal & digital sign-off)
    - `node test/canary.security.js` (CSV formula injection, prototype pollution, XSS, commercial privacy, bounds, ReDoS)
+   - `node test/canary.webhook.js` (Post-acceptance webhooks, Slack BlockKit formatting, and outbound automation contracts)
    - `npm run test:ui` (Full Playwright E2E suite)
 5. **Commercials & Proposals**:
    - Internal cost rates (`costRate`) and margins must strictly be suppressed when `.clean-mode` / Presentation Mode is active.

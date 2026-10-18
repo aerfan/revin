@@ -175,6 +175,86 @@
     </section>`;
   }
 
+  function WebhooksPanel(p) {
+    var ctx = p.ctx, d = p.d;
+    var s = d.draft;
+    var wh = s.webhooks || {};
+    var st = useState(false), testing = st[0], setTesting = st[1];
+
+    function mutWh(fn) {
+      d.mut(function (n) {
+        n.webhooks = Object.assign({}, n.webhooks || {});
+        fn(n.webhooks);
+      });
+    }
+
+    async function sendTest() {
+      var url = (wh.url || '').trim();
+      if (!url) { ctx.toast('Please enter a webhook endpoint URL first', 'bad'); return; }
+      if (!/^https:\/\/[^\s/$.?#].[^\s]*$/i.test(url)) {
+        ctx.toast('Webhook URL must be a valid secure HTTPS endpoint', 'bad');
+        return;
+      }
+      setTesting(true);
+      try {
+        var payload = E.formatWebhookPayload({
+          id: 'test-estimate-id',
+          name: 'Acme Digital Platform (Sample)',
+          client: 'Acme International',
+          currency: s.currency || 'USD',
+          hourlyRate: s.hourlyRate || 100,
+          costRate: s.costRate || 50,
+          total: 120,
+          totalCost: (s.hourlyRate || 100) * 120,
+          acceptance: {
+            name: 'Jane Doe',
+            email: 'jane@acme.com',
+            org: 'Acme International',
+            package: 'Standard Scope',
+            timestamp: Date.now(),
+          },
+        }, 'test.ping', { url: url });
+
+        var res = await E.dispatchWebhook(url, payload, wh.secret);
+        if (res.ok) {
+          ctx.toast('Test webhook delivered successfully (' + res.status + ')', 'good');
+        } else {
+          ctx.toast('Endpoint responded with status ' + res.status + ': ' + (res.statusText || 'Error'), 'bad');
+        }
+      } catch (err) {
+        ctx.toast('Webhook test failed: ' + (err.message || 'Network error'), 'bad');
+      }
+      setTesting(false);
+    }
+
+    return html`<section class="panel panel-pad" id="panel-webhooks">
+      <${CardHead} icon="plug" color="blue" title="Outbound webhooks & post-acceptance automation" desc="Trigger external workflows (Stripe deposit invoice, Slack team notification, Zapier, Make.com) when proposals are digitally accepted." />
+      <div class="stack" style="gap:14px">
+        <label class="check-line">
+          <${Switch} id="wh-enabled" label="Enable outbound webhooks" checked=${wh.enabled !== false && !!wh.url} onChange=${function (v) { mutWh(function (w) { w.enabled = v; }); }} />
+          <span>Enable outbound webhooks</span>
+        </label>
+        <div class="grid-2">
+          <label class="field"><span>Endpoint URL (HTTPS only)</span>
+            <input class="input" id="wh-url" type="url" placeholder="https://hooks.slack.com/... or https://hooks.zapier.com/..." value=${wh.url || ''} onInput=${function (e) { mutWh(function (w) { w.url = e.target.value.trim(); }); }} />
+          </label>
+          <label class="field"><span>Signing secret or token (optional)</span>
+            <input class="input" id="wh-secret" type="password" placeholder="Passed as X-Revin-Secret header" value=${wh.secret || ''} onInput=${function (e) { mutWh(function (w) { w.secret = e.target.value.trim(); }); }} />
+          </label>
+        </div>
+        <div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding-top:4px">
+          <div class="muted" style="font-size:12px">
+            <b>Supported events:</b> <span class="pill" style="font-size:11px">proposal.accepted</span>
+            <span style="margin-left:8px">Slack & Discord webhooks auto-format with rich message blocks.</span>
+          </div>
+          <button class="btn sm" id="btn-test-webhook" disabled=${testing || !wh.url} onClick=${sendTest}>
+            <${Icon} name="refresh" size=${13} /> ${testing ? 'Sending test…' : 'Send test webhook'}
+          </button>
+        </div>
+      </div>
+    </section>`;
+  }
+
   function SettingsView(p) {
     var ctx = p.ctx;
     var d = useDocDraft(ctx.settings);
@@ -229,6 +309,8 @@
             </div>
           </div>
         </section>
+
+        <${WebhooksPanel} ctx=${ctx} d=${d} />
 
         <section class="panel panel-pad">
           <${CardHead} icon="gauge" color="purple" title="Complexity levels" desc="Multipliers estimators apply per item. Standard is the default." />

@@ -162,6 +162,13 @@
     var seenPh = {}, ph = strs(st.phases).map(function (p) { return p.trim(); }).filter(function (p) { var k = p.toLowerCase(); if (!p || seenPh[k]) return false; seenPh[k] = 1; return true; });
     var rls = arr(st.roles).map(function (r) { return { id: txt(r.id) || uid('r'), name: txt(r.name), rate: num(r.rate, 100), costRate: num(r.costRate, 0) }; });
     var ms = arr(st.milestones).map(function (m) { return { id: txt(m.id) || uid('m'), name: txt(m.name), percent: num(m.percent) }; });
+    var wh = obj(st.webhooks);
+    var webhooks = {
+      enabled: wh.enabled !== false && !!txt(wh.url),
+      url: txt(wh.url),
+      secret: txt(wh.secret),
+      events: arr(wh.events).length ? strs(wh.events) : ['proposal.accepted'],
+    };
     return Object.assign({}, st, {
       agencyName: txt(st.agencyName), bufferPercent: num(st.bufferPercent, 10),
       hourlyRate: num(st.hourlyRate, 100), costRate: num(st.costRate, 0), currency: txt(st.currency) || 'USD',
@@ -171,6 +178,7 @@
       overhead: arr(st.overhead).map(function (o) { return Object.assign({}, o, { id: txt(o.id) || uid('oh'), name: txt(o.name), rule: o.rule === 'percent' ? 'percent' : 'fixed', value: num(o.value), enabled: o.enabled !== false, description: txt(o.description) }); }),
       phases: ph.length ? ph : ['Phase 1'],
       defaultAssumptions: strs(st.defaultAssumptions), defaultExclusions: strs(st.defaultExclusions),
+      webhooks: webhooks,
     });
   }
   function normalizeService(s) {
@@ -1120,6 +1128,132 @@
     return typeof window !== 'undefined' && D.Packer.toBlob ? D.Packer.toBlob(doc) : D.Packer.toBuffer(doc);
   }
 
+  // ---------------------------------------------------------------- Webhooks & Automation (Phase 1)
+  function formatWebhookPayload(est, event, opts) {
+    est = normalize(est);
+    event = txt(event) || 'proposal.accepted';
+    opts = obj(opts);
+    var url = txt(opts.url);
+    var isSlackOrDiscord = /hooks\.slack\.com|discord\.com\/api\/webhooks/i.test(url);
+    var acceptance = obj(est.acceptance);
+    var c = compute(est);
+    var curr = txt(est.currency || (est.snapshot && est.snapshot.currency) || 'USD');
+    var pkg = acceptance.package || 'Standard';
+    var totalCostStr = fmtMoney(c.totalCost, curr);
+    var totalHoursStr = fmtHours(c.total);
+    var ts = acceptance.timestamp || Date.now();
+    var isoTime = new Date(ts).toISOString();
+
+    if (isSlackOrDiscord) {
+      var summaryText = '🎉 Proposal Accepted: *' + (est.name || 'Estimate') + '* (' + totalCostStr + ' · ' + totalHoursStr + ') by ' + (acceptance.name || 'Client');
+      if (event === 'test.ping') {
+        summaryText = '🔔 Revin Webhook Test Ping — Delivery verified successfully!';
+      }
+      return {
+        text: summaryText,
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: event === 'test.ping' ? '🔔 Revin Integration Ping' : '🎉 Proposal Digitally Accepted!',
+              emoji: true,
+            },
+          },
+          {
+            type: 'section',
+            fields: [
+              { type: 'mrkdwn', text: '*Project:*\n' + (est.name || '—') },
+              { type: 'mrkdwn', text: '*Client:*\n' + (est.client || '—') },
+              { type: 'mrkdwn', text: '*Contract Value:*\n' + totalCostStr + ' (' + totalHoursStr + ')' },
+              { type: 'mrkdwn', text: '*Package:*\n' + pkg },
+              { type: 'mrkdwn', text: '*Accepted By:*\n' + (acceptance.name || '—') + (acceptance.email ? ' (' + acceptance.email + ')' : '') },
+              { type: 'mrkdwn', text: '*Organization:*\n' + (acceptance.org || est.client || '—') },
+            ],
+          },
+          {
+            type: 'context',
+            elements: [
+              { type: 'mrkdwn', text: 'Verified timestamp: ' + isoTime + ' · Revin Commercial Platform' },
+            ],
+          },
+        ],
+      };
+    }
+
+    return {
+      event: event,
+      timestamp: ts,
+      isoTimestamp: isoTime,
+      estimate: {
+        id: est.id || '',
+        name: est.name || '',
+        client: est.client || '',
+        currency: curr,
+        hourlyRate: c.rate,
+        costRate: c.costRate,
+        totalHours: round(c.total, 1),
+        totalCost: round(c.totalCost, 2),
+        laborCost: round(c.laborCost, 2),
+        grossProfit: round(c.grossProfit, 2),
+        marginPercent: c.marginPercent,
+        package: pkg,
+        status: est.status || 'approved',
+      },
+      acceptance: {
+        name: acceptance.name || '',
+        email: acceptance.email || '',
+        org: acceptance.org || '',
+        package: pkg,
+        timestamp: ts,
+        isoTimestamp: isoTime,
+      },
+      milestones: (c.milestones || []).map(function (m) {
+        return { name: m.name, percent: m.percent, amount: m.amount };
+      }),
+      source: 'revin-webhooks-v1',
+    };
+  }
+
+  async function dispatchWebhook(url, payload, secret, timeoutMs) {
+    url = txt(url).trim();
+    if (!url) throw new Error('Webhook URL is required');
+    if (!/^https:\/\/[^\s/$.?#].[^\s]*$/i.test(url)) {
+      throw new Error('Webhook URL must be a valid secure HTTPS endpoint');
+    }
+    timeoutMs = num(timeoutMs, 8000);
+    var headers = {
+      'Content-Type': 'application/json',
+      'X-Revin-Event': (payload && payload.event) || 'proposal.accepted',
+      'X-Revin-Delivery': 'wh_' + Date.now().toString(36),
+    };
+    if (secret && typeof secret === 'string' && secret.trim()) {
+      headers['X-Revin-Secret'] = secret.trim();
+    }
+
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = controller ? setTimeout(function () { controller.abort(); }, timeoutMs) : null;
+    try {
+      var fetchFn = typeof fetch !== 'undefined' ? fetch : null;
+      if (!fetchFn) throw new Error('Global fetch is not available in this environment');
+      var res = await fetchFn(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload),
+        mode: 'cors',
+        signal: controller ? controller.signal : undefined,
+      });
+      if (timer) clearTimeout(timer);
+      return { ok: res.ok, status: res.status, statusText: res.statusText };
+    } catch (err) {
+      if (timer) clearTimeout(timer);
+      if (err.name === 'AbortError') {
+        throw new Error('Webhook delivery timed out after ' + timeoutMs + 'ms');
+      }
+      throw err;
+    }
+  }
+
   return {
     PRIORITIES: PRIORITIES, STATUSES: STATUSES, REGISTER_KINDS: REGISTER_KINDS, DEFAULT_LABELS: DEFAULT_LABELS, DEFAULT_COMPLEXITY: DEFAULT_COMPLEXITY,
     DEFAULT_ROLES: DEFAULT_ROLES, DEFAULT_MILESTONES: DEFAULT_MILESTONES, computeMilestones: computeMilestones,
@@ -1136,5 +1270,6 @@
     requirementsOf: requirementsOf, traceMatrix: traceMatrix, parseCsv: parseCsv, pastRows: pastRows, calibrate: calibrate,
     actualsOf: actualsOf, hasActuals: hasActuals, actualsSummary: actualsSummary, trackedRows: trackedRows, matchActuals: matchActuals,
     normalize: normalize, normalizeService: normalizeService, normalizeSettings: normalizeSettings, fileBase: fileBase,
+    formatWebhookPayload: formatWebhookPayload, dispatchWebhook: dispatchWebhook,
   };
 });
