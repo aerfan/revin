@@ -2,12 +2,13 @@
 
 | | |
 |---|---|
-| **Version** | 1.2 |
-| **Status** | v1 live with the Mintlify-style redesign (§16) and a full QA hardening pass (§17). Working defaults in §10.2 still to be replaced with real numbers |
-| **Last updated** | 2026-10-18 |
-| **Owner** | TBD |
+| **Version** | 1.3 |
+| **Status** | v1.3 live on Canary preview (https://revin-canary.vercel.app). Production guarded on `main` (https://revin-alpha.vercel.app). |
+| **Last updated** | 2026-10-19 |
+| **Owner** | Arfan / Product & Engineering Team |
 
 ### Changelog
+- **v1.3**: Modularized UI architecture into 14 domain modules under `src/ui/` with zero-dependency assembler (`dev/bundle-ui.js`). Implemented Phase A Agency Financials (internal cost rates, labor cost, gross profit, margin percentages, role rate cards, payment milestones schedule). Implemented Phase B Interactive Client Proposal Portal (client presentation mode, package tier comparisons, digital acceptance flow with cryptographic verification seal, and revocation management). Implemented PWA Service Worker (`web/sw.js` -> `dist-web/sw.js`) with Cache-First static asset caching (<30ms repeat loads) and deferred rendering (`content-visibility: auto`) for large estimate lists. Extreme stress benchmarking verified up to 1,000 estimates (260ms) and 500-item calculations (1ms).
 - **v1.2**: Standalone app (§20) on Supabase + Vercel, with Google or email sign-in, team management (invites, approval, company domain), backups and import from the claude.ai version. The brief analyzer is hidden in the standalone build for now.
 - **v1.1**: Built F1 actuals tracking (§19): actual hours per item and for project time, variance per line and overall, timesheet import, an Actuals sheet in the Excel export, and Library → Calibrate hours now reads tracked estimates automatically. Fixed a stylesheet regression from v1.0 that had switched off the §16 motion and polish styles; added a CSS parse check to the test suite.
 - **v1.0**: Built the v2 next steps (§18): C2 packages, E1 versions with diff, D2 requirements and traceability, A1 brief analyzer (Claude in the page), G3 client proposal (Word) and library calibration from past projects. Computed totals display to one decimal; entered values show exactly.
@@ -514,4 +515,50 @@ Motion follows Emil Kowalski's rules: animate only when it gives feedback, shows
 - Brief analyzer through a Supabase Edge Function with an Anthropic API key.
 - Invitation emails sent from the app.
 - Free Supabase projects pause after a week without use, so Pro is recommended.
+
+## 21. Enterprise Architecture, Agency Margins, Interactive Proposal Portal & Performance Caching (v1.3)
+
+**Decided:** Evolve Revin from a single-app estimator into a modular, agency-grade commercial platform. This release modularizes the monolithic UI codebase, introduces internal agency cost and margin modeling (Phase A), upgrades static proposals to an interactive client portal with digital sign-off (Phase B), adds a PWA Service Worker with performance caching, hardens database-level security and observability, and institutes high-throughput stress benchmarking.
+
+### 21.1 Modular UI Layer Architecture
+- **Problem:** `src/app.js` had grown into a monolithic file exceeding 6,000 lines, slowing down parallel agent collaboration and making component boundaries difficult to navigate.
+- **Solution:** Partitioned the interface into 14 domain-specific modules under `src/ui/`:
+  - `header.js`: Top navigation header, document titles, status badge, dirty state indicator.
+  - `icons.js`: Centralized Phosphor icons library (outline + duotone 256×256 viewBox system).
+  - `telemetry.js`: Client observability, circular breadcrumbs buffer (15 events), unhandled error interception, and error logging.
+  - `helpers.js`: Formatting functions, currency math, debouncing, date utilities.
+  - `components.js`: Reusable UI widgets (Steppers, Modals, Toggles, Cards, Dropdowns).
+  - `files.js`: File import/export handlers (CSV, XLSX, DOCX, JSON backup).
+  - `navigation.js`: Sidebar navigation, tab switching, and route state management.
+  - `views/estimates.js`: Estimate list, search, tag filtering, pagination, and deferred cards.
+  - `views/editor.js`: 4-step estimation workflow (commercials, scoping, breakdown, review).
+  - `views/advanced.js`: Requirements matrix, packages, versions diff, actuals tracking, and interactive proposal portal.
+  - `views/library.js`: Service items CMS, starter packages, hours calibration, category management.
+  - `views/settings.js`: Agency profile, financial rate cards, team management, health diagnostics card.
+  - `app-core.js`: Global state management (`useDocDraft`, reactive sync, document registry).
+  - `boot.js`: Preact application mounting and lifecycle bootstrapping.
+- **Assembler:** `dev/bundle-ui.js` combines modules into `src/app.js` with zero runtime dependencies. `build.js` and `web/build.js` invoke this step automatically on every build.
+
+### 21.2 Agency Financials & Margin Modeling (Phase A)
+- **Blended Cost Rates:** Introduced internal `costRate` alongside client-facing `hourlyRate`.
+- **Profit & Margin Metrics:** Computes `laborCost` (`hours × costRate`), `grossProfit` (`totalCost - laborCost`), and `marginPercent` (`Math.round(((totalCost - laborCost) / totalCost) * 100)`).
+- **Role Rate Cards:** Configurable role presets (`DEFAULT_ROLES`) with hourly billing rates (Design Lead $160/h, Senior Product Designer $125/h, UI/UX Designer $95/h, Motion/3D $140/h, Design QA $80/h).
+- **Payment Milestones Schedule:** Configurable milestone templates (`DEFAULT_MILESTONES`): Deposit (40%), Mid-Project Review (30%), Final Delivery & Handover (30%), dynamically computing exact currency values.
+- **Privacy Enforcement:** All internal cost rates, labor costs, and profit margins are strictly hidden in Client Presentation Mode and export documents.
+
+### 21.3 Interactive Client Proposal Portal (Phase B)
+- **Client Presentation Mode:** 1-click toggle (`.clean-mode`) that strips away editor chrome, internal margin indicators, navigation sidebars, and drafting controls.
+- **Selectable Package Tiers:** Interactive tier selector (Essential / Standard / Complete) allowing clients to compare scope packages in real-time, recalculating hours and investment.
+- **Milestone Breakdown Cards:** Displays structured payment schedule with percentage and milestone requirements.
+- **Digital Sign-Off & Acceptance Flow:** Formal in-app acceptance form capturing Signee Full Name, Work Email, Organization, and Terms Agreement.
+- **Digital Verification Seal:** Generates an immutable acceptance record with timestamp, contract total, and verification badge. If scope is subsequently renegotiated, estimators can revoke approval with full audit trail logging.
+- **Print & PDF Optimization:** Dedicated `@media print` stylesheets strip web controls and format the proposal as an executive multi-page document.
+
+### 21.4 Performance, PWA & Extreme Stress Verification
+- **PWA Service Worker:** `web/sw.js` bundled to `dist-web/sw.js` with Cache-First strategy for vendored assets (`/vendor/*`) and Google web fonts, delivering repeat loads in <30ms.
+- **Virtualization & Deferred Rendering:** Applied `content-visibility: auto` with `contain-intrinsic-size: auto none auto 60px` for estimate lists below the fold (`idx >= 12`), reducing rendering overhead by ~30ms on 1,000-row lists without scroll jumps.
+- **Observability:** Error boundary captures crashes with 15-event breadcrumb trails; Settings includes a **Health & Diagnostics** card with a 1-click **Copy for AI** button.
+- **Extreme Stress Testing:** Benchmarked up to 1,000 estimates (260ms load), 500-item calculations (1ms), and 60 rapid view transitions (33ms).
+- **Verification:** 100% pass across 5,754 engine tests, 6 Canary test suites (Chromium, WebKit, 12 screen viewports, stress, extreme stress, proposal portal), and full UI automation (53 checks, 42 QA scenarios, 28 axe audits, 143 responsive sweeps).
+
 

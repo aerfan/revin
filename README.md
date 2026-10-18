@@ -1,8 +1,8 @@
 # Revin - Design Hours Estimator
 
-A web app for estimating design hours from a shared library of pages, features and sections. Estimators pick a service, set the scope, tick items with preset hours, and get a reviewed breakdown with overhead, buffer, scope scenarios, phases, packages, versions, requirements traceability and actual-hours tracking. Exports are CSV, Excel (with live formulas) and a client proposal in Word.
+A modern web application for estimating design hours from a shared library of pages, features, and sections. Engineered for digital agencies, Revin couples deterministic estimation with commercial financials (internal cost rates, gross margin analysis, milestone payment schedules), an interactive client proposal portal (presentation mode, package tiers, digital sign-off with certificate seals), version diffs, requirements traceability, and actual-hours tracking. Exports include CSV, Excel (with live formulas), Word proposals, and printable PDFs.
 
-It runs on **Supabase** (database, sign-in, live updates) and **Vercel** (hosting). Team members sign in with Google or with email and password.
+It runs on **Supabase** (database, sign-in, live updates) and **Vercel** (hosting). Team members sign in with Google or with email and password. PWA offline caching provides sub-30ms load times.
 
 ---
 
@@ -76,16 +76,20 @@ The database enforces these rules (Postgres row-level security), not only the in
 
 ## How it's built
 
-- `src/`: the app (Preact + htm, no build framework). `engine.js` holds the calculations and exports, `app.js` the screens, `styles.css` the design.
-- `web/runtime.js`: the standalone layer. It provides the sign-in screens, keeps documents in Supabase through four database functions (`get_doc`, `query_docs`, `set_doc`, `delete_doc`), handles live updates over Supabase Realtime, and supplies user profiles, team management and backups.
-- `web/build.js`: produces `dist-web/` (one `index.html` plus the vendored libraries in `/vendor`). It runs on every Vercel deploy and writes a Content Security Policy that only allows your Supabase project.
+- `src/ui/`: Modular UI layer partitioned into 14 focused components (`header.js`, `icons.js`, `telemetry.js`, `helpers.js`, `components.js`, `files.js`, `navigation.js`, `views/estimates.js`, `views/editor.js`, `views/advanced.js`, `views/library.js`, `views/settings.js`, `app-core.js`, `boot.js`).
+- `dev/bundle-ui.js`: High-speed, zero-dependency assembler that compiles `src/ui/` into `src/app.js` for standalone and web builds.
+- `src/engine.js`: Pure mathematical engine for scope calculations, agency commercials (blended cost rates, gross profit margins, payment milestone schedules), package tiers, and deterministic exports. Zero DOM dependencies.
+- `src/styles.css`: Complete responsive design system (light/dark themes, fluid typography, mobile safe areas, clean proposal presentation mode, and `@media print` layouts).
+- `web/runtime.js`: Supabase real-time sync, auth, document hierarchy, and profile adapter.
+- `web/sw.js`: PWA Service Worker implementing Cache-First static asset caching (<30ms repeat loads) and Network-First document sync.
+- `web/build.js`: Produces `dist-web/` (one `index.html` plus `/vendor` assets and `sw.js`). Runs on Vercel deploys with CSP header generation.
 - `supabase/migrations/`:
-  - `0001_init.sql`: the base tables (`docs`, `members`, `invites`, `team_settings`), access rules, sign-up trigger and team functions.
-  - `0002_security_hardening.sql`: PostgreSQL check constraints (256 KiB limit, valid paths), `trg_docs_integrity` trigger, search_path isolation, admin lockout prevention.
+  - `0001_init.sql`: Base tables (`docs`, `members`, `invites`, `team_settings`), access rules, sign-up trigger, and team functions.
+  - `0002_security_hardening.sql`: PostgreSQL check constraints (256 KiB size limit, valid regex paths), `trg_docs_integrity` trigger, search_path isolation, admin lockout prevention.
   - `0003_observability.sql`: `public.error_logs` table, deduplication RPC (`log_client_error`), admin-only RLS policies.
-- `build.js`: builds the claude.ai version of the same app (`dist/`), which is still supported.
+- `build.js`: Standalone bundler producing the legacy single-file distribution (`dist/design-hours-estimator.html`).
 
-Data is stored as JSON documents addressed by path (`services/website`, `config/settings`, `estimates/{id}`, `estimates/{id}/versions/{id}`), which keeps backups and the claude.ai version compatible.
+Data is stored as JSON documents addressed by path (`services/website`, `config/settings`, `estimates/{id}`, `estimates/{id}/versions/{id}`), keeping backups and local runners compatible.
 
 ## Deployment & Staging Environments
 
@@ -114,14 +118,16 @@ Add `http://localhost:3000/**` to the Supabase redirect URLs while developing.
 
 | Command | What it covers |
 |---|---|
-| `npm run test:engine` | calculations, exports, actual hours, and 5,754 randomised fuzz checks |
-| `node test/canary.compat.js` | cross-browser rendering & interaction contracts on Chromium & WebKit (Safari engine) |
+| `npm run test:canary` | Runs all Canary test suites across engines, viewports, stress benchmarks, and proposal contracts |
+| `npm run test:engine` | Pure math calculations, agency financials, margins, milestones, and 5,754 randomised fuzz checks |
+| `node test/canary.compat.js` | Cross-browser rendering & interaction contracts on Chromium & WebKit (Safari engine) |
 | `node test/canary.screens.js` | 12 responsive viewport sweeps (320px ultra-compact to 2560px QHD Ultrawide) |
 | `node test/canary.stress.js` | 500-estimate load benchmarks, rapid stepper click storms, memory stability churn |
-| `node test/canary.telemetry.js` | circular telemetry breadcrumbs, local error persistence, and Settings health diagnostics |
-| `npm run test:ui` | full interface: journeys, QA scenarios, accessibility (axe) and responsive checks |
-| `npm run test:db` | the migration on a real Postgres: sign-up roles, access rules, path and size limits, ordering, team rules, a first-admin race (needs Postgres; set `PGHOST`/`PGPASSWORD`) |
-| `npm run test:web` | the built standalone app in Chromium, against real Postgres and PostgREST with local stand-ins for Supabase Auth and Realtime |
+| `node test/canary.telemetry.js` | Circular telemetry breadcrumbs, local error persistence, and Settings health diagnostics |
+| `node test/canary.proposal.js` | Interactive proposal portal, presentation mode, tier switching, digital sign-off, certificate seal, and revocation |
+| `npm run test:ui` | Full interface: 53 UI automation checks, 42 QA scenarios, 7 v2 scenarios, 3 F1 scenarios, 28 axe accessibility audits, 143 responsive sweeps |
+| `npm run test:db` | The migration on real Postgres: sign-up roles, access rules, path and size limits, ordering, team rules, first-admin race |
+| `npm run test:web` | The built standalone app in Chromium against real Postgres and PostgREST with local Auth/Realtime mocks |
 
 The browser tests need Playwright (`npm i -D playwright && npx playwright install chromium`).
 

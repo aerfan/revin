@@ -6,21 +6,28 @@ You are an expert engineer working on Revin. Follow these non-negotiable guideli
 1. **Branching (Canary First)**: Develop all features and refactors on `canary` branch. Never commit directly to `main`. Deploy preview to `revin-canary.vercel.app`.
 2. **Icons**: ALWAYS use Phosphor Icons (`@phosphor-icons/core`) for all UI controls and service tiles (viewBox 0 0 256 256).
 3. **Architecture**:
-   - `src/engine.js`: Pure mathematical calculations and data transforms. Zero DOM code.
-   - `src/app.js`: Interactive Preact + htm UI components.
-   - `src/styles.css`: CSS design system with light/dark themes and responsive typography.
+   - `src/engine.js`: Pure mathematical calculations, margin models, milestone schedules. Zero DOM code.
+   - `src/ui/`: 14 modular components (`header.js`, `icons.js`, `telemetry.js`, `helpers.js`, `components.js`, `files.js`, `navigation.js`, `views/*`, `app-core.js`, `boot.js`).
+   - `dev/bundle-ui.js`: High-speed zero-dependency assembler that compiles `src/ui/` into `src/app.js`.
+   - `src/styles.css`: CSS design system with light/dark themes, clean proposal mode, and print rules.
    - `web/runtime.js`: Supabase Realtime, Auth, and Storage.
+   - `web/sw.js`: PWA Service Worker for Cache-First static asset caching.
    - `supabase/migrations/`: PostgreSQL schemas, security hardening, and error logging.
 4. **Testing Contracts (100% Pass Required)**:
-   - `npm run test:engine` (5,754 fuzz checks)
+   - `npm run test:canary` (Runs all 6 Canary test suites)
+   - `npm run test:engine` (5,754 fuzz checks & margin contracts)
    - `node test/canary.compat.js` (Chromium + WebKit)
    - `node test/canary.screens.js` (12 screen viewports)
-   - `node test/canary.stress.js` (500 estimates, heavy benchmarks)
+   - `node test/canary.stress.js` (500 estimates & 1,000-estimate benchmarks)
    - `node test/canary.telemetry.js` (Telemetry & error logging)
+   - `node test/canary.proposal.js` (Interactive proposal portal & digital sign-off)
    - `npm run test:ui` (Full Playwright E2E suite)
-5. **Observability & Diagnostics**:
+5. **Commercials & Proposals**:
+   - Internal cost rates (`costRate`) and margins must strictly be suppressed when `.clean-mode` / Presentation Mode is active.
+   - Digital proposal acceptances are immutable once signed; changes require explicit revocation.
+6. **Observability & Diagnostics**:
    - Telemetry automatically maintains a 15-event circular breadcrumbs buffer.
    - Settings includes a **Health & Diagnostics** card with 1-click **Copy for AI** debugging reports.
-6. **Git Sync & Readable Commits**:
+7. **Git Sync & Readable Commits**:
    - Use descriptive conventional commits with explanatory details.
    - Push all commits to `origin <branch>`.
