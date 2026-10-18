@@ -116,7 +116,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .recent-item { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border: 0; border-radius: 10px; background: transparent; text-align: left; color: var(--ink-2); min-width: 0; }
 .recent-item:hover { background: var(--surface-3); color: var(--ink); }
 .recent-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; }
-.side-foot { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 10px 8px 2px; border-top: 1px solid var(--line); min-width: 0; }
+.side-theme { margin-top: auto; display: flex; align-items: center; padding: 0 4px; margin-bottom: -6px; }
+.side-foot { display: flex; align-items: center; gap: 10px; padding: 12px 8px 2px; border-top: 1px solid var(--line); min-width: 0; }
 .who-text { min-width: 0; flex: 1; }
 .who-name { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .role { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 500; background: var(--gray-bg); color: var(--gray-fg); white-space: nowrap; }
@@ -594,6 +595,7 @@ span.icon-btn { pointer-events: none; }
   .side-nav { flex-direction: row; }
   .navtab { width: auto; height: 36px; padding: 0 8px; }
   .navtab .count { display: none; }
+  .side-theme { margin-top: 0; margin-bottom: 0; padding: 0; }
   .side-foot { margin-top: 0; padding: 0; border-top: 0; }
   .side-foot .who-text { display: none; }
   .main { padding: 20px max(16px, env(safe-area-inset-right, 0px)) 72px max(16px, env(safe-area-inset-left, 0px)); }

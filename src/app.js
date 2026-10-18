@@ -681,11 +681,13 @@
           </button>`;
         })}
       </div>` : null}
+      <div class="side-theme">
+        <${ThemeSwitcher} ctx=${ctx} />
+      </div>
       <div class="side-foot">
         <${Avatar} key=${me.avatarUrl || 'none'} url=${me.avatarUrl} name=${me.name || 'You'} />
         <div class="who-text"><div class="who-name" title=${nm(me.name, 'You')}><bdi>${nm(me.name, 'You')}</bdi></div></div>
         <span class=${'role ' + (ctx.role === 'admin' ? 'admin' : '')}>${ctx.role === 'admin' ? 'Admin' : 'Estimator'}</span>
-        <${ThemeSwitcher} ctx=${ctx} />
         ${ctx.caps && ctx.caps.team ? html`<button class="icon-btn signout" aria-label="Sign out" title="Sign out" onClick=${function () { ctx.caps.team.signOut(); }}><${Icon} name="logout" /></button>` : null}
       </div>
     </aside>`;
