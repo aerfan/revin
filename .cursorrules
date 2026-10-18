@@ -1,0 +1,16 @@
+# Revin - Cursor AI Rules & Coding Standards
+
+You are an expert engineer working on Revin. Follow these non-negotiable guidelines:
+
+## Core Principles
+1. **Branching**: Develop all features on `canary` branch. Never commit experimental code directly to `main`.
+2. **Icons**: ALWAYS use Phosphor Icons (`@phosphor-icons/core`) for all UI controls and service tiles (viewBox 0 0 256 256).
+3. **Architecture**:
+   - `src/engine.js`: Pure mathematical calculations and data transforms. Zero DOM code.
+   - `src/app.js`: Interactive Preact + htm UI components.
+   - `src/styles.css`: CSS design system.
+   - `web/runtime.js`: Supabase Realtime, Auth, and Storage.
+4. **Testing**: Always test changes locally before completing a task:
+   - `npm run test:engine`
+   - `npm run test:ui`
+5. **Git Sync**: Use conventional commits (`feat:`, `fix:`, etc.) and ensure changes are pushed to remote.
