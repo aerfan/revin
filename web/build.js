@@ -34,7 +34,6 @@ const csp = [
   "base-uri 'none'",
   "form-action 'self' https://accounts.google.com https://*.supabase.co",
   "object-src 'none'",
-  "frame-ancestors 'none'",
 ].join('; ');
 
 const parts = { CSS: read('src', 'styles.css'), ENGINE: read('src', 'engine.js'), RUNTIME: read('web', 'runtime.js'), APP: read('src', 'app.js') };
