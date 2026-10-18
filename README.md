@@ -134,8 +134,21 @@ Add `http://localhost:3000/**` to the Supabase redirect URLs while developing.
 
 The browser tests need Playwright (`npm i -D playwright && npx playwright install chromium`).
 
+## Documentation Ecosystem
+
+Revin maintains a unified, interconnected documentation system where each document serves a precise purpose:
+
+| Document | Purpose & Scope |
+|---|---|
+| [`design-estimator-prd.md`](design-estimator-prd.md) | **Product & Mathematical Blueprint**: Deterministic calculations, scope rules, JSON schemas, CMS configurations, and phase specifications |
+| [`CANARY_CHANGELOG.md`](CANARY_CHANGELOG.md) | **QA & Defect Ledger**: Continuous issue tracking (`ISSUE-001` through `ISSUE-013`), test session logs, and Canary benchmark reports |
+| [`SECURITY.md`](SECURITY.md) | **Security Policy**: Vulnerability disclosure SLA, OWASP defenses (CWE-1236, CWE-1321, CWE-79, CWE-200, SEC-01..03), and reporting channels |
+| [`GEMINI.md`](GEMINI.md) | **Canonical AI Engineering Standards**: Core specification for all AI agents, dual-track branching, testing gates, and layer boundaries |
+| [`CLAUDE.md`](CLAUDE.md) / [`.cursorrules`](.cursorrules) | **Tool Adapters**: High-density CLI workflows and IDE rules pointing to `GEMINI.md` as the single source of truth |
+
 ## Notes
 
 - **Free Supabase projects pause after a week without use.** Upgrade to Pro for a team tool, or open the app at least weekly.
 - **Brief analyzer:** the "Analyze a client brief" feature from the claude.ai version is hidden here. It needs an AI provider and can be added later through a Supabase Edge Function.
 - **Backups:** Supabase Pro takes daily backups. **Settings → Backup → Download backup** also gives you a full JSON copy at any time.
+

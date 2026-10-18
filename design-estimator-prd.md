@@ -7,20 +7,18 @@
 | **Last updated** | 2026-10-19 |
 | **Owner** | Arfan / Product & Engineering Team |
 
-### Changelog
-- **v1.3**: Modularized UI architecture into 14 domain modules under `src/ui/` with zero-dependency assembler (`dev/bundle-ui.js`). Implemented Phase A Agency Financials (internal cost rates, labor cost, gross profit, margin percentages, role rate cards, payment milestones schedule). Implemented Phase B Interactive Client Proposal Portal (client presentation mode, package tier comparisons, digital acceptance flow with cryptographic verification seal, and revocation management). Implemented Phase 1 Post-Acceptance Webhooks & Automation (instant outbound webhook dispatch for Stripe deposit invoicing, Slack notifications with BlockKit cards, and Zapier/Make CRM sync). Implemented PWA Service Worker (`web/sw.js` -> `dist-web/sw.js`) with Cache-First static asset caching (<30ms repeat loads) and deferred rendering (`content-visibility: auto`) for large estimate lists. Extreme stress benchmarking verified up to 1,000 estimates (260ms) and 500-item calculations (1ms). Implemented automated Canary Security & Penetration Suite (`test/canary.security.js`) protecting against CSV Formula/DDE injection (CWE-1236), prototype pollution (CWE-1321), stored XSS (CWE-79), client mode commercial leakage (CWE-200), boundary overflows (CWE-128), and ReDoS (CWE-1333).
-- **v1.2**: Standalone app (§20) on Supabase + Vercel, with Google or email sign-in, team management (invites, approval, company domain), backups and import from the claude.ai version. The brief analyzer is hidden in the standalone build for now.
-- **v1.1**: Built F1 actuals tracking (§19): actual hours per item and for project time, variance per line and overall, timesheet import, an Actuals sheet in the Excel export, and Library → Calibrate hours now reads tracked estimates automatically. Fixed a stylesheet regression from v1.0 that had switched off the §16 motion and polish styles; added a CSS parse check to the test suite.
-- **v1.0**: Built the v2 next steps (§18): C2 packages, E1 versions with diff, D2 requirements and traceability, A1 brief analyzer (Claude in the page), G3 client proposal (Word) and library calibration from past projects. Computed totals display to one decimal; entered values show exactly.
-- **v0.9**: Worst-case data pass (14 fixes: pageable estimate list, exact decimals, thousands separators, initials avatars, right-to-left names, wrapping titles and badges). Added purposeful motion (§16): press feedback, dialog and toast enter/exit, in-place reveals, a rising unsaved-changes bar and first-run empty states; reduced motion keeps fades only.
-- **v0.8**: Lead-QA pass across engine, data store and interface (§17, full report in `qa-report.md`). Fixed 24 findings, including CSV formula injection, estimates recreated after a teammate deleted them, teammates' edits lost while typing, crashes on malformed data, and WCAG AA contrast and keyboard issues. Added three-way merging of simultaneous edits, a deleted-estimate banner with Restore, automatic reconnection, a size guard and number limits. Accent token darkened to `#0C8468` for contrast (§16).
-- **v0.7**: Added §16 **Visual design direction**, based on the provided UI references (category table with duotone icons, Gridline-style menu cards) and Mintlify's dashboard style: off-white ground, white rounded cards, pastel icon tiles, muted parenthetical details, mint green for primary actions, compact sidebar navigation.
-- **v0.6**: v1 built and published as the **Design Hours Estimator** app. Starter library seeded. Added §15 build notes (what shipped, access, verification, known limits, next steps).
-- **v0.5**: Adopted the recommended BA/requirements shortlist. **v1** adds the gap & completeness checker (A3), item definitions with included/excluded scope (B1), the assumptions/exclusions/dependencies/risks register (B2), complexity levels (B3), non-functional scope options (B4), MoSCoW priorities and phases (C1) and the status pipeline (E3). Added §10 **v1 release scope** with working defaults for every open calculation question. Decided the technical approach (§13): v1 runs as a hosted web app on claude.ai with sign-in, a shared database and role-based access.
-- **v0.4**: Added candidate features for business analysis & requirements engineering, with a suggested phase for each.
-- **v0.3**: Defined the end-to-end user flow, pages with expandable sections, the admin CMS, extensible services and custom items. Moved to a multi-user web app with a backend.
-- **v0.2**: Rewrote around a reusable feature library with preset hours, deliverables, add-ons, overhead and buffer.
-- **v0.1**: Initial generic ideation draft.
+### Version History & Document Navigation
+
+| Version | Status / Milestone | Key Capabilities | Detailed Section |
+|---|---|---|---|
+| **v1.3** | **Canary Active** (Staging) | Modular UI layer (`src/ui/`), Agency Financials & Margins (Phase A), Interactive Proposal Portal & Digital Sign-off (Phase B), Outbound Webhooks & Automation (Phase 1), PWA Performance Caching, and Defense-in-Depth Security Suite | [§21](#21-enterprise-architecture-agency-margins-interactive-proposal-portal--performance-caching-v13) |
+| **v1.2** | Stable | Standalone Supabase + Vercel deployment, role-based access control (Admin / Estimator), team management, and JSON backup imports | [§20](#20-standalone-app-v12) |
+| **v1.1** | Historic | F1 Actuals tracking, timesheet import, variance analysis, and automatic calibration feed from tracked estimates | [§19](#19-f1-actuals-tracking-built-v11) |
+| **v1.0** | Historic | Tiered packages (C2), versions diff (E1), requirements traceability (D2), AI brief analyzer (A1), and Word/PDF proposal export (G3) | [§18](#18-v2-features-built) |
+| **v0.5–0.9**| Historic | Initial block-based estimation engine, Admin CMS, Mintlify visual design system, and multi-user sync | [§10](#10-v1-release-scope)–[§16](#16-visual-design-direction) |
+
+> For operational test cycle logs, browser compatibility sweeps, extreme benchmarks, and defect tracking (`ISSUE-001` through `ISSUE-013`), see [`CANARY_CHANGELOG.md`](CANARY_CHANGELOG.md).
+
 
 ---
 
@@ -594,4 +592,5 @@ Motion follows Emil Kowalski's rules: animate only when it gives feedback, shows
   5. **Build Configuration Gate (OPS-01):** Added strict build enforcement in `web/build.js` (`--strict` / `CI` / `VERCEL`) exiting with code 1 if required Supabase backend variables are missing.
   6. **Content Security Policy Hardening (SEC-03):** Removed external CDN allowlists (`unpkg.com`, `cdnjs`, `jsdelivr`) from `script-src` across `web/build.js` and `vercel.json`; locked connections to configured backend origin and Google OAuth.
   7. **Mobile Header Reflow at 320px (A11Y-02):** Added `@media (max-width: 420px)` and `@media (max-width: 360px)` ultra-compact rules in `src/styles.css` ensuring 0px horizontal overflow with the authenticated Sign Out button active.
-- **Verification:** 100% pass across all 8 Canary suites, 5,754 engine tests, 10 automated security penetration vectors, and 53 UI automation scenarios.
+- **Verification:** 100% pass across all 8 Canary suites, 5,754 engine tests, 10 automated security penetration vectors, and 53 UI automation scenarios. Detailed resolution records and verification proof are documented under `ISSUE-007` through `ISSUE-013` in [`CANARY_CHANGELOG.md`](CANARY_CHANGELOG.md) and security defense policies in [`SECURITY.md`](SECURITY.md).
+

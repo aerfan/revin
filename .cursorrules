@@ -1,43 +1,32 @@
 # Revin - Cursor AI Rules & Coding Standards
 
-You are an expert engineer working on Revin. Follow these non-negotiable guidelines:
+You are an expert engineer working on Revin. Follow these non-negotiable standards:
 
-## Core Principles
-1. **Branching (Canary First)**: Develop all features and refactors on `canary` branch. Never commit directly to `main`. Deploy preview to `revin-canary.vercel.app`.
-2. **Icons**: ALWAYS use Phosphor Icons (`@phosphor-icons/core`) for all UI controls and service tiles (viewBox 0 0 256 256).
-3. **Architecture**:
-   - `src/engine.js`: Pure mathematical calculations, margin models, milestone schedules. Zero DOM code.
-   - `src/ui/`: 14 modular components (`header.js`, `icons.js`, `telemetry.js`, `helpers.js`, `components.js`, `files.js`, `navigation.js`, `views/*`, `app-core.js`, `boot.js`).
-   - `dev/bundle-ui.js`: High-speed zero-dependency assembler that compiles `src/ui/` into `src/app.js`.
-   - `src/styles.css`: CSS design system with light/dark themes, clean proposal mode, and print rules.
-   - `web/runtime.js`: Supabase Realtime, Auth, and Storage.
-   - `web/sw.js`: PWA Service Worker for Cache-First static asset caching.
-   - `supabase/migrations/`: PostgreSQL schemas, security hardening, and error logging.
-4. **Testing Contracts (100% Pass Required)**:
-   - `npm run test:canary` (Runs all 8 Canary test suites)
-   - `npm run test:security` (Automated penetration and exploit suite)
-   - `npm run test:engine` (5,754 fuzz checks & margin contracts)
-   - `node test/canary.compat.js` (Chromium + WebKit)
-   - `node test/canary.screens.js` (12 screen viewports)
-   - `node test/canary.stress.js` (500 estimates & 1,000-estimate benchmarks)
-   - `node test/canary.telemetry.js` (Telemetry & error logging)
-   - `node test/canary.proposal.js` (Interactive proposal portal & digital sign-off)
-   - `node test/canary.security.js` (CSV formula injection, prototype pollution, XSS, commercial privacy, bounds, ReDoS)
-   - `node test/canary.webhook.js` (Post-acceptance webhooks, Slack BlockKit formatting, and outbound automation contracts)
-   - `npm run test:ui` (Full Playwright E2E suite)
-5. **Commercials & Proposals**:
-   - Internal cost rates (`costRate`) and margins must strictly be suppressed when `.clean-mode` / Presentation Mode is active.
-   - Digital proposal acceptances are immutable once signed; changes require explicit revocation.
-6. **Observability & Diagnostics**:
-   - Telemetry automatically maintains a 15-event circular breadcrumbs buffer.
-   - Settings includes a **Health & Diagnostics** card with 1-click **Copy for AI** debugging reports.
-7. **Security, Audit Remediation & Defense-in-Depth**:
-   - Server path confinement: Use `path.relative` containment and bind `127.0.0.1` (SEC-01).
-   - Atomic backup imports: Pre-validate format/size (256 KiB) and execute snapshot-based rollback (FUNC-01).
-   - Strict build gates: Fail closed with `process.exit(1)` in CI/Vercel/strict builds if configuration is missing (OPS-01).
-   - Content Security Policy: Lock `script-src` to `'self' 'unsafe-inline'` and scope `connect-src` strictly to project domain (SEC-03).
-   - Mobile responsive layout: Maintain 0px horizontal overflow across all viewports (320px to 2560px) (A11Y-02).
-   - Accessibility: Maintain `aria-label` accessible names on all mobile navigation buttons (A11Y-01).
-8. **Git Sync & Readable Commits**:
-   - Use descriptive conventional commits with explanatory details.
-   - Push all commits to `origin <branch>`.
+> **Canonical Specification**: For complete layer boundaries, security penetration protocols, and database schemas, refer to [`GEMINI.md`](GEMINI.md).
+
+## Architecture & Code Navigation
+- **Calculations & Commercials**: `src/engine.js` (Pure math, margins, milestones, zero DOM code).
+- **UI Architecture**: `src/ui/` (14 domain modules: `header.js`, `icons.js`, `telemetry.js`, `helpers.js`, `components.js`, `files.js`, `navigation.js`, `views/*`, `app-core.js`, `boot.js`).
+- **UI Bundler**: `dev/bundle-ui.js` (Zero-dependency assembler compiling `src/ui/` into `src/app.js`).
+- **Design System**: `src/styles.css` (Light/dark themes, presentation mode, `@media print`).
+- **Runtime & PWA**: `web/runtime.js` (Supabase Realtime/Auth/Atomic rollback) and `web/sw.js` (PWA Cache-First).
+
+## Non-Negotiable Engineering Rules
+1. **Branching (Canary First)**: Develop all features/fixes on `canary`. Never commit to `main`. Deploy preview: `revin-canary.vercel.app`.
+2. **Icons**: ALWAYS use **Phosphor Icons** (`@phosphor-icons/core`) with 256×256 viewBox (outline for controls, duotone for service tiles).
+3. **Verification (100% Pass Required)**:
+   - Run `npm run test:engine`, `npm run test:security`, and `npm run test:canary` before finalizing code.
+4. **Commercial Privacy in Client Presentation Mode**:
+   - Internal cost rates (`costRate`) and margins must strictly be excluded from the DOM when `.clean-mode` is active.
+   - Proposal digital acceptances are immutable once signed; changes require explicit revocation.
+5. **Security & Resilience**:
+   - CSV formula injection: escape `=, +, -, @, |` with single quotes in `src/engine.js` (CWE-1236).
+   - Prototype pollution: filter `__proto__`, `constructor`, `prototype` in merge routines (CWE-1321).
+   - Server path confinement: validate with `path.relative` and bind to `127.0.0.1` (SEC-01).
+   - Atomic backup import: pre-validate format/size (256 KiB) and rollback on error (FUNC-01).
+   - Strict build gates: fail closed (`process.exit(1)`) on missing backend config in CI (OPS-01).
+   - Content Security Policy: lock `script-src` to `'self' 'unsafe-inline'` without external CDNs (SEC-03).
+   - Viewport reflow: ensure 0px horizontal overflow across all viewports down to 320px (A11Y-02).
+   - Accessibility: maintain `aria-label` accessible names on mobile nav buttons (A11Y-01).
+6. **Git Discipline**:
+   - Write clear conventional commits (`feat:`, `fix:`, `refactor:`, `docs:`) and push directly to GitHub.

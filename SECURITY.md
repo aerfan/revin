@@ -22,6 +22,8 @@ Revin incorporates defense-in-depth protections verified by automated CI penetra
 7. **Strict Build Gates & Fail-Closed Deployment:** Production builds fail closed (`process.exit(1)`) if required Supabase backend variables are missing.
 8. **Hardened Content Security Policy:** Script execution is restricted to `'self' 'unsafe-inline'` without external CDNs; connections are scoped to the project backend origin.
 
+> For historical remediation records and automated exploit tests (`ISSUE-003`, `ISSUE-004`, `ISSUE-008`, `ISSUE-010`, `ISSUE-011`, `ISSUE-012`), see [`CANARY_CHANGELOG.md`](CANARY_CHANGELOG.md).
+
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability or exploit in Revin, please do **NOT** open a public GitHub issue.

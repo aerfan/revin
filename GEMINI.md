@@ -7,7 +7,7 @@ Welcome to the **Revin** workspace in Google Antigravity.
 - **Repository Root:** `/Users/arfan/Documents/Revin`
 - **Primary Production Branch:** `main` (Deploys to `https://revin-alpha.vercel.app`)
 - **Canary / Staging Branch:** `canary` (Deploys to `https://revin-canary.vercel.app`)
-- **CI/CD:** GitHub Actions configured under `.github/workflows/ci.yml`
+- **CI/CD & Security:** GitHub Actions (`.github/workflows/ci.yml`, `.github/workflows/codeql.yml`, `.github/dependabot.yml`)
 
 ## Project Structure & Layer Architecture
 - `src/engine.js`: Pure mathematical calculations, estimates, phase logic, commercials (blended cost rate, gross profit, margin %, milestones), and exports. 100% deterministic, zero DOM dependencies.
@@ -78,7 +78,7 @@ Welcome to the **Revin** workspace in Google Antigravity.
   - Ensure COOP headers allow popup authentication: `Cross-Origin-Opener-Policy: same-origin-allow-popups`.
   - Protect database tables with PostgreSQL constraints against PostgREST direct payload abuse.
   - Service worker `sw.js` must be served with `no-cache, no-store, must-revalidate` and excluded from SPA rewrite rules.
-- **Multi-Agent Coexistence & Git Worktrees**:
-  - Revin is engineered for parallel AI agent development (Google Antigravity, Claude Code, Cursor, ChatGPT Codex).
-  - Guidelines are mirrored in `GEMINI.md`, `CLAUDE.md`, `.cursorrules`, and `.github/copilot-instructions.md`.
+- **Multi-Agent Coexistence & Hub Architecture**:
+  - `GEMINI.md` is the canonical engineering standard and single source of truth across all AI tools.
+  - Tool adapters (`CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md`) reference this document to eliminate redundancy and prevent instruction drift.
   - Use Git Worktrees (`git worktree add ../revin-<task> canary`) for isolated parallel AI agent execution without directory or file locks.
