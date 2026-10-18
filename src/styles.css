@@ -302,7 +302,7 @@ span.icon-btn { pointer-events: none; }
 .search .ic { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
 .search .input { padding-left: 34px; }
 .est-table { width: 100%; overflow: hidden; }
-.est-head, .est-row { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1.3fr) 112px 92px 108px 34px 72px; gap: 14px; align-items: center; padding: 0 18px; }
+.est-head, .est-row { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1.3fr) 112px 104px 108px 34px 72px; gap: 14px; align-items: center; padding: 0 18px; }
 .est-head { height: 44px; font-size: 13px; font-weight: 500; color: var(--muted); background: var(--surface-2); border-bottom: 1px solid var(--line); }
 .est-row { min-height: 64px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.12s; }
 .est-row:hover { background: var(--surface-2); }
@@ -314,7 +314,9 @@ span.icon-btn { pointer-events: none; }
 .est-svc span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .est-when { font-size: 13px; color: var(--muted); white-space: nowrap; }
 .est-actions { display: flex; justify-content: flex-end; gap: 2px; }
+.row-sub-cost { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: 1px; }
 .list-foot { display: flex; justify-content: space-between; gap: 12px; padding: 12px 18px; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+.cost-foot { color: var(--brand-text); font-weight: 600; }
 
 /* ---------- new estimate ---------- */
 .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 4px 8px; }
@@ -357,6 +359,8 @@ span.icon-btn { pointer-events: none; }
 .insp-total { display: flex; align-items: baseline; gap: 3px; margin: 8px 0 2px; }
 .insp-total .num { font-size: 40px; font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
 .insp-total .u { font-size: 18px; font-weight: 500; color: var(--faint); }
+.insp-cost-badge { font-size: 14px; font-weight: 600; color: var(--brand-text); margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+.insp-cost-badge .rate-sub { font-size: 11.5px; color: var(--muted); font-weight: 400; }
 .insp-sub { font-size: 12.5px; color: var(--muted); }
 .insp-lines { grid-area: lines; margin: 16px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 8px 10px; font-size: 13px; }
 .insp-lines dt { color: var(--muted); }
@@ -449,11 +453,16 @@ span.icon-btn { pointer-events: none; }
 .total-big .measure { display: inline-flex; align-items: baseline; gap: 4px; }
 .total-big .measure .num { font-size: 44px; line-height: 1; font-weight: 600; letter-spacing: -0.045em; }
 .total-big .measure .u { font-size: 20px; font-weight: 500; color: var(--faint); }
+.total-cost-badge { display: inline-flex; align-items: baseline; gap: 8px; background: var(--surface-2); border: 1px solid var(--line); padding: 5px 10px; border-radius: var(--radius-sm); width: fit-content; margin-top: 2px; }
+.total-cost-badge .cost-val { font-size: 17px; font-weight: 700; color: var(--brand-text); font-variant-numeric: tabular-nums; }
+.total-cost-badge .cost-rate { font-size: 12px; color: var(--muted); font-weight: 500; }
 .total-meta { font-size: 13px; color: var(--muted); }
 .summary-lines { display: grid; grid-template-columns: 1fr auto; gap: 9px 16px; font-size: 13.5px; margin-top: 10px; padding-top: 14px; border-top: 1px solid var(--line); }
 .summary-lines dt { color: var(--muted); }
 .summary-lines dd { margin: 0; text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
+.summary-lines .dim { font-size: 11.5px; color: var(--muted); font-weight: 400; margin-left: 4px; }
 .summary-lines .tot { font-weight: 600; color: var(--ink); padding-top: 9px; border-top: 1px solid var(--line); }
+.summary-lines .tot-cost { color: var(--brand-text); font-size: 13.5px; margin-left: 4px; }
 .bars { display: flex; flex-direction: column; gap: 14px; }
 .bar-row { display: grid; grid-template-columns: minmax(0, 160px) minmax(0, 1fr) auto; gap: 14px; align-items: center; }
 .bar-label { font-size: 13.5px; font-weight: 500; min-width: 0; }

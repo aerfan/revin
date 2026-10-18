@@ -33,6 +33,23 @@ near(r.buffer, 31.79145, 'buffer');
 near(r.total, 349.70595, 'total');
 console.log('compute OK  total', E.fmtHours(r.total), '| base', r.base, '| options', r.optionHours);
 
+// financials & multi-currency
+assert.strictEqual(E.fmtMoney(1250, 'USD'), '$1,250');
+assert.strictEqual(E.fmtMoney(1250, 'EUR'), '€1,250');
+assert.strictEqual(E.fmtMoney(1250, 'GBP'), '£1,250');
+assert.strictEqual(E.fmtMoney(1250, 'BDT'), '৳1,250');
+assert.strictEqual(E.fmtMoney(-500, 'USD'), '−$500');
+assert.strictEqual(r.hourlyRate, 100, 'default hourly rate');
+assert.strictEqual(r.currency, 'USD', 'default currency');
+assert.strictEqual(r.totalCost, Math.round(r.total * 100), 'total fee at default rate');
+const estEUR = E.clone(est); estEUR.hourlyRate = 125; estEUR.currency = 'EUR';
+const rEUR = E.compute(estEUR);
+assert.strictEqual(rEUR.hourlyRate, 125);
+assert.strictEqual(rEUR.currency, 'EUR');
+assert.strictEqual(rEUR.totalCost, Math.round(rEUR.total * 125));
+assert.strictEqual(E.fmtMoney(rEUR.totalCost, rEUR.currency), '€' + E.fmtNum(Math.round(rEUR.total * 125)));
+console.log('financials OK rate', rEUR.hourlyRate, '| total fee', E.fmtMoney(rEUR.totalCost, rEUR.currency));
+
 // option edge cases
 const langGroup = est.snapshot.optionGroups.find((g) => g.id === 'localization');
 const langOpt = langGroup.options.find((o) => o.id === 'languages');

@@ -67,6 +67,7 @@
     link: '<path d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/>',
     folder: '<path d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"/>',
     clock: '<path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"/>',
+    coins: '<path d="M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM232,132c0,13.22-30.79,28-72,28-3.73,0-7.43-.13-11.08-.37C170.49,151.77,184,139,184,124V105.74C213.87,110.19,232,122.27,232,132ZM72,150.25V126.46A183.74,183.74,0,0,0,96,128a183.74,183.74,0,0,0,24-1.54v23.79A163,163,0,0,1,96,152,163,163,0,0,1,72,150.25Zm96-40.32V124c0,8.39-12.41,17.4-32,22.87V123.5C148.91,120.37,159.84,115.71,168,109.93ZM96,56c41.21,0,72,14.78,72,28s-30.79,28-72,28S24,97.22,24,84,54.79,56,96,56ZM24,124V109.93c8.16,5.78,19.09,10.44,32,13.57v23.37C36.41,141.4,24,132.39,24,124Zm64,48v-4.17c2.63.1,5.29.17,8,.17,3.88,0,7.67-.13,11.39-.35A121.92,121.92,0,0,0,120,171.41v23.46C100.41,189.4,88,180.39,88,172Zm48,26.25V174.4a179.48,179.48,0,0,0,24,1.6,183.74,183.74,0,0,0,24-1.54v23.79a165.45,165.45,0,0,1-48,0Zm64-3.38V171.5c12.91-3.13,23.84-7.79,32-13.57V172C232,180.39,219.59,189.4,200,194.87Z"/>',
   };
   // Duotone filled icons for services (reference: category table with two-tone icons).
   var DUO = {
@@ -769,6 +770,10 @@
       return lower(e.name).indexOf(ql) >= 0 || lower(e.client).indexOf(ql) >= 0 || lower(e.serviceName).indexOf(ql) >= 0;
     });
     var sum = list.reduce(function (s, e) { return s + E.num(e.totalHours); }, 0);
+    var costSum = list.reduce(function (s, e) {
+      var rate = E.num(e.hourlyRate, (e.snapshot && e.snapshot.hourlyRate) || (ctx.settings && ctx.settings.hourlyRate) || 100);
+      return s + (e.totalCost ? E.num(e.totalCost) : Math.round(E.num(e.totalHours) * rate));
+    }, 0);
     return html`${head}
       <${StartCard} ctx=${ctx} />
       <section class="panel est-table">
@@ -792,7 +797,10 @@
             <div class="est-main"><${SvcTile} svc=${svc} /><button type="button" class="est-open est-name" title=${ename + (client ? ' (' + client + ')' : '')} onClick=${open}><bdi>${ename}</bdi>${client ? html` <span class="paren">(<bdi>${client}</bdi>)</span>` : null}</button></div>
             <div class="est-svc"><span title=${e.serviceName || ''}><bdi>${e.serviceName || ''}</bdi></span></div>
             <div><span class=${'pill s-' + st.id}>${st.name}</span></div>
-            <div style="text-align:right"><${Hrs} v=${e.totalHours || 0} ghost=${!e.totalHours} /></div>
+            <div style="text-align:right">
+              <${Hrs} v=${e.totalHours || 0} ghost=${!e.totalHours} />
+              ${(e.totalCost || e.totalHours) ? html`<div class="row-sub-cost">${E.fmtMoney(e.totalCost || Math.round(E.num(e.totalHours) * E.num(e.hourlyRate, 100)), e.currency || (ctx.settings && ctx.settings.currency) || 'USD')}</div>` : null}
+            </div>
             <div class="est-when">${ago(e.updatedAt)}</div>
             <div>${prof ? html`<${Avatar} sm key=${prof.avatarUrl || 'none'} url=${prof.avatarUrl} name=${prof.name} title=${'Created by ' + nm(prof.name, 'a teammate')} />` : null}</div>
             <div class="est-actions">
@@ -802,7 +810,7 @@
           </div>`;
         }) : html`<div class="empty"><h2>No matching estimates</h2><p>Try another search or status.</p></div>`}
         ${ctx.hasMore ? html`<div class="est-more"><span class="muted" style="font-size:13px;margin-right:12px">Showing the ${E.fmtNum(estimates.length)} most recent estimates.</span><button class="btn sm" onClick=${ctx.moreEstimates}>Show ${E.fmtNum(500)} more</button></div>` : null}
-        <div class="list-foot"><span>${E.fmtNum(list.length)} ${plural(list.length, 'estimate', 'estimates')}</span><span>Total <b class="tnum" style="color:var(--ink);font-weight:600">${E.fmtHours(sum)}</b></span></div>
+        <div class="list-foot"><span>${E.fmtNum(list.length)} ${plural(list.length, 'estimate', 'estimates')}</span><span>Total <b class="tnum" style="color:var(--ink);font-weight:600">${E.fmtHours(sum)}</b> <span class="cost-foot">· ${E.fmtMoney(costSum, (ctx.settings && ctx.settings.currency) || 'USD')}</span></span></div>
       </section>`;
   }
 
@@ -914,7 +922,8 @@
       timer.current = null;
       var d = latest.current; if (!d || goneRef.current || paused.current) return;
       setSave('saving');
-      var data = clean(Object.assign({}, d, { totalHours: E.round(E.compute(d).total, 1) }));
+      var r = E.compute(d);
+      var data = clean(Object.assign({}, d, { totalHours: E.round(r.total, 1), totalCost: r.totalCost }));
       mine.current.push(data.updatedAt); if (mine.current.length > 40) mine.current.shift();
       var ok = await ctx.api.set('estimates/' + id, data);
       if (!timer.current) {
@@ -1036,6 +1045,7 @@
         <div class="insp-head">
           <div class="eyebrow insp-label">Total estimate</div>
           <div class="insp-total"><span class="num">${E.fmtNum(E.round(res.total, 1))}</span><span class="u">h</span></div>
+          <div class="insp-cost-badge">${E.fmtMoney(res.totalCost, res.currency)} <span class="rate-sub">· ${E.fmtMoney(res.hourlyRate, res.currency)}/h</span></div>
           <div class="insp-sub">About ${E.fmtNum(E.round(res.total / 40, 1))} designer-weeks at 40h a week</div>
         </div>
         <button class="btn sm ghost insp-toggle" aria-expanded=${open ? 'true' : 'false'} onClick=${function () { setOpen(!open); }}>${open ? 'Hide' : 'Details'}</button>
@@ -1486,13 +1496,17 @@
         <section class="panel total-card">
           <div class="eyebrow">Total estimate</div>
           <div class="total-big"><span class="measure"><span class="num">${E.fmtNum(E.round(res.total, 1))}</span><span class="u">h</span></span></div>
+          <div class="total-cost-badge">
+            <span class="cost-val">${E.fmtMoney(res.totalCost, res.currency)}</span>
+            <span class="cost-rate">at ${E.fmtMoney(res.hourlyRate, res.currency)}/h</span>
+          </div>
           <div class="total-meta">${dl[0] ? dl[0].text : ''} <span class="paren">(about ${E.fmtNum(E.round(res.total / 40, 1))} designer-weeks)</span></div>
           <dl class="summary-lines">
-            <dt>Base design</dt><dd>${E.fmtHours(E.round(res.base, 1))}</dd>
-            <dt>Adaptations & add-ons</dt><dd>${E.fmtHours(E.round(res.adaptations, 1))}</dd>
-            <dt>Project overhead</dt><dd>${E.fmtHours(E.round(res.overhead, 1))}</dd>
-            <dt>Buffer (${E.fmtNum(res.bufferPercent)}%)</dt><dd>${E.fmtHours(E.round(res.buffer, 1))}</dd>
-            <dt class="tot">Total</dt><dd class="tot">${E.fmtHours(E.round(res.total, 1))}</dd>
+            <dt>Base design</dt><dd>${E.fmtHours(E.round(res.base, 1))} <span class="dim">(${E.fmtMoney(res.baseCost, res.currency)})</span></dd>
+            <dt>Adaptations & add-ons</dt><dd>${E.fmtHours(E.round(res.adaptations, 1))} <span class="dim">(${E.fmtMoney(res.designSubtotalCost - res.baseCost, res.currency)})</span></dd>
+            <dt>Project overhead</dt><dd>${E.fmtHours(E.round(res.overhead, 1))} <span class="dim">(${E.fmtMoney(res.overheadCost, res.currency)})</span></dd>
+            <dt>Buffer (${E.fmtNum(res.bufferPercent)}%)</dt><dd>${E.fmtHours(E.round(res.buffer, 1))} <span class="dim">(${E.fmtMoney(res.bufferCost, res.currency)})</span></dd>
+            <dt class="tot">Total</dt><dd class="tot">${E.fmtHours(E.round(res.total, 1))} <span class="tot-cost">· ${E.fmtMoney(res.totalCost, res.currency)}</span></dd>
           </dl>
         </section>
         <section class="panel panel-pad">
@@ -1576,6 +1590,20 @@
             <${Stepper} value=${E.num(draft.bufferPercent)} step=${1} max=${100} label="Buffer percent" unit="%" onChange=${function (v) { p.change(function (n) { n.bufferPercent = v; }); }} />
             <${Hrs} v=${res.buffer} />
           </div>
+        </div>
+      </section>
+
+      <section class="panel panel-pad">
+        <${CardHead} icon="coins" color="green" title="Commercials & rate card" desc="Billing rate and currency for this estimate. Defaults come from Settings." />
+        <div class="grid-2">
+          <label class="field"><span>Project currency</span>
+            <select class="select" id="est-currency" aria-label="Project currency" value=${draft.currency || 'USD'} onChange=${function (e) { var c = e.target.value; p.change(function (n) { n.currency = c; }); }}>
+              ${E.CURRENCIES.map(function (c) { return html`<option key=${c.id} value=${c.id}>${c.name}</option>`; })}
+            </select>
+          </label>
+          <label class="field"><span>Billing rate</span>
+            <${Stepper} id="est-rate" value=${E.num(draft.hourlyRate, (draft.snapshot && draft.snapshot.hourlyRate) || (ctx.settings && ctx.settings.hourlyRate) || 100)} step=${5} min=${1} max=${10000} label="Billing rate" unit=${E.currencyInfo(draft.currency || 'USD').symbol + '/h'} onChange=${function (v) { p.change(function (n) { n.hourlyRate = v; }); }} />
+          </label>
         </div>
       </section>
 
@@ -2629,6 +2657,20 @@
           <div class="grid-2">
             <label class="field"><span>Agency name</span><input class="input" id="set-agency" maxlength="200" value=${s.agencyName || ''} placeholder="Shown at the top of exported workbooks" onInput=${function (e) { var v = e.target.value; d.mut(function (n) { n.agencyName = v; }); }} /></label>
             <label class="field"><span>Default buffer</span><${Stepper} id="set-buffer" value=${E.num(s.bufferPercent)} step=${1} max=${100} unit="%" label="Default buffer" onChange=${function (v) { d.mut(function (n) { n.bufferPercent = v; }); }} /></label>
+          </div>
+        </section>
+
+        <section class="panel panel-pad">
+          <${CardHead} icon="coins" color="green" title="Financials & rate cards" desc="Defaults for new estimates. Estimators can change the rate and currency per estimate." />
+          <div class="grid-2">
+            <label class="field"><span>Default currency</span>
+              <select class="select" id="set-currency" aria-label="Default currency" value=${s.currency || 'USD'} onChange=${function (e) { var v = e.target.value; d.mut(function (n) { n.currency = v; }); }}>
+                ${E.CURRENCIES.map(function (c) { return html`<option key=${c.id} value=${c.id}>${c.name}</option>`; })}
+              </select>
+            </label>
+            <label class="field"><span>Default billing rate</span>
+              <${Stepper} id="set-rate" value=${E.num(s.hourlyRate, 100)} step=${5} min=${1} max=${10000} label="Default billing rate" unit=${E.currencyInfo(s.currency || 'USD').symbol + '/h'} onChange=${function (v) { d.mut(function (n) { n.hourlyRate = v; }); }} />
+            </label>
           </div>
         </section>
 

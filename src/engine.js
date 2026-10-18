@@ -42,6 +42,30 @@
   // Lower-case the first letter of a sentence fragment unless it starts an acronym or brand (SEO, UI kit, iOS, KYC).
   function lcFirst(t) { var w = String(t).split(/\s/)[0]; return /^[A-Z][a-z]*$/.test(w.replace(/[^A-Za-z]/g, '')) && (w.length > 1 || w === 'A') && !/^[A-Z][a-z]*[A-Z]/.test(w) ? t.charAt(0).toLowerCase() + t.slice(1) : t; }
   function fmtHours(n) { return fmtNum(n) + 'h'; }
+  var CURRENCIES = [
+    { id: 'USD', symbol: '$', name: 'US Dollar ($)', pos: 'prefix' },
+    { id: 'EUR', symbol: '€', name: 'Euro (€)', pos: 'prefix' },
+    { id: 'GBP', symbol: '£', name: 'British Pound (£)', pos: 'prefix' },
+    { id: 'CAD', symbol: 'CA$', name: 'Canadian Dollar (CA$)', pos: 'prefix' },
+    { id: 'AUD', symbol: 'A$', name: 'Australian Dollar (A$)', pos: 'prefix' },
+    { id: 'BDT', symbol: '৳', name: 'Bangladeshi Taka (৳)', pos: 'prefix' },
+    { id: 'SGD', symbol: 'S$', name: 'Singapore Dollar (S$)', pos: 'prefix' },
+    { id: 'JPY', symbol: '¥', name: 'Japanese Yen (¥)', pos: 'prefix' },
+    { id: 'INR', symbol: '₹', name: 'Indian Rupee (₹)', pos: 'prefix' },
+    { id: 'CHF', symbol: 'CHF ', name: 'Swiss Franc (CHF)', pos: 'prefix' },
+  ];
+  function currencyInfo(currId) {
+    var c = CURRENCIES.filter(function (x) { return x.id === currId; })[0];
+    return c || CURRENCIES[0];
+  }
+  function fmtMoney(amount, currId) {
+    var c = currencyInfo(currId);
+    var v = Math.round(num(amount));
+    var neg = v < 0;
+    var absStr = fmtNum(Math.abs(v));
+    var sign = neg ? '−' : '';
+    return c.pos === 'suffix' ? sign + absStr + ' ' + c.symbol : sign + c.symbol + absStr;
+  }
   function uid(prefix) { return (prefix || 'k') + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function slug(s) {
     return String(s || '').toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-').slice(0, 40) || 'item';
@@ -69,12 +93,16 @@
     if (est && est.__norm) return est;
     est = obj(est);
     var snap = obj(est.snapshot), scope = obj(est.scope), reg = obj(est.register);
+    var rate = num(est.hourlyRate, snap.hourlyRate !== undefined ? snap.hourlyRate : 100);
+    var curr = txt(est.currency || snap.currency || 'USD');
     var e = Object.assign({}, est, {
       name: txt(est.name), client: txt(est.client), serviceName: txt(est.serviceName),
+      hourlyRate: rate, currency: curr,
       snapshot: Object.assign({}, snap, {
         labels: obj(snap.labels),
         optionGroups: arr(snap.optionGroups).map(function (g) { return Object.assign({}, g, { name: txt(g.name), options: arr(g.options).map(function (o) { return Object.assign({}, o, { name: txt(o.name) }); }) }); }),
         complexity: arr(snap.complexity), phases: strs(snap.phases), gapRules: arr(snap.gapRules),
+        hourlyRate: num(snap.hourlyRate, rate), currency: txt(snap.currency || curr),
       }),
       scope: { values: obj(scope.values), choice: obj(scope.choice) },
       items: arr(est.items).map(normItem),
@@ -93,6 +121,7 @@
     var seenPh = {}, ph = strs(st.phases).map(function (p) { return p.trim(); }).filter(function (p) { var k = p.toLowerCase(); if (!p || seenPh[k]) return false; seenPh[k] = 1; return true; });
     return Object.assign({}, st, {
       agencyName: txt(st.agencyName), bufferPercent: num(st.bufferPercent, 10),
+      hourlyRate: num(st.hourlyRate, 100), currency: txt(st.currency) || 'USD',
       complexity: cx.length ? cx : clone(DEFAULT_COMPLEXITY),
       overhead: arr(st.overhead).map(function (o) { return Object.assign({}, o, { id: txt(o.id) || uid('oh'), name: txt(o.name), rule: o.rule === 'percent' ? 'percent' : 'fixed', value: num(o.value), enabled: o.enabled !== false, description: txt(o.description) }); }),
       phases: ph.length ? ph : ['Phase 1'],
@@ -218,12 +247,17 @@
     settings = settings || {};
     var groups = clone(service.optionGroups || []);
     var now = Date.now();
+    var rate = num(settings.hourlyRate, 100);
+    var curr = txt(settings.currency || 'USD');
     return {
       name: (meta && meta.name) || 'Untitled estimate',
       client: (meta && meta.client) || '',
       status: 'draft',
       serviceId: serviceId, serviceName: service.name,
       totalHours: 0,
+      totalCost: 0,
+      hourlyRate: rate,
+      currency: curr,
       createdBy: (meta && meta.userId) || null, updatedBy: (meta && meta.userId) || null,
       createdAt: now, updatedAt: now,
       snapshot: {
@@ -232,6 +266,8 @@
         complexity: clone(settings.complexity || DEFAULT_COMPLEXITY),
         phases: clone(settings.phases && settings.phases.length ? settings.phases : ['Phase 1']),
         gapRules: clone(service.gapRules || []),
+        hourlyRate: rate,
+        currency: curr,
         takenAt: now,
       },
       scope: defaultScope(groups),
@@ -337,13 +373,23 @@
     var subtotal = designSubtotal + overhead;
     var bufferPercent = num(est.bufferPercent);
     var buffer = subtotal * bufferPercent / 100;
+    var total = subtotal + buffer;
+    var rate = num(est.hourlyRate, (est.snapshot && est.snapshot.hourlyRate) !== undefined ? est.snapshot.hourlyRate : 100);
+    var curr = txt(est.currency || (est.snapshot && est.snapshot.currency) || 'USD');
     return {
       items: items, base: base, itemCount: itemCount,
       optionLines: optionLines, optionHours: optionHours,
       customLines: customLines, customHours: customHours,
       adaptations: optionHours + customHours,
       designSubtotal: designSubtotal, overheadLines: overheadLines, overhead: overhead,
-      subtotal: subtotal, bufferPercent: bufferPercent, buffer: buffer, total: subtotal + buffer,
+      subtotal: subtotal, bufferPercent: bufferPercent, buffer: buffer, total: total,
+      hourlyRate: rate, currency: curr,
+      baseCost: Math.round(base * rate),
+      designSubtotalCost: Math.round(designSubtotal * rate),
+      overheadCost: Math.round(overhead * rate),
+      subtotalCost: Math.round(subtotal * rate),
+      bufferCost: Math.round(buffer * rate),
+      totalCost: Math.round(total * rate),
     };
   }
 
@@ -356,7 +402,7 @@
     ];
     return sets.map(function (s) {
       var r = compute(est, { priorities: s.priorities });
-      return { id: s.id, label: s.label, total: r.total, count: r.items.filter(function (x) { return x.included; }).length };
+      return { id: s.id, label: s.label, total: r.total, totalCost: r.totalCost, count: r.items.filter(function (x) { return x.included; }).length };
     });
   }
 
@@ -371,7 +417,11 @@
       var b = mine.reduce(function (s, x) { return s + x.total; }, 0);
       return { phase: p, base: b, count: mine.length };
     });
-    rows.forEach(function (r, i) { r.share = res.base > 0 ? r.base / res.base : (i === 0 ? 1 : 0); r.total = res.total * r.share; });
+    rows.forEach(function (r, i) {
+      r.share = res.base > 0 ? r.base / res.base : (i === 0 ? 1 : 0);
+      r.total = res.total * r.share;
+      r.totalCost = Math.round(r.total * (res.hourlyRate || 100));
+    });
     return rows;
   }
 
@@ -487,8 +537,8 @@
     return pk.names.map(function (name, t) {
       var r = compute(est, { maxTier: t });
       var inc = r.items.filter(function (x) { return x.included; });
-      return { tier: t, name: name, total: r.total, base: r.base, count: inc.length,
-        added: inc.filter(function (x) { return tierOf(x.item) === t; }).map(function (x) { return { key: x.item.key, name: x.item.name, hours: x.total }; }) };
+      return { tier: t, name: name, total: r.total, totalCost: r.totalCost, base: r.base, baseCost: r.baseCost, count: inc.length,
+        added: inc.filter(function (x) { return tierOf(x.item) === t; }).map(function (x) { return { key: x.item.key, name: x.item.name, hours: x.total, cost: Math.round(x.total * r.hourlyRate) }; }) };
     });
   }
 
@@ -926,6 +976,7 @@
     var pk = packagesOf(est);
     return {
       title: est.name || 'Untitled estimate', client: est.client || '', service: est.serviceName || '',
+      hourlyRate: res.hourlyRate, currency: res.currency, totalCost: res.totalCost,
       agency: meta.agency || '', preparedBy: meta.preparedBy || '', date: meta.date || '', validDays: Math.max(0, Math.round(num(pr.validDays, 30))),
       intro: txt(pr.intro).trim() || ('This proposal sets out the design work for ' + (est.name || 'the project') + (est.client ? ' for ' + est.client : '') + ': what is included, what each part takes and the assumptions behind the estimate.'),
       total: res.total, capacity: cap, weeks: res.total / cap, showHours: showHours, labels: labels,
@@ -995,6 +1046,7 @@
 
   return {
     PRIORITIES: PRIORITIES, STATUSES: STATUSES, REGISTER_KINDS: REGISTER_KINDS, DEFAULT_LABELS: DEFAULT_LABELS, DEFAULT_COMPLEXITY: DEFAULT_COMPLEXITY,
+    CURRENCIES: CURRENCIES, currencyInfo: currencyInfo, fmtMoney: fmtMoney,
     num: num, round: round, fmtNum: fmtNum, plainNum: plainNum, lcFirst: lcFirst, fmtHours: fmtHours, uid: uid, slug: slug, clone: clone, lines: lines, labelsOf: labelsOf,
     optionValue: optionValue, optionUnits: optionUnits, optionActive: optionActive, chosenOption: chosenOption, defaultScope: defaultScope, ruleHint: ruleHint, ruleLabel: ruleLabel,
     itemUnitHours: itemUnitHours, libItemHours: libItemHours, complexityMap: complexityMap, categoryName: categoryName,
