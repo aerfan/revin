@@ -1,7 +1,7 @@
 // Measure worst-case contrast of text drawn on the gradient start card (axe cannot judge gradients).
 const { chromium } = (() => { try { return require('playwright'); } catch (e) { return require('/opt/npm-tools/node_modules/playwright'); } })();
 const fs = require('fs'); const path = require('path');
-const ROOT = '/home/claude/estimator';
+const ROOT = path.join(__dirname, '..');
 const page$ = fs.readFileSync(path.join(ROOT, 'dist', 'design-hours-estimator.html'), 'utf8');
 const mock = fs.readFileSync(path.join(ROOT, 'test', 'mock-claude.js'), 'utf8');
 const seed = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed', 'seed.json'), 'utf8'));

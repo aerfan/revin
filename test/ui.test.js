@@ -222,7 +222,9 @@ print(wb.sheetnames, round(tot, 4))
     await page.locator('.cms-tab', { hasText: 'Sections' }).click();
     ok((await page.locator('.ed-row').count()) === 31, 'section library listed');
     await btn(page, 'Add service').click();
+    await page.locator('.toast', { hasText: 'Service created' }).waitFor();
     await page.locator('#svc-name').waitFor();
+    await settle(page, 200);
     await page.locator('#svc-name').fill('Video production');
     await page.locator('.savebar').getByRole('button', { name: 'Save changes' }).click();
     await page.waitForFunction(() => Array.from(window.__store.values()).some((d) => d.name === 'Video production'));
@@ -230,6 +232,8 @@ print(wb.sheetnames, round(tot, 4))
 
     // settings
     await page.locator('.navtab', { hasText: 'Settings' }).click();
+    await page.locator('#set-agency').waitFor();
+    await settle(page, 200);
     await page.locator('#set-agency').fill('Test Agency');
     await page.locator('.savebar').getByRole('button', { name: 'Save changes' }).click();
     await page.waitForFunction(() => window.__store.get('config/settings').agencyName === 'Test Agency');

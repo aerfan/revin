@@ -469,7 +469,7 @@ async function frame(page, fn) {
       const { page, context, errors } = await open({ role: 'admin', seed: seedWith({ 'estimates/est-slow': est }), latency: 1200 });
       await page.locator('.est-row').first().click();
       await page.locator('#est-name').click();
-      await page.locator('#est-name').press('Control+A');
+      await page.locator('#est-name').fill('');
       await page.keyboard.type('Slow network estimate typed quickly with many characters', { delay: 15 });
       assert((await page.locator('.savestate').innerText()).includes('Saving'), 'no saving indicator during slow write');
       await page.waitForTimeout(4500);

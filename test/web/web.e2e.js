@@ -51,8 +51,8 @@ const noErr = (errors) => assert(!errors.length, 'console: ' + errors.slice(0, 3
     await scenario('First sign-up becomes admin; empty workspace; backup import loads the library', async (note) => {
       const o = await open(); admin = o.context; adminPage = o.page; adminErrors = o.errors;
       const page = o.page;
-      await page.getByRole('heading', { name: 'Sign in to the estimator' }).waitFor();
-      assert(await page.getByText('News9 · Design Hours Estimator').count() === 1, 'agency name on sign-in');
+      await page.getByRole('heading', { name: 'Sign in to Revin' }).waitFor();
+      assert(await page.getByText('News9 · Revin').count() === 1, 'agency name on sign-in');
       await signIn(page, 'ada@agency.com', 'wrong-password');
       await page.getByRole('alert').filter({ hasText: 'don’t match' }).waitFor();
       await signUp(page, 'Ada Owner', 'Ada@Agency.com', 'correct-horse-1');
@@ -171,8 +171,8 @@ const noErr = (errors) => assert(!errors.length, 'console: ' + errors.slice(0, 3
       assert(j.docs['services/website'] && Object.keys(j.docs).some((k) => k.startsWith('estimates/')), 'backup content');
       await page.reload(); await page.locator('.side').waitFor();
       await page.getByRole('button', { name: 'Sign out' }).click();
-      await page.getByRole('heading', { name: 'Sign in to the estimator' }).waitFor();
-      await page.reload(); await page.getByRole('heading', { name: 'Sign in to the estimator' }).waitFor();
+      await page.getByRole('heading', { name: 'Sign in to Revin' }).waitFor();
+      await page.reload(); await page.getByRole('heading', { name: 'Sign in to Revin' }).waitFor();
       await signIn(page, 'sam@agency.com', 'sam-password-1'); await page.locator('.side').waitFor();
     });
 
@@ -209,7 +209,7 @@ const noErr = (errors) => assert(!errors.length, 'console: ' + errors.slice(0, 3
 
     await scenario('Phone width: sign-in and team panel fit', async () => {
       const o = await open({ viewport: { width: 360, height: 740 } });
-      await o.page.getByRole('heading', { name: 'Sign in to the estimator' }).waitFor();
+      await o.page.getByRole('heading', { name: 'Sign in to Revin' }).waitFor();
       let over = await o.page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
       assert(over <= 0, 'sign-in scrolls sideways ' + over);
       await o.page.screenshot({ path: path.join(ROOT, 'test', 'out', 'web-signin-360.png') });

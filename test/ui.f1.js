@@ -80,6 +80,7 @@ const ROUTE_F1 = (step) => ({ view: 'estimate', id: 'est-f1', step });
       await page.locator('#act-sheet').fill('Task,Hours\nHeader,2\nheader,1.5\nContact,4\nClient call,3');
       await panel.getByRole('button', { name: 'Fill from timesheet' }).click();
       await page.locator('.toast', { hasText: 'Filled 2' }).waitFor();
+      await page.waitForFunction((id) => document.getElementById(id) && document.getElementById(id).value === '3.5', 'act-' + keys[0]);
       assert(await page.locator('#act-' + keys[0]).inputValue() === '3.5', 'header not summed');
       assert(await page.locator('#act-other').inputValue() === '3', 'unmatched hours → project time');
       assert(await panel.locator('.pill', { hasText: 'Tracked' }).count() === 1, 'should be complete');
