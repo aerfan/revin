@@ -87,3 +87,15 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
     - Added `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()`.
     - Added `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`.
 - **Verification**: 100% pass across all engine tests, 53 UI automation checks, 42 QA scenarios, 28 axe audits, 143 responsive width checks, and Canary compatibility suites.
+
+### Session 6: Database Security & Integrity Hardening (Completed)
+- **Status**: Completed (100% pass).
+- **Migration**: `supabase/migrations/0002_security_hardening.sql`.
+- **Database Protections Implemented**:
+  - **PostgreSQL Check Constraints on `public.docs`**: Max 256 KiB size limit (`docs_size_max`) and regex path validation (`docs_valid_path`) enforced at the database engine level to block direct PostgREST payload abuse.
+  - **Deterministic Hierarchy Trigger (`trg_docs_integrity`)**: Automatically maintains `parent`, `id`, `updated_at`, and `updated_by` on insert/update, eliminating path spoofing vulnerabilities.
+  - **Search-Path Hijacking Protection**: Explicit `set search_path = public, pg_temp` on all Security Definer and Security Invoker functions.
+  - **First-Sign-up Hijacking Defense**: Explicitly pre-authorizes `aerfan.work@gmail.com` as admin in `handle_new_user()` and pre-seeds an invite into `public.invites`.
+  - **Last-Admin Safeguard**: Enforced in `set_member_role()` so the organization's last active admin cannot be demoted or removed.
+  - **Profile Input Sanitization**: Stripping control characters and null bytes in `update_my_profile()`.
+- **Verification**: 100% pass across all 53 UI checks, 42 QA scenarios, 7 v2 scenarios, 3 F1 scenarios, 28 axe audits, and 143 responsive sweeps.
