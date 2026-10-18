@@ -235,14 +235,17 @@
     }
     function bump(d) { p.onChange(Math.min(max, Math.max(min, Math.round((value + d) * 100) / 100))); }
     return html`<span class="stepper">
-      <button type="button" aria-label=${'Decrease ' + (p.label || '')} disabled=${p.disabled || value <= min} onClick=${function () { bump(-step); }}><${Icon} name="minus" size=${14} /></button>
-      <input id=${p.id} inputmode="decimal" aria-label=${p.label || 'Value'} value=${text} disabled=${p.disabled}
-        onFocus=${function () { focused.current = true; }}
-        onInput=${function (e) { setText(e.target.value); live(e.target.value); }}
-        onBlur=${function (e) { focused.current = false; commit(e.target.value); }}
-        onKeyDown=${function (e) { if (e.key === 'Enter') { e.preventDefault(); commit(e.target.value); } }} />
-      ${p.unit ? html`<span class="unit">${p.unit}</span>` : null}
-      <button type="button" aria-label=${'Increase ' + (p.label || '')} disabled=${p.disabled || value >= max} onClick=${function () { bump(step); }}><${Icon} name="plus" size=${14} /></button>
+      <button type="button" aria-label=${'Decrease ' + (p.label || '')} disabled=${p.disabled || value <= min} onClick=${function () { bump(-step); }}><${Icon} name="minus" size=${12} /></button>
+      <span class="stepper-val">
+        <input id=${p.id} inputmode="decimal" aria-label=${p.label || 'Value'} value=${text} disabled=${p.disabled}
+          style=${{ width: Math.max(1, (text || '').length) + 'ch' }}
+          onFocus=${function () { focused.current = true; }}
+          onInput=${function (e) { setText(e.target.value); live(e.target.value); }}
+          onBlur=${function (e) { focused.current = false; commit(e.target.value); }}
+          onKeyDown=${function (e) { if (e.key === 'Enter') { e.preventDefault(); commit(e.target.value); } }} />
+        ${p.unit ? html`<span class="unit">${p.unit}</span>` : null}
+      </span>
+      <button type="button" aria-label=${'Increase ' + (p.label || '')} disabled=${p.disabled || value >= max} onClick=${function () { bump(step); }}><${Icon} name="plus" size=${12} /></button>
     </span>`;
   }
   function Switch(p) {

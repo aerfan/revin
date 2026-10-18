@@ -221,14 +221,16 @@ span.icon-btn { pointer-events: none; }
 .seg.pri button[aria-pressed="true"][data-v="could"] { color: var(--muted); }
 .seg.pri button[aria-pressed="true"][data-v="wont"] { color: var(--red-fg); }
 
-.stepper { display: inline-flex; align-items: center; height: 32px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--surface); overflow: hidden; flex: none; }
-.stepper button { width: 30px; height: 100%; border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; }
+.stepper { display: inline-flex; align-items: stretch; height: 32px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--surface); overflow: hidden; flex: none; align-self: flex-start; }
+.stepper button { width: 28px; height: 100%; border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; flex: none; cursor: pointer; padding: 0; transition: background 0.12s, color 0.12s; }
 .stepper button:hover:not(:disabled) { background: var(--surface-3); color: var(--ink); }
 .stepper button:disabled { opacity: 0.35; cursor: not-allowed; }
-.stepper input { width: 46px; height: 100%; border: 0; border-inline: 1px solid var(--line); text-align: center; background: transparent; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; -moz-appearance: textfield; }
+.stepper-val { display: inline-flex; align-items: center; justify-content: center; height: 100%; min-width: 48px; border-inline: 1px solid var(--line); background: var(--surface); padding: 0 6px; box-sizing: border-box; transition: background 0.12s; }
+.stepper-val:focus-within { background: var(--surface-2); }
+.stepper input { height: 100%; border: 0; text-align: center; background: transparent; font-family: inherit; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ink); -moz-appearance: textfield; padding: 0; box-sizing: content-box; min-width: 1.5ch; max-width: 8ch; }
 .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.stepper input:focus { outline: none; background: var(--surface-2); }
-.stepper .unit { font-size: 12px; color: var(--faint); padding-right: 6px; }
+.stepper input:focus { outline: none; }
+.stepper .unit { font-size: 12px; font-weight: 500; color: var(--muted); margin-left: 2px; user-select: none; pointer-events: none; line-height: 1; flex: none; }
 
 /* hours pill: mint when counted, grey when not */
 .hrs { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: var(--brand-wash); color: var(--brand-text); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; flex: none; }
