@@ -99,3 +99,22 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
   - **Last-Admin Safeguard**: Enforced in `set_member_role()` so the organization's last active admin cannot be demoted or removed.
   - **Profile Input Sanitization**: Stripping control characters and null bytes in `update_my_profile()`.
 - **Verification**: 100% pass across all 53 UI checks, 42 QA scenarios, 7 v2 scenarios, 3 F1 scenarios, 28 axe audits, and 143 responsive sweeps.
+
+### Session 7: Zero-Cost Observability & Automated Issue Tracking (Completed)
+- **Status**: Completed (100% pass).
+- **Database Migration**: `supabase/migrations/0003_observability.sql`.
+- **Client Telemetry**: `src/app.js` (`Telemetry` module, `HealthPanel`, and `Boundary` integration).
+- **Automated Test Suite**: `test/canary.telemetry.js`.
+- **Architecture & Features Implemented**:
+  - **In-App Telemetry & Circular Breadcrumbs**: Tracks user navigation, action intents, and step transitions in an in-memory 15-event circular ring buffer without performance overhead.
+  - **Deterministic Error Fingerprinting**: Hashes `message + normalized top stack frame` to group identical crashes together.
+  - **Local Storage Persistence & Offline Triage**: Stores up to 50 diagnostic records in `dhe:error_logs` so developers and users can inspect and copy issues immediately even when disconnected from Supabase.
+  - **Automated Database Deduplication RPC (`log_client_error`)**: Automatically increments `occurrence_count` and updates `last_seen` timestamp for existing incidents within a 24-hour window, preventing log flooding during crash loops.
+  - **1-Click "Copy for AI" Bug Triage**: Formats full incident diagnostics (stack trace, route, breadcrumbs, user agent, timestamps) into structured Markdown ready to paste directly into Google Antigravity, Claude Code, or Codex for instant automated fixing.
+  - **Settings Health & Diagnostics Panel**: Administrative dashboard embedded into Settings allowing team leads to inspect incident counts, review recent breadcrumbs, and clear resolved logs.
+- **Verification Results**:
+  - `node test/canary.telemetry.js`: Passed (100%).
+  - `npm run test:engine`: 5,754 checks passed (100%).
+  - `node test/canary.compat.js && node test/canary.screens.js && node test/canary.stress.js`: Passed across all browsers and 12 device viewports (100%).
+  - `npm run test:ui`: All 53 UI checks, 42 QA scenarios, 7 v2 scenarios, 3 F1 scenarios, 28 axe audits, and 143 responsive width sweeps passed (100%).
+

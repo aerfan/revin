@@ -106,6 +106,56 @@
     get: function (k, d) { try { var v = localStorage.getItem('dhe:' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
     set: function (k, v) { try { localStorage.setItem('dhe:' + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } },
   };
+  var Telemetry = {
+    crumbs: [],
+    maxCrumbs: 15,
+    crumb: function (cat, msg) {
+      try {
+        this.crumbs.push({ t: Date.now(), cat: cat, msg: String(msg || '').slice(0, 100) });
+        if (this.crumbs.length > this.maxCrumbs) this.crumbs.shift();
+      } catch (e) { /* silent */ }
+    },
+    record: function (err, extra) {
+      try {
+        var msg = String((err && (err.message || err.error_description)) || err || 'Unknown error').slice(0, 500);
+        var stack = String((err && err.stack) || '').slice(0, 3000);
+        var fp = (msg + ':' + (stack.split('\n')[1] || '')).replace(/\s+/g, ' ').slice(0, 120);
+        var item = {
+          id: 'err-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
+          fingerprint: fp,
+          message: msg,
+          stack: stack,
+          route: extra && extra.route ? (typeof extra.route === 'string' ? extra.route : JSON.stringify(extra.route)) : null,
+          breadcrumbs: this.crumbs.slice(),
+          browser: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+          time: Date.now(),
+          severity: (extra && extra.severity) || 'error'
+        };
+        var list = local.get('error_logs', []);
+        list.unshift(item);
+        if (list.length > 50) list.length = 50;
+        local.set('error_logs', list);
+
+        if (extra && extra.api && typeof extra.api.rpc === 'function') {
+          extra.api.rpc('log_client_error', {
+            p_fingerprint: item.fingerprint,
+            p_message: item.message,
+            p_stack: item.stack,
+            p_route: item.route,
+            p_breadcrumbs: item.breadcrumbs,
+            p_browser: item.browser,
+            p_severity: item.severity
+          }).catch(function () { /* fail silently */ });
+        }
+        return item;
+      } catch (e) { return null; }
+    },
+    getLogs: function () { return local.get('error_logs', []); },
+    clearLogs: function () { local.set('error_logs', []); }
+  };
+  if (typeof window !== 'undefined') {
+    window.RevinTelemetry = Telemetry;
+  }
   function clean(o) { var c = JSON.parse(JSON.stringify(o)); delete c.id; return c; }
   function newId(prefix) { return (prefix || 'est') + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7); }
   function uniqueId(base, taken) { var b = E.slug(base), id = b, i = 2; while (taken.indexOf(id) >= 0) id = b + '-' + (i++); return id; }
@@ -437,6 +487,7 @@
       setTimeout(function () { setToasts(function (t) { return t.filter(function (x) { return x.id !== id; }); }); }, life);
     }, []);
     var setRoute = useCallback(function (r) {
+      if (r) Telemetry.crumb('nav', 'View ' + r.view + (r.step ? ':' + r.step : ''));
       setRouteState(r);
       local.set('route', { view: r.view, id: r.id, step: r.step, serviceId: r.serviceId, tab: r.tab });
       try { window.scrollTo(0, 0); } catch (e) { /* ignore */ }
@@ -603,7 +654,7 @@
         <${Sidebar} ctx=${ctx} />
         <main class="main"><div class="wrap">
           ${readOnly ? html`<div class="banner bad" style="margin-bottom:16px"><${Icon} name="lock" /><div class="grow"><b>View only.</b> Your changes are not being saved. Ask the owner for Contributor access.</div></div>` : null}
-          <${Boundary} resetKey=${route.view + ':' + (route.id || route.serviceId || '')} onHome=${function () { setRoute({ view: 'estimates' }); }}>${view}<//>
+          <${Boundary} resetKey=${route.view + ':' + (route.id || route.serviceId || '')} api=${api} onHome=${function () { setRoute({ view: 'estimates' }); }}>${view}<//>
         </div></main>
       </div>
       ${dialog ? html`<${Modal} ...${dialog} onClose=${function () { setDialog(null); }} />` : null}
@@ -615,7 +666,12 @@
   }
 
   function Boundary(p) {
-    var eb = H.useErrorBoundary ? H.useErrorBoundary(function (err) { try { console.warn('Estimator view error:', err); } catch (e) { /* ignore */ } }) : [null, function () {}];
+    var eb = H.useErrorBoundary ? H.useErrorBoundary(function (err) {
+      try {
+        console.warn('Estimator view error:', err);
+        Telemetry.record(err, { route: p.resetKey, severity: 'error', api: p.api });
+      } catch (e) { /* ignore */ }
+    }) : [null, function () {}];
     var err = eb[0], reset = eb[1];
     // clear the error when the person navigates elsewhere, without remounting (and resetting) the view's state
     var last = useRef(p.resetKey);
@@ -624,7 +680,14 @@
       <${Tile} size="lg" icon="alert" color="red" />
       <h2>Something went wrong showing this page</h2>
       <p>${String((err && err.message) || err).slice(0, 160)}</p>
-      <div class="row" style="justify-content:center"><button class="btn" onClick=${function () { reset(); p.onHome(); }}>Back to estimates</button><button class="btn primary" onClick=${reset}>Try again</button></div>
+      <div class="row" style="justify-content:center;gap:8px">
+        <button class="btn" onClick=${function () { reset(); p.onHome(); }}>Back to estimates</button>
+        <button class="btn primary" onClick=${reset}>Try again</button>
+        <button class="btn sm" title="Copy error report for support" onClick=${function () {
+          var rep = Telemetry.getLogs()[0];
+          if (rep && navigator.clipboard) navigator.clipboard.writeText(JSON.stringify(rep, null, 2));
+        }}><${Icon} name="copy" size=${13} /> Copy diagnostics</button>
+      </div>
     </div></div>`;
     return p.children;
   }
@@ -2637,6 +2700,70 @@
     </section>`;
   }
 
+  function HealthPanel(p) {
+    var ctx = p.ctx;
+    var st = useState(function () { return Telemetry.getLogs(); }), logs = st[0], setLogs = st[1];
+    var so = useState(null), expanded = so[0], setExpanded = so[1];
+    function clear() { Telemetry.clearLogs(); setLogs([]); ctx.toast('Diagnostics cleared'); }
+    function copyAI(err) {
+      var md = [
+        '### Revin Error Report for AI Debugging',
+        '- **Message**: `' + err.message + '`',
+        '- **Severity**: ' + err.severity,
+        '- **Route**: `' + (err.route || 'unknown') + '`',
+        '- **Timestamp**: ' + new Date(err.time).toISOString(),
+        '- **Browser**: `' + err.browser + '`',
+        '- **Breadcrumbs**:',
+        (err.breadcrumbs && err.breadcrumbs.length ? err.breadcrumbs.map(function (b, i) { return '  ' + (i + 1) + '. `[' + b.cat + ']` ' + b.msg; }).join('\n') : '  (none)'),
+        '- **Stack Trace**:',
+        '```',
+        err.stack || 'No stack trace',
+        '```'
+      ].join('\n');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(md).then(function () {
+          ctx.toast('Report copied in Markdown — ready to paste to AI assistant');
+        }).catch(function () { ctx.toast('Failed to copy', 'bad'); });
+      }
+    }
+    return html`<section class="panel panel-pad">
+      <${CardHead} icon="shield" color="teal" title="System health & error diagnostics" desc="Client crash reports, breadcrumbs, and automated diagnostic summaries." />
+      <div class="row" style="justify-content:space-between;margin-bottom:12px;align-items:center;flex-wrap:wrap;gap:8px">
+        <div>
+          <b>${logs.length === 0 ? 'All systems operational' : logs.length + ' incident(s) recorded'}</b>
+          <span class="muted" style="margin-left:8px;font-size:12px">${logs.length === 0 ? 'Zero unhandled crashes' : 'Stored locally for immediate debugging'}</span>
+        </div>
+        ${logs.length > 0 ? html`<button class="btn sm danger" onClick=${clear}><${Icon} name="trash" size=${14} /> Clear logs</button>` : null}
+      </div>
+      ${logs.length === 0 ? html`<div class="banner" style="background:var(--bg-sub);border-color:var(--border-sub)"><${Icon} name="checkCircle" /><div class="grow">No runtime errors or unhandled exceptions recorded in this environment.</div></div>` : null}
+      <div class="stack" style="gap:8px">
+        ${logs.map(function (err) {
+          var isExp = expanded === err.id;
+          return html`<div class="panel panel-pad" key=${err.id} style="background:var(--bg-sub);border:1px solid var(--border)">
+            <div class="row" style="justify-content:space-between;align-items:start;gap:8px">
+              <div class="grow" style="cursor:pointer" onClick=${function () { setExpanded(isExp ? null : err.id); }}>
+                <div style="font-weight:600;font-family:monospace;font-size:13px;color:var(--red, #e53e3e)">${err.message}</div>
+                <div class="muted" style="font-size:12px;margin-top:2px">${ago(err.time)} · Route: ${err.route || 'app'} · Severity: ${err.severity}</div>
+              </div>
+              <div class="row" style="gap:6px">
+                <button class="btn sm" title="Copy formatted Markdown for AI debugging" onClick=${function () { copyAI(err); }}><${Icon} name="copy" size=${13} /> Copy for AI</button>
+                <button class="icon-btn" aria-label="Toggle stack trace" onClick=${function () { setExpanded(isExp ? null : err.id); }}><${Icon} name=${isExp ? 'up' : 'down'} size=${13} /></button>
+              </div>
+            </div>
+            ${isExp ? html`<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)">
+              <div style="font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px">Recent Actions (Breadcrumbs)</div>
+              <ul style="margin:0 0 8px;padding-left:18px;font-size:12px" class="muted">
+                ${(err.breadcrumbs || []).map(function (b, i) { return html`<li key=${i}><b>[${b.cat}]</b> ${b.msg}</li>`; })}
+              </ul>
+              <div style="font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px">Stack Trace</div>
+              <pre style="background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;font-size:11px;line-height:1.4">${err.stack || 'No stack trace'}</pre>
+            </div>` : null}
+          </div>`;
+        })}
+      </div>
+    </section>`;
+  }
+
   function SettingsView(p) {
     var ctx = p.ctx;
     var d = useDocDraft(ctx.settings);
@@ -2655,7 +2782,7 @@
     var cx = s.complexity || E.DEFAULT_COMPLEXITY, oh = s.overhead || [];
     return html`<div class="page-head"><div><h1>Settings</h1><p>Defaults for new estimates. Existing estimates keep their own values and can update their rates from the Review step.</p></div></div>
       <div class="stack">
-        ${ctx.caps && ctx.caps.team && ctx.caps.team.isAdmin ? html`<${TeamPanel} ctx=${ctx} /><${BackupPanel} ctx=${ctx} />` : null}
+        ${ctx.caps && ctx.caps.team && ctx.caps.team.isAdmin ? html`<${TeamPanel} ctx=${ctx} /><${BackupPanel} ctx=${ctx} /><${HealthPanel} ctx=${ctx} />` : (ctx.caps && !ctx.caps.team ? html`<${HealthPanel} ctx=${ctx} />` : null)}
         ${ctx.settingsDoc === false ? html`<div class="banner"><${Icon} name="info" /><div class="grow">No settings saved yet. These are starting values; save them to make them the defaults.</div></div>` : null}
         <section class="panel panel-pad">
           <${CardHead} icon="sliders" color="gray" title="General" desc="Shown on exports and used as the starting buffer." />
@@ -2727,6 +2854,14 @@
   }
 
   // ------------------------------------------------------------------ boot
+  if (typeof window !== 'undefined') {
+    window.addEventListener('error', function (e) {
+      if (e && e.error) Telemetry.record(e.error, { severity: 'fatal' });
+    });
+    window.addEventListener('unhandledrejection', function (e) {
+      if (e && e.reason) Telemetry.record(e.reason, { severity: 'error' });
+    });
+  }
   function mountApp() { mount.innerHTML = ''; render(html`<${App} />`, mount); }
   if (window.DHE_DEFER_MOUNT) window.DHE_MOUNT_APP = mountApp; // standalone build: mounts after sign-in
   else mountApp();
