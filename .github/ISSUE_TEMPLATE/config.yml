@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🚀 Revin Canary Preview
+    url: https://revin-canary.vercel.app
+    about: Test the latest features and pre-release builds on our staging environment.
+  - name: 📖 PRD & Architecture Documentation
+    url: https://github.com/aerfan/revin/blob/canary/design-estimator-prd.md
+    about: Review mathematical models, financial specs, and technical architecture.
+  - name: 📜 Canary Change Log
+    url: https://github.com/aerfan/revin/blob/canary/CANARY_CHANGELOG.md
+    about: Check continuous test cycle reports, issue matrices, and resolved defects.

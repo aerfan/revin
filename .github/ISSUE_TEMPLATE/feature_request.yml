@@ -1,0 +1,41 @@
+name: 💡 Feature Request / Improvement
+description: Suggest an idea, commercial enhancement, or ROI matrix item
+labels: ["enhancement", "proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Suggest an enhancement or optimization for Revin. Review the [CTO Roadmap](design-estimator-prd.md) for existing planned features.
+  - type: input
+    id: title
+    attributes:
+      label: Feature Title
+      placeholder: e.g. Native Multi-Currency Exchange Rate Sync
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement / Agency Pain Point
+      description: What challenge or friction does this feature solve for design agencies and estimators?
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution & Commercial Impact
+      description: Describe how the feature should behave, how it impacts agency margins or proposal conversion, and any technical considerations.
+    validations:
+      required: true
+  - type: dropdown
+    id: roadmap-phase
+    attributes:
+      label: Roadmap Alignment
+      options:
+        - Phase 1: Outbound Automation & Webhooks
+        - Phase 2: Live Collaborative Multi-User Estimation
+        - Phase 3: AI Scope Assistant & Brief Ingestion
+        - Phase 4: Native Client Portal & Stripe Invoicing
+        - Architecture / Developer Experience
+    validations:
+      required: true

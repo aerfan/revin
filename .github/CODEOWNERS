@@ -1,0 +1,16 @@
+# Revin Code Owners
+# Defines individuals or teams responsible for code in this repository.
+
+# Default catch-all owner
+* @aerfan
+
+# Database migrations and security schemas
+/supabase/migrations/ @aerfan
+
+# Core mathematical engine and financial logic
+/src/engine.js @aerfan
+
+# CI/CD Workflows and security scanning
+/.github/workflows/ @aerfan
+/.github/CODEOWNERS @aerfan
+/.github/dependabot.yml @aerfan
