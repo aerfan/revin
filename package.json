@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "axe-core": "^4.10.2",
     "exceljs": "^4.4.0"
   },

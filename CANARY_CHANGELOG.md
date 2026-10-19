@@ -350,3 +350,15 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
   - `npm run test:security`: 10 vulnerability surfaces checked, 0 findings (100%).
   - `npm run test:canary`: All 8 canary suites passed (viewport sweeps, stress & chaos, telemetry, 1,000-estimate benchmarks, proposal portal, security, webhooks).
   - `test:ui` & `test:a11y`: 53 UI automation checks passed, 30 axe audits (0 violations), 154 responsive screen checks passed (100%).
+
+### Session 17: Vercel Speed Insights Integration (Completed)
+- **Status**: Completed (100% pass).
+- **Scope**:
+  - Installed `@vercel/speed-insights` (`^2.0.0`) with 0 vulnerabilities.
+  - Added native Vercel Speed Insights queue initialization (`window.si`) and script loader (`/_vercel/speed-insights/script.js`) to `web/template.html`.
+  - Extended `src/ui/telemetry.js` with `Telemetry.route(path)` dispatching route events to `window.si('route', ...)`.
+  - Wired view navigation in `src/ui/app-core.js` (`setRoute`) to automatically broadcast route transitions to Speed Insights for view-specific Core Web Vitals (LCP, INP, CLS, FCP).
+  - Re-assembled `src/app.js` bundle (270.4 KB) and built standalone distribution artifacts.
+  - Confirmed service worker bypass in `web/sw.js` and SPA rewrite bypass in `vercel.json` for `/_vercel/speed-insights`.
+- **Verification**: 100% pass across all engine tests (5,754 checks), security penetration suite (10 attack vectors), canary telemetry suite, and proposal portal sign-off contracts.
+

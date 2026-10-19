@@ -55,5 +55,12 @@
           window.va('event', { name: name, data: data });
         }
       } catch (e) { /* silent */ }
+    },
+    route: function (path) {
+      try {
+        if (typeof window !== 'undefined' && typeof window.si === 'function') {
+          window.si('route', { route: typeof path === 'string' ? path : (path && path[0]) || '/' });
+        }
+      } catch (e) { /* silent */ }
     }
   };

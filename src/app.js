@@ -150,6 +150,13 @@
           window.va('event', { name: name, data: data });
         }
       } catch (e) { /* silent */ }
+    },
+    route: function (path) {
+      try {
+        if (typeof window !== 'undefined' && typeof window.si === 'function') {
+          window.si('route', { route: typeof path === 'string' ? path : (path && path[0]) || '/' });
+        }
+      } catch (e) { /* silent */ }
     }
   };
 
@@ -2959,7 +2966,10 @@ var STEPS = [
       setTimeout(function () { setToasts(function (t) { return t.filter(function (x) { return x.id !== id; }); }); }, life);
     }, []);
     var setRoute = useCallback(function (r) {
-      if (r) Telemetry.crumb('nav', 'View ' + r.view + (r.step ? ':' + r.step : ''));
+      if (r) {
+        Telemetry.crumb('nav', 'View ' + r.view + (r.step ? ':' + r.step : ''));
+        Telemetry.route('/' + r.view + (r.step ? '/' + r.step : ''));
+      }
       setRouteState(r);
       local.set('route', { view: r.view, id: r.id, step: r.step, serviceId: r.serviceId, tab: r.tab });
       try { window.scrollTo(0, 0); } catch (e) { /* ignore */ }
