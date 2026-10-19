@@ -30,6 +30,7 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
 | **ISSUE-015** (A11Y-04) | High | `src/ui/views/editor.js`, `src/ui/views/settings.js`, `src/styles.css`, `src/ui/views/advanced.js` | Color contrast ratio failures (< 4.5:1) on margin badges, profitability preview pills, and milestone percentages (WCAG 1.4.3) | **Resolved** | Replaced hardcoded `#2e7d32` with design system tokens `var(--green-bg)` and `var(--green-fg)` (> 4.8:1 ratio); darkened proposal milestone text to `#096E56` (> 5.5:1 ratio) | Verified in axe audits across light and dark themes (0 violations) |
 | **ISSUE-016** (A11Y-05) | Medium | `src/ui/components.js`, `src/ui/views/editor.js`, `src/ui/views/advanced.js`, `web/runtime.js` | Orphaned form inputs and missing accessible names on `StringList`, `RegisterCard`, version input, requirement input, and proposal acceptance forms (WCAG 4.1.2, 3.3.2) | **Resolved** | Added dynamic `aria-label` attributes to all add-line and search inputs; added explicit `<label for="...">` associations to all proposal sign-off inputs and web auth fields | Verified via automated orphaned input scan (0 unassociated inputs) |
 | **ISSUE-017** (A11Y-06) | Medium | `src/ui/views/advanced.js`, `src/styles.css` | Interactive proposal package tier selection cards were non-focusable `<div>`s lacking keyboard event handlers; proposal tables lacked `<caption>` and `<th>` column headers (WCAG 2.1.1, 1.3.1) | **Resolved** | Converted package selection into accessible `role="radiogroup"` / `role="radio"` with `aria-checked`, `tabindex="0"`, `onKeyDown` (Space/Enter) handlers, and focus-visible rings; added semantic `<caption>`, `<thead>`, and `<th scope="col">` to proposal summary and timeline tables | Verified across full keyboard navigation and axe audit |
+| **ISSUE-018** (SEC-04) | High | `.github/workflows/ci.yml`, `src/template.html`, `dev/break-ui/peek.js`, `test/*` | CodeQL security alerts: missing Subresource Integrity (SRI) on CDN scripts, dynamic regex construction in screenshot filter, overly permissive default GITHUB_TOKEN, and loose URL substring matching | **Resolved** | Added SHA-384 SRI hashes and `crossorigin="anonymous"` to CDN scripts; replaced dynamic RegExp with literal substring checking; enforced `permissions: contents: read` in CI; converted route mocks to exact hostname check (`new URL(u).hostname === 'fonts.googleapis.com'`) | Verified via GitHub Agentic Autofix PR #1 merge, CodeQL scan passing, and 100% Canary test suites pass |
 
 ---
 
@@ -335,5 +336,17 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
      - Enhanced proposal financial summary and timeline tables with `<caption>`, `<thead>`, and `<th scope="col">` column headers.
   5. **Tap Target Touch Sizes**:
      - Increased minimum touch target heights to >= 28px for `.crumbs button` and `.link-arrow` navigation controls.
-- **Verification**: Zero axe violations (0 across all 15 screens and auth states), 0 orphaned form inputs, 100% pass across all 8 Canary test suites.
-
+### Session 16: GitHub Remote Sync & CodeQL Security Remediations (PR #1) (Completed)
+- **Status**: Completed (100% pass).
+- **Scope & Remote Changes Merged**:
+  - Fetched and merged remote updates from `origin/main` containing GitHub Agentic Autofix PR #1 (`Remediate CodeQL security alerts aerfan/revin#1`).
+  - Added Subresource Integrity (SRI) SHA-384 hashes and `crossorigin="anonymous"` to CDN-loaded scripts (`preact`, `preact/hooks`, `htm`) in `src/template.html`.
+  - Replaced dynamic user-input RegExp construction with literal substring containment in `dev/break-ui/peek.js`.
+  - Tightened test runner URL interceptors (`new URL(u).hostname === 'fonts.googleapis.com'`) across `test/ui.*.js` and `dev/break-ui/*`.
+  - Hardened GitHub Actions CI workflow (`.github/workflows/ci.yml`) by restricting default permissions to `permissions: contents: read` while preserving the full dual-node matrix, security suite, and build summary reporting.
+  - Standardized `.github/workflows/codeql.yml` with `actions/checkout@v4` and dual `main`/`canary` scanning.
+- **Verification**:
+  - `npm run test:engine`: 5,754 unit & fuzz checks passed (100%).
+  - `npm run test:security`: 10 vulnerability surfaces checked, 0 findings (100%).
+  - `npm run test:canary`: All 8 canary suites passed (viewport sweeps, stress & chaos, telemetry, 1,000-estimate benchmarks, proposal portal, security, webhooks).
+  - `test:ui` & `test:a11y`: 53 UI automation checks passed, 30 axe audits (0 violations), 154 responsive screen checks passed (100%).
