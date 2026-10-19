@@ -26,6 +26,10 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
 | **ISSUE-011** (OPS-01) | Medium | `web/build.js` | Missing Supabase configuration fails open with exit code 0, emitting setup placeholder in CI pipelines | **Resolved** | Added strict configuration gate (`isStrict` checking `process.env.CI || process.env.VERCEL || process.env.STRICT_BUILD`) exiting with code 1 | Verified in `test/canary.security.js` (Attack 9) |
 | **ISSUE-012** (SEC-03) | Low | `web/build.js`, `vercel.json` | Overly broad CSP allowlists (`script-src` includes unneeded CDNs, wildcard `*.supabase.co`) | **Resolved** | Restricted `script-src` to `'self' 'unsafe-inline'` (removed external CDNs) and scoped `connect-src` strictly to project Supabase domain and Google OAuth | Verified in `test/canary.security.js` (Attack 10) |
 | **ISSUE-013** (A11Y-02) | Low | `src/styles.css` | Header elements with Sign Out button introduce 9px horizontal overflow on 320 CSS pixels | **Resolved** | Added `@media (max-width: 420px)` and `@media (max-width: 360px)` ultra-compact styles for side header, buttons, and avatar | Verified in `test/canary.screens.js` across all 12 viewports (0px overflow) |
+| **ISSUE-014** (A11Y-03) | High | `web/runtime.js`, `web/template.html`, `src/template.html`, `src/ui/app-core.js` | Missing `<main>` landmarks and skip-to-content links across web and app viewports (WCAG 2.4.1, 1.3.1) | **Resolved** | Added accessible `.skip-link` utility with smooth focus transitions, designated `<main id="main-content" tabindex="-1">` across all views, and wrapped web auth cards/notices in `<main>` | Verified in zero-rule-disabled axe audits (0 violations) |
+| **ISSUE-015** (A11Y-04) | High | `src/ui/views/editor.js`, `src/ui/views/settings.js`, `src/styles.css`, `src/ui/views/advanced.js` | Color contrast ratio failures (< 4.5:1) on margin badges, profitability preview pills, and milestone percentages (WCAG 1.4.3) | **Resolved** | Replaced hardcoded `#2e7d32` with design system tokens `var(--green-bg)` and `var(--green-fg)` (> 4.8:1 ratio); darkened proposal milestone text to `#096E56` (> 5.5:1 ratio) | Verified in axe audits across light and dark themes (0 violations) |
+| **ISSUE-016** (A11Y-05) | Medium | `src/ui/components.js`, `src/ui/views/editor.js`, `src/ui/views/advanced.js`, `web/runtime.js` | Orphaned form inputs and missing accessible names on `StringList`, `RegisterCard`, version input, requirement input, and proposal acceptance forms (WCAG 4.1.2, 3.3.2) | **Resolved** | Added dynamic `aria-label` attributes to all add-line and search inputs; added explicit `<label for="...">` associations to all proposal sign-off inputs and web auth fields | Verified via automated orphaned input scan (0 unassociated inputs) |
+| **ISSUE-017** (A11Y-06) | Medium | `src/ui/views/advanced.js`, `src/styles.css` | Interactive proposal package tier selection cards were non-focusable `<div>`s lacking keyboard event handlers; proposal tables lacked `<caption>` and `<th>` column headers (WCAG 2.1.1, 1.3.1) | **Resolved** | Converted package selection into accessible `role="radiogroup"` / `role="radio"` with `aria-checked`, `tabindex="0"`, `onKeyDown` (Space/Enter) handlers, and focus-visible rings; added semantic `<caption>`, `<thead>`, and `<th scope="col">` to proposal summary and timeline tables | Verified across full keyboard navigation and axe audit |
 
 ---
 
@@ -311,3 +315,25 @@ This change log tracks automated testing sessions, compatibility sweeps, stress 
   - Added 204 handler in `server.js` for local development server cleanliness.
   - Extended `src/ui/telemetry.js` with `Telemetry.track(name, data)` hooking into `window.va('event', ...)` for custom event tracking (e.g. `proposal_accepted`).
 - **Verification**: 100% pass across all engine tests (5,754 checks), security penetration suite (10 vectors), compatibility suites (Chromium & WebKit), 12 responsive screen viewports, and proposal portal sign-off contracts.
+
+### Session 15: Accessibility (A11y) Hardening & Zero-Violation Audit (Completed)
+- **Status**: Completed (100% pass).
+- **Audit Tooling**: Chrome DevTools a11y protocols + `axe-core` 4.10 with zero rules disabled (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`, `best-practice`).
+- **Defects Resolved**:
+  1. **A11Y-03 (Landmark Structure & Skip Navigation)**:
+     - Embedded `.skip-link` utility with smooth transition and keyboard focus targeting `<main id="main-content" tabindex="-1">`.
+     - Wrapped web standalone auth views (`AuthCard`) and notification screens (`Notice`) in `<main>` landmarks.
+  2. **A11Y-04 (Color Contrast Remediation)**:
+     - Replaced non-standard `var(--green, #2e7d32)` with design tokens `var(--green-bg)` and `var(--green-fg)` across editor inspector badges, cost rate margin indicators, and settings target margin preview.
+     - Darkened proposal milestone percentages and eyebrow typography to `#096E56` (> 5.5:1 ratio on light surfaces).
+  3. **A11Y-05 (Orphaned Form Inputs & Accessible Names)**:
+     - Added dynamic `aria-label` bindings to `StringList` and `RegisterCard` input fields (`reg-new-assumptions`, `reg-new-exclusions`, `reg-new-dependencies`, `reg-new-risks`, `phase-new`, etc.).
+     - Added accessible labels to `ver-label` ("Version label") and `req-new` ("New requirement").
+     - Added explicit `<label for="...">` associations and `aria-label` attributes to digital proposal acceptance fields.
+  4. **A11Y-06 (Keyboard Navigation & Table Semantics in Proposals)**:
+     - Enhanced package tier cards with `role="radiogroup"` / `role="radio"`, `aria-checked`, `tabindex="0"`, and `Space`/`Enter` keyboard interaction.
+     - Enhanced proposal financial summary and timeline tables with `<caption>`, `<thead>`, and `<th scope="col">` column headers.
+  5. **Tap Target Touch Sizes**:
+     - Increased minimum touch target heights to >= 28px for `.crumbs button` and `.link-arrow` navigation controls.
+- **Verification**: Zero axe violations (0 across all 15 screens and auth states), 0 orphaned form inputs, 100% pass across all 8 Canary test suites.
+

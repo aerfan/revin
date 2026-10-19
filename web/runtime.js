@@ -267,7 +267,7 @@
   var MARK = html`<div style="display:flex;justify-content:center;margin-bottom:12px"><span class="brand-logo" style="font-size:32px" aria-label="Revin">Revin</span></div>`;
   var GOOGLE = html`<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`;
 
-  function Notice(p) { return html`<div class="notice auth-notice">${MARK}<h1>${p.title}</h1><p>${p.children}</p>${p.actions ? html`<div class="row auth-actions">${p.actions}</div>` : null}</div>`; }
+  function Notice(p) { return html`<main class="notice auth-notice" id="main-content">${MARK}<h1>${p.title}</h1><p>${p.children}</p>${p.actions ? html`<div class="row auth-actions">${p.actions}</div>` : null}</main>`; }
 
   function AuthCard(p) {
     var sb = p.sb;
@@ -310,7 +310,7 @@
     }
     var titles = { signin: 'Sign in to Revin', signup: 'Create your account', reset: 'Reset your password', newpw: 'Choose a new password' };
     var subs = { signin: (cfg.agencyName ? cfg.agencyName + ' · ' : '') + 'Revin', signup: 'Your admin approves new accounts unless you were invited.', reset: 'We’ll email you a link to set a new password.', newpw: 'At least 8 characters.' };
-    return html`<div class="auth">
+    return html`<main class="auth" id="main-content">
       <div class="auth-card panel">
         ${MARK}
         <h1>${titles[mode]}</h1>
@@ -318,9 +318,9 @@
         ${mode === 'signin' || mode === 'signup' ? html`<button type="button" class="btn auth-google" disabled=${busy} onClick=${google}>${GOOGLE} Continue with Google</button>
           <div class="auth-or"><span>or with email</span></div>` : null}
         <form class="auth-form" onSubmit=${submit}>
-          ${mode === 'signup' ? html`<label class="auth-field"><span>Name</span><input class="input" id="auth-name" autocomplete="name" maxlength="120" value=${name} onInput=${function (e) { setName(e.target.value); }} /></label>` : null}
-          ${mode !== 'newpw' ? html`<label class="auth-field"><span>Email</span><input class="input" id="auth-email" type="email" required autocomplete="email" value=${email} onInput=${function (e) { setEmail(e.target.value); }} /></label>` : null}
-          ${mode !== 'reset' ? html`<label class="auth-field"><span>${mode === 'newpw' ? 'New password' : 'Password'}</span><input class="input" id="auth-password" type="password" required minlength=${mode === 'signin' ? 1 : 8} autocomplete=${mode === 'signin' ? 'current-password' : 'new-password'} value=${pw} onInput=${function (e) { setPw(e.target.value); }} /></label>` : null}
+          ${mode === 'signup' ? html`<label class="auth-field" for="auth-name"><span>Name</span><input class="input" id="auth-name" autocomplete="name" maxlength="120" value=${name} onInput=${function (e) { setName(e.target.value); }} /></label>` : null}
+          ${mode !== 'newpw' ? html`<label class="auth-field" for="auth-email"><span>Email</span><input class="input" id="auth-email" type="email" required autocomplete="email" value=${email} onInput=${function (e) { setEmail(e.target.value); }} /></label>` : null}
+          ${mode !== 'reset' ? html`<label class="auth-field" for="auth-password"><span>${mode === 'newpw' ? 'New password' : 'Password'}</span><input class="input" id="auth-password" type="password" required minlength=${mode === 'signin' ? 1 : 8} autocomplete=${mode === 'signin' ? 'current-password' : 'new-password'} value=${pw} onInput=${function (e) { setPw(e.target.value); }} /></label>` : null}
           ${msg ? html`<div class=${'auth-msg' + (msg.bad ? ' bad' : '')} role=${msg.bad ? 'alert' : 'status'}>${msg.text}</div>` : null}
           <button class="btn primary auth-submit" type="submit" disabled=${busy}>${busy ? 'Please wait…' : { signin: 'Sign in', signup: 'Create account', reset: 'Send reset link', newpw: 'Save password' }[mode]}</button>
         </form>
@@ -329,7 +329,7 @@
           ${mode === 'signup' || mode === 'reset' ? html`<button type="button" class="linkish" onClick=${function () { go('signin'); }}>Back to sign in</button>` : null}
         </div>
       </div>
-    </div>`;
+    </main>`;
   }
 
   // ------------------------------------------------------------------ boot

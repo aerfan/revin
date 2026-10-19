@@ -110,7 +110,7 @@
         </div>`;
       })}
       <form class="str-row" onSubmit=${function (e) { e.preventDefault(); var t = text.trim(); if (!t) return; if (dup(t)) { setErr(t + ' is already in the list.'); return; } setErr(''); p.onChange(values.concat(t)); setText(''); }}>
-        <input class="input" id=${p.idPrefix + '-new'} maxlength="1000" placeholder=${p.placeholder} value=${text} onInput=${function (e) { setText(e.target.value); setErr(''); }} />
+        <input class="input" id=${p.idPrefix + '-new'} aria-label=${p.placeholder || ('Add ' + p.label)} maxlength="1000" placeholder=${p.placeholder} value=${text} onInput=${function (e) { setText(e.target.value); setErr(''); }} />
         <button class="btn" type="submit"><${Icon} name="plus" /> Add</button>
       </form>
       ${err ? html`<span class="hint" role="alert" style="color:var(--red-fg)">${err}</span>` : null}
@@ -153,9 +153,9 @@
     </div>`;
   }
   function Notice(p) {
-    return html`<div class="notice">
+    return html`<main class="notice" id="main-content">
       <div class="brand-mark"><${BrandMark} /></div>
       <h1>${p.title}</h1>
       <p>${p.children}</p>
-    </div>`;
+    </main>`;
   }

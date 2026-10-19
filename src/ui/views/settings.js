@@ -309,7 +309,7 @@
               <div class="panel panel-pad" style="background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px">
                 ${s.costRate && Number(s.hourlyRate) > Number(s.costRate) ? html`<div class="row" style="justify-content:space-between;align-items:center">
                   <span style="font-size:12px;color:var(--text-sub)">Target Margin</span>
-                  <span class="pill" style="font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${Math.round(((s.hourlyRate - s.costRate) / s.hourlyRate) * 100)}% gross margin</span>
+                  <span class="pill" style="font-weight:700;color:var(--green-fg);background:var(--green-bg)">${Math.round(((s.hourlyRate - s.costRate) / s.hourlyRate) * 100)}% gross margin</span>
                 </div>` : html`<div class="muted" style="font-size:12px">Set cost rate > 0 to display target margin %</div>`}
               </div>
             </div>

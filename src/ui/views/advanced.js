@@ -70,7 +70,7 @@
     return html`<section class="panel panel-pad">
       <${CardHead} icon="clock" color="teal" title="Versions" desc="Save the estimate as it stands before sending it, then compare what changed between quotes." />
       <form class="str-row" onSubmit=${async function (e) { e.preventDefault(); var t = label.trim() || next; if (await saveVersion(t)) { setLabel(''); ctx.toast('Saved ' + t); } }}>
-        <input class="input" id="ver-label" maxlength="80" placeholder=${next + ', e.g. Sent to client 18 Oct'} value=${label} onInput=${function (e) { setLabel(e.target.value); }} />
+        <input class="input" id="ver-label" aria-label="Version label" maxlength="80" placeholder=${next + ', e.g. Sent to client 18 Oct'} value=${label} onInput=${function (e) { setLabel(e.target.value); }} />
         <button class="btn" type="submit" disabled=${busy}><${Icon} name="plus" /> Save version</button>
       </form>
       ${list === null ? html`<div class="skeleton" style="width:40%;margin-top:12px"></div>` : list.length ? html`<div class="ver-list">${list.map(function (v) {
@@ -192,7 +192,7 @@
       })}</div>` : null}
       ${tm.unlinked.length && reqs.length ? html`<p class="opt-hint" style="margin-top:8px">${tm.unlinked.length} ${lower(plural(tm.unlinked.length, p.labels.item, p.labels.items))} not linked to a requirement. Link them from each item in Build.</p>` : null}
       <form class="str-row" style="margin-top:10px" onSubmit=${function (e) { e.preventDefault(); var t = text.trim(); if (!t) return; add(t); setText(''); }}>
-        <input class="input" id="req-new" maxlength="300" placeholder="Add a requirement, e.g. Customers can track their order" value=${text} onInput=${function (e) { setText(e.target.value); }} />
+        <input class="input" id="req-new" aria-label="New requirement" maxlength="300" placeholder="Add a requirement, e.g. Customers can track their order" value=${text} onInput=${function (e) { setText(e.target.value); }} />
         <button class="btn" type="submit"><${Icon} name="plus" /> Add</button>
       </form>
     </section>`;
@@ -453,14 +453,16 @@
           <p class="paper-meta">${[m.client ? 'Prepared for ' + m.client : '', m.date, m.preparedBy ? 'by ' + m.preparedBy : ''].filter(Boolean).join(' · ')}</p>
           <p class="paper-intro">${m.intro}</p>
 
-          ${m.packages ? html`<h2>Packages</h2><div class="paper-pk">${m.packages.map(function (pk, i) {
+          ${m.packages ? html`<h2>Packages</h2><div class="paper-pk" role="radiogroup" aria-label="Proposal packages">${m.packages.map(function (pk, i) {
             var isSel = selectedTier === i;
-            return html`<div key=${i} class=${isSel ? 'selected' : ''} style="cursor:pointer" onClick=${function () { setSelectedTier(selectedTier === i ? null : i); }}>
+            return html`<div key=${i} class=${isSel ? 'selected' : ''} role="radio" aria-checked=${isSel ? 'true' : 'false'} tabindex="0" style="cursor:pointer"
+              onKeyDown=${function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setSelectedTier(selectedTier === i ? null : i); } }}
+              onClick=${function () { setSelectedTier(selectedTier === i ? null : i); }}>
               <b>${pk.name}</b>
               <span class="n">${hrs(pk.total)}</span>
               <span class="paper-note">${wk(pk.weeks)}${i ? ' · everything in ' + m.packageNames[i - 1] + (pk.added.length ? ', plus ' + pk.added.slice(0, 4).join(', ') + (pk.added.length > 4 ? ' and ' + (pk.added.length - 4) + ' more' : '') : '') : ''}</span>
               <div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center">
-                <span style="font-weight:700;font-size:13px;color:#0C8468">${E.fmtMoney(pk.totalCost, m.currency)}</span>
+                <span style="font-weight:700;font-size:13px;color:#096E56">${E.fmtMoney(pk.totalCost, m.currency)}</span>
                 <span class=${'pill ' + (isSel ? 's-approved' : 's-review')} style="font-size:11px">${isSel ? '✓ Active Tier' : 'Compare'}</span>
               </div>
             </div>`;
@@ -469,7 +471,11 @@
           ` : null}
 
           <h2>Summary</h2>
-          <table class="paper-table"><tbody>${m.summary.map(function (r) { return html`<tr key=${r[0]}><td>${r[0]}</td><td class="n">${hrs(r[1])}</td></tr>`; })}<tr class="tot"><td>Total Investment</td><td class="n" style="font-size:16px">${hrs(m.total)} · ${E.fmtMoney(m.totalCost, m.currency)}</td></tr></tbody></table>
+          <table class="paper-table">
+            <caption class="sr">Financial investment summary</caption>
+            <thead><tr><th scope="col">Category</th><th scope="col" class="n">Hours & Cost</th></tr></thead>
+            <tbody>${m.summary.map(function (r) { return html`<tr key=${r[0]}><td>${r[0]}</td><td class="n">${hrs(r[1])}</td></tr>`; })}<tr class="tot"><td>Total Investment</td><td class="n" style="font-size:16px">${hrs(m.total)} · ${E.fmtMoney(m.totalCost, m.currency)}</td></tr></tbody>
+          </table>
           <p class="paper-note">Estimated duration: about ${wk(m.weeks)} at ${E.fmtNum(m.capacity)} design hours per week.</p>
 
           <h2>Scope</h2>
@@ -477,7 +483,11 @@
           ${m.scope.length ? null : html`<p class="paper-note">No ${lower(m.labels.items)} in scope yet.</p>`}
 
           <h2>Deliverables</h2><ul>${m.deliverables.map(function (x) { return html`<li key=${x.group}><b><bdi>${x.group}</bdi>:</b> <bdi>${x.text}</bdi></li>`; })}</ul>
-          ${m.timeline.length ? html`<h2>Timeline by phase</h2><table class="paper-table"><tbody>${m.timeline.map(function (t) { return html`<tr key=${t.phase}><td>${t.phase}</td><td class="n">${hrs(t.hours)}</td><td class="n">${wk(t.weeks)}</td></tr>`; })}</tbody></table>` : null}
+          ${m.timeline.length ? html`<h2>Timeline by phase</h2><table class="paper-table">
+            <caption class="sr">Estimated timeline by phase</caption>
+            <thead><tr><th scope="col">Phase</th><th scope="col" class="n">Hours</th><th scope="col" class="n">Estimated Weeks</th></tr></thead>
+            <tbody>${m.timeline.map(function (t) { return html`<tr key=${t.phase}><td>${t.phase}</td><td class="n">${hrs(t.hours)}</td><td class="n">${wk(t.weeks)}</td></tr>`; })}</tbody>
+          </table>` : null}
 
           ${(m.milestones || []).length ? html`<div>
             <h2>Payment milestone schedule</h2>
@@ -510,12 +520,12 @@
             <h3>Digital Proposal Acceptance</h3>
             <p>Review the scope above and sign below to accept this proposal and initiate project scheduling.</p>
             <div class="paper-sign-fields">
-              <label class="field"><span>Full Name</span><input class="input" id="prop-sign-name" maxlength="100" placeholder="Client Stakeholder Name" value=${signName} onInput=${function (e) { setSignName(e.target.value); }} /></label>
-              <label class="field"><span>Work Email</span><input class="input" type="email" id="prop-sign-email" maxlength="120" placeholder="client@company.com" value=${signEmail} onInput=${function (e) { setSignEmail(e.target.value); }} /></label>
-              <label class="field"><span>Organization</span><input class="input" id="prop-sign-org" maxlength="100" placeholder="Client Organization" value=${signOrg} onInput=${function (e) { setSignOrg(e.target.value); }} /></label>
+              <label class="field" for="prop-sign-name"><span>Full Name</span><input class="input" id="prop-sign-name" maxlength="100" placeholder="Client Stakeholder Name" value=${signName} onInput=${function (e) { setSignName(e.target.value); }} /></label>
+              <label class="field" for="prop-sign-email"><span>Work Email</span><input class="input" type="email" id="prop-sign-email" maxlength="120" placeholder="client@company.com" value=${signEmail} onInput=${function (e) { setSignEmail(e.target.value); }} /></label>
+              <label class="field" for="prop-sign-org"><span>Organization</span><input class="input" id="prop-sign-org" maxlength="100" placeholder="Client Organization" value=${signOrg} onInput=${function (e) { setSignOrg(e.target.value); }} /></label>
             </div>
-            <label class="check-line" style="margin-bottom:16px;cursor:pointer">
-              <input type="checkbox" id="prop-sign-agree" checked=${agreed} onChange=${function (e) { setAgreed(e.target.checked); }} />
+            <label class="check-line" for="prop-sign-agree" style="margin-bottom:16px;cursor:pointer">
+              <input type="checkbox" id="prop-sign-agree" aria-label="Confirm acceptance of proposal terms" checked=${agreed} onChange=${function (e) { setAgreed(e.target.checked); }} />
               <span>I confirm acceptance of this project proposal, scope, timeline, milestones, and commercial investment on behalf of <b>${signOrg || 'the client'}</b>.</span>
             </label>
             <button class="btn primary" id="btn-prop-accept" disabled=${!agreed || !signName.trim()} onClick=${signProposal}>

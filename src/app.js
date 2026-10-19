@@ -4,7 +4,7 @@
   var P = window.preact, H = window.preactHooks, E = window.Engine;
   var mount = document.getElementById('app');
   if (!P || !H || !window.htm || !E) {
-    mount.innerHTML = '<div class="notice"><h1>The estimator could not load</h1><p>A required script did not load. Check your connection and reload the page.</p></div>';
+    mount.innerHTML = '<main class="notice" id="main-content"><h1>The estimator could not load</h1><p>A required script did not load. Check your connection and reload the page.</p></main>';
     return;
   }
   var h = P.h, render = P.render;
@@ -342,7 +342,7 @@ var STEPS = [
         </div>`;
       })}
       <form class="str-row" onSubmit=${function (e) { e.preventDefault(); var t = text.trim(); if (!t) return; if (dup(t)) { setErr(t + ' is already in the list.'); return; } setErr(''); p.onChange(values.concat(t)); setText(''); }}>
-        <input class="input" id=${p.idPrefix + '-new'} maxlength="1000" placeholder=${p.placeholder} value=${text} onInput=${function (e) { setText(e.target.value); setErr(''); }} />
+        <input class="input" id=${p.idPrefix + '-new'} aria-label=${p.placeholder || ('Add ' + p.label)} maxlength="1000" placeholder=${p.placeholder} value=${text} onInput=${function (e) { setText(e.target.value); setErr(''); }} />
         <button class="btn" type="submit"><${Icon} name="plus" /> Add</button>
       </form>
       ${err ? html`<span class="hint" role="alert" style="color:var(--red-fg)">${err}</span>` : null}
@@ -385,11 +385,11 @@ var STEPS = [
     </div>`;
   }
   function Notice(p) {
-    return html`<div class="notice">
+    return html`<main class="notice" id="main-content">
       <div class="brand-mark"><${BrandMark} /></div>
       <h1>${p.title}</h1>
       <p>${p.children}</p>
-    </div>`;
+    </main>`;
   }
 
 // ------------------------------------------------------------------ files
@@ -865,7 +865,7 @@ var STEPS = [
           <div class="eyebrow insp-label">Total estimate</div>
           <div class="insp-total"><span class="num">${E.fmtNum(E.round(res.total, 1))}</span><span class="u">h</span></div>
           <div class="insp-cost-badge">${E.fmtMoney(res.totalCost, res.currency)} <span class="rate-sub">· ${E.fmtMoney(res.hourlyRate, res.currency)}/h</span></div>
-          ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<div class="insp-margin-badge" style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;background:var(--green-sub, rgba(46,125,50,0.12));color:var(--green, #2e7d32)">Margin: ${res.marginPercent}% (${E.fmtMoney(res.grossProfit, res.currency)})</div>` : null}
+          ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<div class="insp-margin-badge" style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;background:var(--green-bg);color:var(--green-fg)">Margin: ${res.marginPercent}% (${E.fmtMoney(res.grossProfit, res.currency)})</div>` : null}
           <div class="insp-sub">About ${E.fmtNum(E.round(res.total / 40, 1))} designer-weeks at 40h a week</div>
         </div>
         <button class="btn sm ghost insp-toggle" aria-expanded=${open ? 'true' : 'false'} onClick=${function () { setOpen(!open); }}>${open ? 'Hide' : 'Details'}</button>
@@ -1300,7 +1300,7 @@ var STEPS = [
             p.change(function (n) { n.register = n.register || {}; n.register[kind.id] = (n.register[kind.id] || []).concat({ id: E.uid('r'), text: t }); });
             setText('');
           }}>
-            <input class="input" id=${'reg-new-' + kind.id} maxlength="1000" placeholder=${'Add ' + ({ assumptions: 'an assumption', exclusions: 'an exclusion', dependencies: 'a dependency', risks: 'a risk' }[kind.id] || lower(kind.name))} value=${text} onInput=${function (e) { setText(e.target.value); }} />
+            <input class="input" id=${'reg-new-' + kind.id} aria-label=${'Add ' + ({ assumptions: 'an assumption', exclusions: 'an exclusion', dependencies: 'a dependency', risks: 'a risk' }[kind.id] || lower(kind.name))} maxlength="1000" placeholder=${'Add ' + ({ assumptions: 'an assumption', exclusions: 'an exclusion', dependencies: 'a dependency', risks: 'a risk' }[kind.id] || lower(kind.name))} value=${text} onInput=${function (e) { setText(e.target.value); }} />
             <button class="btn" type="submit"><${Icon} name="plus" /> Add</button>
           </form>
         </div>
@@ -1319,7 +1319,7 @@ var STEPS = [
           <div class="total-cost-badge">
             <span class="cost-val">${E.fmtMoney(res.totalCost, res.currency)}</span>
             <span class="cost-rate">at ${E.fmtMoney(res.hourlyRate, res.currency)}/h</span>
-            ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<span class="cost-margin" style="margin-left:8px;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${res.marginPercent}% margin</span>` : null}
+            ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<span class="cost-margin" style="margin-left:8px;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;color:var(--green-fg);background:var(--green-bg)">${res.marginPercent}% margin</span>` : null}
           </div>
           <div class="total-meta">${dl[0] ? dl[0].text : ''} <span class="paren">(about ${E.fmtNum(E.round(res.total / 40, 1))} designer-weeks)</span></div>
           <dl class="summary-lines">
@@ -1434,7 +1434,7 @@ var STEPS = [
             <div class="panel panel-pad" style="background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px">
               ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<div class="row" style="justify-content:space-between;align-items:center">
                 <span style="font-size:12px;color:var(--text-sub)">Labor: ${E.fmtMoney(res.laborCost, res.currency)}</span>
-                <span class="pill" style="font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${res.marginPercent}% gross margin (${E.fmtMoney(res.grossProfit, res.currency)} profit)</span>
+                <span class="pill" style="font-weight:700;color:var(--green-fg);background:var(--green-bg)">${res.marginPercent}% gross margin (${E.fmtMoney(res.grossProfit, res.currency)} profit)</span>
               </div>` : html`<div class="muted" style="font-size:12px">Set cost rate > 0 to track profitability margin</div>`}
             </div>
           </div>
@@ -1555,7 +1555,7 @@ var STEPS = [
     return html`<section class="panel panel-pad">
       <${CardHead} icon="clock" color="teal" title="Versions" desc="Save the estimate as it stands before sending it, then compare what changed between quotes." />
       <form class="str-row" onSubmit=${async function (e) { e.preventDefault(); var t = label.trim() || next; if (await saveVersion(t)) { setLabel(''); ctx.toast('Saved ' + t); } }}>
-        <input class="input" id="ver-label" maxlength="80" placeholder=${next + ', e.g. Sent to client 18 Oct'} value=${label} onInput=${function (e) { setLabel(e.target.value); }} />
+        <input class="input" id="ver-label" aria-label="Version label" maxlength="80" placeholder=${next + ', e.g. Sent to client 18 Oct'} value=${label} onInput=${function (e) { setLabel(e.target.value); }} />
         <button class="btn" type="submit" disabled=${busy}><${Icon} name="plus" /> Save version</button>
       </form>
       ${list === null ? html`<div class="skeleton" style="width:40%;margin-top:12px"></div>` : list.length ? html`<div class="ver-list">${list.map(function (v) {
@@ -1677,7 +1677,7 @@ var STEPS = [
       })}</div>` : null}
       ${tm.unlinked.length && reqs.length ? html`<p class="opt-hint" style="margin-top:8px">${tm.unlinked.length} ${lower(plural(tm.unlinked.length, p.labels.item, p.labels.items))} not linked to a requirement. Link them from each item in Build.</p>` : null}
       <form class="str-row" style="margin-top:10px" onSubmit=${function (e) { e.preventDefault(); var t = text.trim(); if (!t) return; add(t); setText(''); }}>
-        <input class="input" id="req-new" maxlength="300" placeholder="Add a requirement, e.g. Customers can track their order" value=${text} onInput=${function (e) { setText(e.target.value); }} />
+        <input class="input" id="req-new" aria-label="New requirement" maxlength="300" placeholder="Add a requirement, e.g. Customers can track their order" value=${text} onInput=${function (e) { setText(e.target.value); }} />
         <button class="btn" type="submit"><${Icon} name="plus" /> Add</button>
       </form>
     </section>`;
@@ -1938,14 +1938,16 @@ var STEPS = [
           <p class="paper-meta">${[m.client ? 'Prepared for ' + m.client : '', m.date, m.preparedBy ? 'by ' + m.preparedBy : ''].filter(Boolean).join(' · ')}</p>
           <p class="paper-intro">${m.intro}</p>
 
-          ${m.packages ? html`<h2>Packages</h2><div class="paper-pk">${m.packages.map(function (pk, i) {
+          ${m.packages ? html`<h2>Packages</h2><div class="paper-pk" role="radiogroup" aria-label="Proposal packages">${m.packages.map(function (pk, i) {
             var isSel = selectedTier === i;
-            return html`<div key=${i} class=${isSel ? 'selected' : ''} style="cursor:pointer" onClick=${function () { setSelectedTier(selectedTier === i ? null : i); }}>
+            return html`<div key=${i} class=${isSel ? 'selected' : ''} role="radio" aria-checked=${isSel ? 'true' : 'false'} tabindex="0" style="cursor:pointer"
+              onKeyDown=${function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setSelectedTier(selectedTier === i ? null : i); } }}
+              onClick=${function () { setSelectedTier(selectedTier === i ? null : i); }}>
               <b>${pk.name}</b>
               <span class="n">${hrs(pk.total)}</span>
               <span class="paper-note">${wk(pk.weeks)}${i ? ' · everything in ' + m.packageNames[i - 1] + (pk.added.length ? ', plus ' + pk.added.slice(0, 4).join(', ') + (pk.added.length > 4 ? ' and ' + (pk.added.length - 4) + ' more' : '') : '') : ''}</span>
               <div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center">
-                <span style="font-weight:700;font-size:13px;color:#0C8468">${E.fmtMoney(pk.totalCost, m.currency)}</span>
+                <span style="font-weight:700;font-size:13px;color:#096E56">${E.fmtMoney(pk.totalCost, m.currency)}</span>
                 <span class=${'pill ' + (isSel ? 's-approved' : 's-review')} style="font-size:11px">${isSel ? '✓ Active Tier' : 'Compare'}</span>
               </div>
             </div>`;
@@ -1954,7 +1956,11 @@ var STEPS = [
           ` : null}
 
           <h2>Summary</h2>
-          <table class="paper-table"><tbody>${m.summary.map(function (r) { return html`<tr key=${r[0]}><td>${r[0]}</td><td class="n">${hrs(r[1])}</td></tr>`; })}<tr class="tot"><td>Total Investment</td><td class="n" style="font-size:16px">${hrs(m.total)} · ${E.fmtMoney(m.totalCost, m.currency)}</td></tr></tbody></table>
+          <table class="paper-table">
+            <caption class="sr">Financial investment summary</caption>
+            <thead><tr><th scope="col">Category</th><th scope="col" class="n">Hours & Cost</th></tr></thead>
+            <tbody>${m.summary.map(function (r) { return html`<tr key=${r[0]}><td>${r[0]}</td><td class="n">${hrs(r[1])}</td></tr>`; })}<tr class="tot"><td>Total Investment</td><td class="n" style="font-size:16px">${hrs(m.total)} · ${E.fmtMoney(m.totalCost, m.currency)}</td></tr></tbody>
+          </table>
           <p class="paper-note">Estimated duration: about ${wk(m.weeks)} at ${E.fmtNum(m.capacity)} design hours per week.</p>
 
           <h2>Scope</h2>
@@ -1962,7 +1968,11 @@ var STEPS = [
           ${m.scope.length ? null : html`<p class="paper-note">No ${lower(m.labels.items)} in scope yet.</p>`}
 
           <h2>Deliverables</h2><ul>${m.deliverables.map(function (x) { return html`<li key=${x.group}><b><bdi>${x.group}</bdi>:</b> <bdi>${x.text}</bdi></li>`; })}</ul>
-          ${m.timeline.length ? html`<h2>Timeline by phase</h2><table class="paper-table"><tbody>${m.timeline.map(function (t) { return html`<tr key=${t.phase}><td>${t.phase}</td><td class="n">${hrs(t.hours)}</td><td class="n">${wk(t.weeks)}</td></tr>`; })}</tbody></table>` : null}
+          ${m.timeline.length ? html`<h2>Timeline by phase</h2><table class="paper-table">
+            <caption class="sr">Estimated timeline by phase</caption>
+            <thead><tr><th scope="col">Phase</th><th scope="col" class="n">Hours</th><th scope="col" class="n">Estimated Weeks</th></tr></thead>
+            <tbody>${m.timeline.map(function (t) { return html`<tr key=${t.phase}><td>${t.phase}</td><td class="n">${hrs(t.hours)}</td><td class="n">${wk(t.weeks)}</td></tr>`; })}</tbody>
+          </table>` : null}
 
           ${(m.milestones || []).length ? html`<div>
             <h2>Payment milestone schedule</h2>
@@ -1995,12 +2005,12 @@ var STEPS = [
             <h3>Digital Proposal Acceptance</h3>
             <p>Review the scope above and sign below to accept this proposal and initiate project scheduling.</p>
             <div class="paper-sign-fields">
-              <label class="field"><span>Full Name</span><input class="input" id="prop-sign-name" maxlength="100" placeholder="Client Stakeholder Name" value=${signName} onInput=${function (e) { setSignName(e.target.value); }} /></label>
-              <label class="field"><span>Work Email</span><input class="input" type="email" id="prop-sign-email" maxlength="120" placeholder="client@company.com" value=${signEmail} onInput=${function (e) { setSignEmail(e.target.value); }} /></label>
-              <label class="field"><span>Organization</span><input class="input" id="prop-sign-org" maxlength="100" placeholder="Client Organization" value=${signOrg} onInput=${function (e) { setSignOrg(e.target.value); }} /></label>
+              <label class="field" for="prop-sign-name"><span>Full Name</span><input class="input" id="prop-sign-name" maxlength="100" placeholder="Client Stakeholder Name" value=${signName} onInput=${function (e) { setSignName(e.target.value); }} /></label>
+              <label class="field" for="prop-sign-email"><span>Work Email</span><input class="input" type="email" id="prop-sign-email" maxlength="120" placeholder="client@company.com" value=${signEmail} onInput=${function (e) { setSignEmail(e.target.value); }} /></label>
+              <label class="field" for="prop-sign-org"><span>Organization</span><input class="input" id="prop-sign-org" maxlength="100" placeholder="Client Organization" value=${signOrg} onInput=${function (e) { setSignOrg(e.target.value); }} /></label>
             </div>
-            <label class="check-line" style="margin-bottom:16px;cursor:pointer">
-              <input type="checkbox" id="prop-sign-agree" checked=${agreed} onChange=${function (e) { setAgreed(e.target.checked); }} />
+            <label class="check-line" for="prop-sign-agree" style="margin-bottom:16px;cursor:pointer">
+              <input type="checkbox" id="prop-sign-agree" aria-label="Confirm acceptance of proposal terms" checked=${agreed} onChange=${function (e) { setAgreed(e.target.checked); }} />
               <span>I confirm acceptance of this project proposal, scope, timeline, milestones, and commercial investment on behalf of <b>${signOrg || 'the client'}</b>.</span>
             </label>
             <button class="btn primary" id="btn-prop-accept" disabled=${!agreed || !signName.trim()} onClick=${signProposal}>
@@ -2843,7 +2853,7 @@ var STEPS = [
               <div class="panel panel-pad" style="background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px">
                 ${s.costRate && Number(s.hourlyRate) > Number(s.costRate) ? html`<div class="row" style="justify-content:space-between;align-items:center">
                   <span style="font-size:12px;color:var(--text-sub)">Target Margin</span>
-                  <span class="pill" style="font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${Math.round(((s.hourlyRate - s.costRate) / s.hourlyRate) * 100)}% gross margin</span>
+                  <span class="pill" style="font-weight:700;color:var(--green-fg);background:var(--green-bg)">${Math.round(((s.hourlyRate - s.costRate) / s.hourlyRate) * 100)}% gross margin</span>
                 </div>` : html`<div class="muted" style="font-size:12px">Set cost rate > 0 to display target margin %</div>`}
               </div>
             </div>
@@ -3112,9 +3122,10 @@ var STEPS = [
     else view = html`<${EstimatesView} ctx=${ctx} />`;
 
     return html`
+      <a href="#main-content" class="skip-link">Skip to main content</a>
       <div class="shell">
         <${Sidebar} ctx=${ctx} />
-        <main class="main"><div class="wrap">
+        <main class="main" id="main-content" tabindex="-1"><div class="wrap">
           ${readOnly ? html`<div class="banner bad" style="margin-bottom:16px"><${Icon} name="lock" /><div class="grow"><b>View only.</b> Your changes are not being saved. Ask the owner for Contributor access.</div></div>` : null}
           <${Boundary} resetKey=${route.view + ':' + (route.id || route.serviceId || '')} api=${api} onHome=${function () { setRoute({ view: 'estimates' }); }}>${view}<//>
         </div></main>

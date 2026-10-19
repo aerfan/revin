@@ -211,9 +211,10 @@
     else view = html`<${EstimatesView} ctx=${ctx} />`;
 
     return html`
+      <a href="#main-content" class="skip-link">Skip to main content</a>
       <div class="shell">
         <${Sidebar} ctx=${ctx} />
-        <main class="main"><div class="wrap">
+        <main class="main" id="main-content" tabindex="-1"><div class="wrap">
           ${readOnly ? html`<div class="banner bad" style="margin-bottom:16px"><${Icon} name="lock" /><div class="grow"><b>View only.</b> Your changes are not being saved. Ask the owner for Contributor access.</div></div>` : null}
           <${Boundary} resetKey=${route.view + ':' + (route.id || route.serviceId || '')} api=${api} onHome=${function () { setRoute({ view: 'estimates' }); }}>${view}<//>
         </div></main>

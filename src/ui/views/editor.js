@@ -182,7 +182,7 @@
           <div class="eyebrow insp-label">Total estimate</div>
           <div class="insp-total"><span class="num">${E.fmtNum(E.round(res.total, 1))}</span><span class="u">h</span></div>
           <div class="insp-cost-badge">${E.fmtMoney(res.totalCost, res.currency)} <span class="rate-sub">· ${E.fmtMoney(res.hourlyRate, res.currency)}/h</span></div>
-          ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<div class="insp-margin-badge" style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;background:var(--green-sub, rgba(46,125,50,0.12));color:var(--green, #2e7d32)">Margin: ${res.marginPercent}% (${E.fmtMoney(res.grossProfit, res.currency)})</div>` : null}
+          ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<div class="insp-margin-badge" style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;background:var(--green-bg);color:var(--green-fg)">Margin: ${res.marginPercent}% (${E.fmtMoney(res.grossProfit, res.currency)})</div>` : null}
           <div class="insp-sub">About ${E.fmtNum(E.round(res.total / 40, 1))} designer-weeks at 40h a week</div>
         </div>
         <button class="btn sm ghost insp-toggle" aria-expanded=${open ? 'true' : 'false'} onClick=${function () { setOpen(!open); }}>${open ? 'Hide' : 'Details'}</button>
@@ -617,7 +617,7 @@
             p.change(function (n) { n.register = n.register || {}; n.register[kind.id] = (n.register[kind.id] || []).concat({ id: E.uid('r'), text: t }); });
             setText('');
           }}>
-            <input class="input" id=${'reg-new-' + kind.id} maxlength="1000" placeholder=${'Add ' + ({ assumptions: 'an assumption', exclusions: 'an exclusion', dependencies: 'a dependency', risks: 'a risk' }[kind.id] || lower(kind.name))} value=${text} onInput=${function (e) { setText(e.target.value); }} />
+            <input class="input" id=${'reg-new-' + kind.id} aria-label=${'Add ' + ({ assumptions: 'an assumption', exclusions: 'an exclusion', dependencies: 'a dependency', risks: 'a risk' }[kind.id] || lower(kind.name))} maxlength="1000" placeholder=${'Add ' + ({ assumptions: 'an assumption', exclusions: 'an exclusion', dependencies: 'a dependency', risks: 'a risk' }[kind.id] || lower(kind.name))} value=${text} onInput=${function (e) { setText(e.target.value); }} />
             <button class="btn" type="submit"><${Icon} name="plus" /> Add</button>
           </form>
         </div>
@@ -636,7 +636,7 @@
           <div class="total-cost-badge">
             <span class="cost-val">${E.fmtMoney(res.totalCost, res.currency)}</span>
             <span class="cost-rate">at ${E.fmtMoney(res.hourlyRate, res.currency)}/h</span>
-            ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<span class="cost-margin" style="margin-left:8px;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${res.marginPercent}% margin</span>` : null}
+            ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<span class="cost-margin" style="margin-left:8px;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;color:var(--green-fg);background:var(--green-bg)">${res.marginPercent}% margin</span>` : null}
           </div>
           <div class="total-meta">${dl[0] ? dl[0].text : ''} <span class="paren">(about ${E.fmtNum(E.round(res.total / 40, 1))} designer-weeks)</span></div>
           <dl class="summary-lines">
@@ -751,7 +751,7 @@
             <div class="panel panel-pad" style="background:var(--bg-sub);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px">
               ${res.marginPercent !== null && res.marginPercent !== undefined ? html`<div class="row" style="justify-content:space-between;align-items:center">
                 <span style="font-size:12px;color:var(--text-sub)">Labor: ${E.fmtMoney(res.laborCost, res.currency)}</span>
-                <span class="pill" style="font-weight:700;color:var(--green, #2e7d32);background:var(--green-sub, rgba(46,125,50,0.12))">${res.marginPercent}% gross margin (${E.fmtMoney(res.grossProfit, res.currency)} profit)</span>
+                <span class="pill" style="font-weight:700;color:var(--green-fg);background:var(--green-bg)">${res.marginPercent}% gross margin (${E.fmtMoney(res.grossProfit, res.currency)} profit)</span>
               </div>` : html`<div class="muted" style="font-size:12px">Set cost rate > 0 to track profitability margin</div>`}
             </div>
           </div>

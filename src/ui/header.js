@@ -4,7 +4,7 @@
   var P = window.preact, H = window.preactHooks, E = window.Engine;
   var mount = document.getElementById('app');
   if (!P || !H || !window.htm || !E) {
-    mount.innerHTML = '<div class="notice"><h1>The estimator could not load</h1><p>A required script did not load. Check your connection and reload the page.</p></div>';
+    mount.innerHTML = '<main class="notice" id="main-content"><h1>The estimator could not load</h1><p>A required script did not load. Check your connection and reload the page.</p></main>';
     return;
   }
   var h = P.h, render = P.render;

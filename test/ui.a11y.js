@@ -41,6 +41,7 @@ const SCREENS = [
   ['error-boundary', async (p) => { await p.evaluate(() => { const E = window.Engine; const c = E.compute; E.compute = function () { if (window.__boom) throw new Error('Injected'); return c.apply(this, arguments); }; window.__boom = true; }); await p.locator('.est-row .est-open', { hasText: 'Acme' }).click(); await p.getByText('Something went wrong showing this page').waitFor(); }],
   ['error-toast', async (p) => { await p.evaluate(() => window.__faults.push({ op: 'set', match: 'estimates/', code: 'quota_exceeded', times: 9 })); await p.locator('.est-row', { hasText: 'Acme' }).click(); await p.locator('#est-name').fill('Acme corporate site v2'); await p.locator('.toast.bad').waitFor({ timeout: 4000 }); }],
   ['modal', async (p) => { await p.locator('.est-row').first().getByRole('button', { name: /Delete/ }).click(); await p.locator('.modal').waitFor(); }],
+  ['proposal', async (p) => { await p.locator('.est-row', { hasText: 'Acme' }).click(); await p.locator('#btn-toggle-client-mode').click(); await p.locator('.paper').waitFor(); }],
 ];
 
 let browser;
