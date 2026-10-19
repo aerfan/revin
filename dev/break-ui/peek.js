@@ -63,18 +63,18 @@ const SHOTS = [
   ['47-review-outdated', 'worst', 'd1360', est('review'), async (p) => { await p.evaluate(() => { const s = JSON.parse(JSON.stringify(window.__store.get('services/website'))); s.optionGroups[0].options[1].value = 99; window.__remoteSet('services/website', s); }); await p.locator('.banner.warn').waitFor(); }, '.banner.warn'],
   ['48-one-scope', 'one', 'd1360', est('scope'), null, '.ed-main'],
 ];
-const ONLY = process.argv[2] ? new RegExp(process.argv[2]) : null;
+const ONLY = process.argv[2] || '';
 (async () => {
   const browser = await chromium.launch();
   for (const [name, ds, env, route, prep, sel, hasText] of SHOTS) {
-    if (ONLY && !ONLY.test(name)) continue;
+    if (ONLY && !name.includes(ONLY)) continue;
     const ctx = await browser.newContext({ viewport: VIEW[env], deviceScaleFactor: env === 'z200' ? 2 : 1 });
     const page = await ctx.newPage();
     await page.route('**/*', (r) => {
       const u = r.request().url();
       if (u.startsWith('https://harness.test/')) return r.fulfill({ contentType: 'text/html', body: html });
       for (const f of ['preact.umd.min.js', 'hooks.umd.min.js', 'htm.umd.min.js', 'exceljs.min.js']) if (u.includes(f)) return r.fulfill({ contentType: 'application/javascript', body: LIB(f) });
-      if (u.includes('fonts.googleapis.com')) return r.fulfill({ contentType: 'text/css', body: '' });
+      if (new URL(u).hostname === 'fonts.googleapis.com') return r.fulfill({ contentType: 'text/css', body: '' });
       return r.abort();
     });
     await page.addInitScript((r) => { try { localStorage.setItem('dhe:route', JSON.stringify(r)); } catch (e) { /* ignore */ } }, route);
