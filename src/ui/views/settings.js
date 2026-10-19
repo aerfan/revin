@@ -21,7 +21,7 @@
     async function act(fn, done) {
       setBusy(true);
       try { await fn(); if (done) ctx.toast(done); await load(); }
-      catch (e) { ctx.toast(/own role/i.test(e.message) ? 'You can’t change your own role. Ask another admin.' : 'That didn’t work: ' + String(e.message || e).slice(0, 120), 'bad'); }
+      catch (e) { ctx.toast(/\byour own role\b/i.test(e.message) ? 'You can’t change your own role. Ask another admin.' : 'That didn’t work: ' + String(e.message || e).slice(0, 120), 'bad'); }
       setBusy(false);
     }
     var mine = (team.me && team.me.user_id) || null;
