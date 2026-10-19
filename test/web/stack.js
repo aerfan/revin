@@ -134,7 +134,7 @@ async function start(opts = {}) {
         return req.pipe(up);
       }
       send(res, 404, { message: 'not found' });
-    } catch (e) { send(res, 500, { message: String(e) }); }
+    } catch (e) { send(res, 500, { message: 'internal server error' }); }
   });
   const wss = new WebSocketServer({ noServer: true });
   const sockets = new Set();
