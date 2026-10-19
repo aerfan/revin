@@ -25,12 +25,12 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
 
   // Strictly skip non-HTTP requests, non-GET methods, external Supabase API / WebSocket traffic, and Vercel endpoints
-  if (!url.protocol.startsWith('http') || req.method !== 'GET' || url.protocol.startsWith('ws') || url.hostname.includes('supabase.co') || url.pathname.startsWith('/_vercel/')) {
+  if (!url.protocol.startsWith('http') || req.method !== 'GET' || url.protocol.startsWith('ws') || url.hostname === 'supabase.co' || url.hostname.endsWith('.supabase.co') || url.pathname.startsWith('/_vercel/')) {
     return;
   }
 
   // Cache-First for versioned vendor assets & fonts
-  if (url.pathname.startsWith('/vendor/') || url.hostname.includes('gstatic.com') || url.hostname.includes('googleapis.com')) {
+  if (url.pathname.startsWith('/vendor/') || url.hostname === 'gstatic.com' || url.hostname.endsWith('.gstatic.com') || url.hostname === 'googleapis.com' || url.hostname.endsWith('.googleapis.com')) {
     event.respondWith(
       caches.match(req).then((cached) => {
         if (cached) return cached;
