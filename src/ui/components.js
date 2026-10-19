@@ -27,6 +27,16 @@
   function BrandMark(p) {
     return BrandLogo(p);
   }
+  // Vercel Speed Insights component (Preact equivalent to @vercel/speed-insights/next)
+  function SpeedInsights(props) {
+    var route = props && props.route;
+    useEffect(function () {
+      if (typeof window !== 'undefined' && typeof window.si === 'function' && route) {
+        window.si('route', { route: route });
+      }
+    }, [route]);
+    return null;
+  }
   // Avatar with an initials fallback for a missing or failing image.
   function Avatar(p) {
     var sf = useState(false), failed = sf[0], setFailed = sf[1];

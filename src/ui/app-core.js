@@ -214,6 +214,7 @@
     else view = html`<${EstimatesView} ctx=${ctx} />`;
 
     return html`
+      <${SpeedInsights} route=${'/' + route.view + (route.step ? '/' + route.step : '')} />
       <a href="#main-content" class="skip-link">Skip to main content</a>
       <div class="shell">
         <${Sidebar} ctx=${ctx} />
