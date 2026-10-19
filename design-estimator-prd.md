@@ -23,6 +23,17 @@
 
 ---
 
+## Current architecture vs legacy notes
+
+- **Current production architecture (source of truth):**
+  - `/home/runner/work/revin/revin/README.md`
+  - `/home/runner/work/revin/revin/web/runtime.js`
+  - `/home/runner/work/revin/revin/supabase/migrations/0001_init.sql`
+- **Current deployment/runtime:** standalone web app on Supabase + Vercel with Supabase Auth (Google/email), team roles, and realtime sync.
+- **Legacy references in this PRD:** some sections still mention the earlier claude.ai-hosted model. Treat those as historical context unless they match the current source-of-truth files above.
+
+---
+
 ## 1. Problem
 
 We are a design agency offering mostly UX/UI design: websites, mobile apps, web applications/dashboards and more. Clients ask for a quotation, but we can't quote directly. Today we:
@@ -514,4 +525,3 @@ Motion follows Emil Kowalski's rules: animate only when it gives feedback, shows
 - Brief analyzer through a Supabase Edge Function with an Anthropic API key.
 - Invitation emails sent from the app.
 - Free Supabase projects pause after a week without use, so Pro is recommended.
-

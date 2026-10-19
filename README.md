@@ -77,6 +77,7 @@ The database enforces these rules (Postgres row-level security), not only the in
 ## How it's built
 
 - `src/`: the app (Preact + htm, no build framework). `engine.js` holds the calculations and exports, `app.js` the screens, `styles.css` the design.
+- Icons follow the Phosphor set and are checked in as inline SVG paths in `src/app.js` (the `@phosphor-icons/core` dev dependency is kept for icon maintenance/version pinning, not runtime loading).
 - `web/runtime.js`: the standalone layer. It provides the sign-in screens, keeps documents in Supabase through four database functions (`get_doc`, `query_docs`, `set_doc`, `delete_doc`), handles live updates over Supabase Realtime, and supplies user profiles, team management and backups.
 - `web/build.js`: produces `dist-web/` (one `index.html` plus the vendored libraries in `/vendor`). It runs on every Vercel deploy and writes a Content Security Policy that only allows your Supabase project.
 - `supabase/migrations/0001_init.sql`: the tables (`docs`, `members`, `invites`, `team_settings`), access rules, the sign-up trigger and the team functions.

@@ -28,7 +28,15 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  const urlPath = req.url.split('?')[0];
+  const rawPath = req.url.split('?')[0];
+  let urlPath = rawPath;
+  try {
+    urlPath = decodeURIComponent(rawPath);
+  } catch (e) {
+    res.writeHead(400, { 'Content-Type': 'text/plain' });
+    res.end('Bad request');
+    return;
+  }
 
   // Route root and index to the interactive dev harness
   let filePath;
@@ -42,7 +50,8 @@ const server = http.createServer((req, res) => {
 
   // Security check to avoid directory traversal
   const resolved = path.resolve(filePath);
-  if (!resolved.startsWith(ROOT)) {
+  const rel = path.relative(ROOT, resolved);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
     res.writeHead(403);
     res.end('Access denied');
     return;

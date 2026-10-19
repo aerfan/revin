@@ -14,8 +14,8 @@ const SP = path.join(__dirname, 'out', 'a11y', 'gradient'); fs.mkdirSync(SP, { r
     const page = await context.newPage();
     await page.route('**/*', (route) => {
       const u = route.request().url();
-      if (u.startsWith('https://app.test/')) return route.fulfill({ contentType: 'text/html', body: '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"></head><body style="margin:0">' + page$ + '</body></html>' });
       for (const f of ['preact.umd.min.js', 'hooks.umd.min.js', 'htm.umd.min.js']) if (u.includes(f)) return route.fulfill({ contentType: 'application/javascript', body: LIB(f) });
+      if (/^https:\/\/app\.test\/($|[?#])/.test(u)) return route.fulfill({ contentType: 'text/html', body: '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"></head><body style="margin:0">' + page$ + '</body></html>' });
       return route.abort();
     });
     await page.addInitScript(`window.__MOCK__ = ${JSON.stringify({ role: 'admin', seed })};\n${mock}`);

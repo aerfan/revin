@@ -98,7 +98,7 @@
     { value: 'fixed', label: 'Fixed hours' }, { value: 'perItem', label: 'Hours per item' },
   ];
   var VENDOR = window.DHE_VENDOR || null;
-  var EXCEL_URLS = VENDOR ? [VENDOR.exceljs] : ['https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', 'https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js'];
+  var EXCEL_URLS = [VENDOR && VENDOR.exceljs, 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', 'https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js'].filter(Boolean);
 
   // ------------------------------------------------------------------ helpers
   var local = {
@@ -134,7 +134,7 @@
       })();
     });
   }
-  var DOCX_URLS = VENDOR ? [VENDOR.docx] : ['https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js', 'https://unpkg.com/docx@8.5.0/build/index.umd.js'];
+  var DOCX_URLS = [VENDOR && VENDOR.docx, 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js', 'https://unpkg.com/docx@8.5.0/build/index.umd.js'].filter(Boolean);
   function loadDocx() { return window.docx ? Promise.resolve(window.docx) : loadScript(DOCX_URLS).then(function () { if (!window.docx) throw new Error('The document library did not load. Check your connection and try again.'); return window.docx; }); }
   function loadExcel() { return window.ExcelJS ? Promise.resolve(window.ExcelJS) : loadScript(EXCEL_URLS).then(function () { return window.ExcelJS; }); }
   function useProfiles(user, ids) {

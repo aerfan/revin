@@ -1,7 +1,7 @@
 name: CI
 on: [push, pull_request]
 jobs:
-  test:
+  fast-checks:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -19,3 +19,13 @@ jobs:
       - run: npm run test:db
         env: { PGHOST: 127.0.0.1, PGPASSWORD: pg }
       - run: node web/build.js
+  ui-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node build.js
+      - run: node test/ui.f1.js

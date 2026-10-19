@@ -5,6 +5,7 @@
 //   AGENCY_NAME (optional)                             shown on the sign-in screen
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'dist-web');
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), 'utf8');
@@ -23,23 +24,28 @@ const config = { supabaseUrl: url, supabaseAnonKey: key, agencyName: env('AGENCY
 
 const origin = url ? new URL(url).origin : '';
 const ws = origin.replace(/^http/, 'ws');
+
+const parts = { CSS: read('src', 'styles.css'), ENGINE: read('src', 'engine.js'), RUNTIME: read('web', 'runtime.js'), APP: read('src', 'app.js') };
+for (const [k, v] of Object.entries(parts)) if (/<\/script/i.test(v) || /<\/style/i.test(v)) throw new Error(`${k} contains a closing tag that would break inlining`);
+let html = read('web', 'template.html');
+html = html.replace('/*__CONFIG__*/', () => JSON.stringify(config).replace(/</g, '\\u003c'));
+for (const [k, v] of Object.entries(parts)) html = html.replace(`/*__${k}__*/`, () => v);
+const inlineScripts = Array.from(html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)).map((m) => m[1]);
+const scriptHashes = inlineScripts.map((code) => `'sha256-${crypto.createHash('sha256').update(code, 'utf8').digest('base64')}'`);
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' ${scriptHashes.join(' ')}`.trim(),
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src https://fonts.gstatic.com",
   "img-src 'self' data: blob: https:",
   `connect-src 'self' ${origin} ${ws}`.trim(),
   "worker-src 'self' blob:",
-  "base-uri 'none'", "form-action 'self'", "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "object-src 'none'",
 ].join('; ');
-
-const parts = { CSS: read('src', 'styles.css'), ENGINE: read('src', 'engine.js'), RUNTIME: read('web', 'runtime.js'), APP: read('src', 'app.js') };
-for (const [k, v] of Object.entries(parts)) if (/<\/script/i.test(v) || /<\/style/i.test(v)) throw new Error(`${k} contains a closing tag that would break inlining`);
-let html = read('web', 'template.html');
 html = html.replace('/*__CSP__*/', () => csp.replace(/"/g, '&quot;'));
-html = html.replace('/*__CONFIG__*/', () => JSON.stringify(config).replace(/</g, '\\u003c'));
-for (const [k, v] of Object.entries(parts)) html = html.replace(`/*__${k}__*/`, () => v);
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(path.join(OUT, 'vendor'), { recursive: true });
 fs.writeFileSync(path.join(OUT, 'index.html'), html);

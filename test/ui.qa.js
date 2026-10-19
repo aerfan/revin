@@ -38,8 +38,8 @@ async function open(cfg, opts = {}) {
   page.on('dialog', (d) => { errors.push('native dialog: ' + d.message()); d.dismiss(); });
   await page.route('**/*', (route) => {
     const u = route.request().url();
-    if (u.startsWith('https://app.test/')) return route.fulfill({ contentType: 'text/html', body: SKELETON(page$) });
     for (const f of ['preact.umd.min.js', 'hooks.umd.min.js', 'htm.umd.min.js', 'exceljs.min.js']) if (u.includes(f)) return route.fulfill({ contentType: 'application/javascript', body: LIB(f) });
+    if (/^https:\/\/app\.test\/($|[?#])/.test(u)) return route.fulfill({ contentType: 'text/html', body: SKELETON(page$) });
     if (u.includes('fonts.googleapis.com')) return route.fulfill({ contentType: 'text/css', body: '' });
     return route.abort();
   });

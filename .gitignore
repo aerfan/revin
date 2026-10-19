@@ -7,11 +7,10 @@ test/web/bin/
 dev/break-ui/out/
 dev/break-ui/break-ui.html
 .env
-.env.*
-!.env.example
 .vercel
 .DS_Store
 *.zip
 
 .env*
+!.env.example
 supabase/.temp/

@@ -25,11 +25,11 @@ async function open(browser, cfg, opts = {}) {
   page.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push('console: ' + m.text()); });
   await page.route('**/*', (route) => {
     const u = route.request().url();
-    if (u.startsWith('https://app.test/')) return route.fulfill({ contentType: 'text/html', body: SKELETON(page$) });
     if (u.includes('preact.umd.min.js')) return route.fulfill({ contentType: 'application/javascript', body: LIB('preact.umd.min.js') });
     if (u.includes('hooks.umd.min.js')) return route.fulfill({ contentType: 'application/javascript', body: LIB('hooks.umd.min.js') });
     if (u.includes('htm.umd.min.js')) return route.fulfill({ contentType: 'application/javascript', body: LIB('htm.umd.min.js') });
     if (u.includes('exceljs.min.js')) return route.fulfill({ contentType: 'application/javascript', body: LIB('exceljs.min.js') });
+    if (/^https:\/\/app\.test\/($|[?#])/.test(u)) return route.fulfill({ contentType: 'text/html', body: SKELETON(page$) });
     if (u.includes('fonts.googleapis.com')) return route.fulfill({ contentType: 'text/css', body: '' });
     return route.abort();
   });

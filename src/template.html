@@ -13,9 +13,20 @@
     <p>Connecting to your workspace.</p>
   </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/preact/10.24.3/preact.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/preact/10.24.3/hooks.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/htm/3.1.1/htm.umd.min.js"></script>
+<script>
+window.DHE_VENDOR = window.DHE_VENDOR || {
+  exceljs: './vendor/exceljs.min.js?v=4.4.0',
+  docx: './vendor/docx.umd.js?v=8.5.0'
+};
+</script>
+<script src="./vendor/preact.umd.min.js?v=10.24.3"></script>
+<script>if (!window.preact) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/preact/10.24.3/preact.umd.min.js"><\/script>');</script>
+<script src="./vendor/hooks.umd.min.js?v=10.24.3"></script>
+<script>if (!window.preactHooks) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/preact/10.24.3/hooks.umd.min.js"><\/script>');</script>
+<script src="./vendor/htm.umd.min.js?v=3.1.1"></script>
+<script>if (!window.htm) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/htm/3.1.1/htm.umd.min.js"><\/script>');</script>
+<script src="./vendor/exceljs.min.js?v=4.4.0"></script>
+<script>if (!window.ExcelJS) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"><\/script>');</script>
 <script>
 /*__ENGINE__*/
 </script>
