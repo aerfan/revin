@@ -30,7 +30,7 @@ async function open(browser, cfg, opts = {}) {
     if (u.includes('hooks.umd.min.js')) return route.fulfill({ contentType: 'application/javascript', body: LIB('hooks.umd.min.js') });
     if (u.includes('htm.umd.min.js')) return route.fulfill({ contentType: 'application/javascript', body: LIB('htm.umd.min.js') });
     if (u.includes('exceljs.min.js')) return route.fulfill({ contentType: 'application/javascript', body: LIB('exceljs.min.js') });
-    if (u.includes('fonts.googleapis.com')) return route.fulfill({ contentType: 'text/css', body: '' });
+    if (new URL(u).hostname === 'fonts.googleapis.com') return route.fulfill({ contentType: 'text/css', body: '' });
     return route.abort();
   });
   if (cfg) await page.addInitScript(`window.__MOCK__ = ${JSON.stringify(cfg)};\n${mock}`);
