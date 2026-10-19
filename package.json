@@ -35,6 +35,6 @@
     "test:canary": "node test/canary.compat.js && node test/canary.screens.js && node test/canary.stress.js && node test/canary.telemetry.js && node test/canary.extreme-stress.js && node test/canary.proposal.js && node test/canary.security.js && node test/canary.webhook.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": "22.x"
   }
 }
